@@ -1,0 +1,17 @@
+// Project styles
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+
+// Stylebase for components
+@import "_stylebase.scss";
+
+// App styles
+@import "./project/_fixes.scss";
+@import "./project/_widgets.scss";
+
+// App themes
+@import "./themes/_themes__content";
+@import "./themes/_theme--dark";
+@import "./themes/_theme--light";
+
+// External libraries customization

@@ -1,0 +1,157 @@
+// Project Utilities
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+
+// Animation utilite example
+//////////////////////////////////////////////////////
+
+.fadeAndLeft {
+  will-change: transform, opacity;
+  @include animations("left #{$animation-duration}", "fade #{$animation-duration}");
+}
+
+
+// Elements
+//////////////////////////////////////////////////////
+
+// Fixed container
+.container {
+  @extend %container;
+  margin: 0 auto;
+}
+
+// Rubber Container
+.container-fluid {
+  @extend %container;
+  width: 100%;
+}
+
+// nowrap spans
+.nowrap {
+  white-space: nowrap;
+}
+
+.text--center {
+  text-align: center;
+}
+
+
+// Visibility utilities
+//////////////////////////////////////////////////////
+
+// stylelint-disable declaration-no-important
+.visible {
+  &--desktop,
+  &--gadgets,
+  &--tablet,
+  &--mobile,
+  &--desktop--inline-block,
+  &--gadgets--inline-block,
+  &--tablet-inline-block,
+  &--mobile--inline-block,
+  &--desktop--inline,
+  &--gadgets--inline,
+  &--tablet--inline,
+  &--mobile--inline {
+    display: none !important;
+  }
+
+  &--desktop {
+    @include not-gadgets {
+      display: block !important;
+    }
+  }
+
+  &--gadgets {
+    @include gadgets {
+      display: block !important;
+    }
+  }
+
+  &--tablet {
+    @include sm {
+      display: block !important;
+    }
+  }
+
+  &--mobile {
+    @include xs {
+      display: block !important;
+    }
+  }
+
+  &--desktop--inline-block {
+    @include not-gadgets {
+      display: inline-block !important;
+    }
+  }
+
+  &--gadgets--inline-block {
+    @include gadgets {
+      display: inline-block !important;
+    }
+  }
+
+  &--tablet--inline-block {
+    @include sm {
+      display: inline-block !important;
+    }
+  }
+
+  &--mobile--inline-block {
+    @include xs {
+      display: inline-block !important;
+    }
+  }
+
+  &--desktop--inline {
+    @include not-gadgets {
+      display: inline !important;
+    }
+  }
+
+  &--gadgets--inline {
+    @include gadgets {
+      display: inline !important;
+    }
+  }
+
+  &--tablet--inline {
+    @include sm {
+      display: inline !important;
+    }
+  }
+
+  &--mobile--inline {
+    @include xs {
+      display: inline !important;
+    }
+  }
+}
+
+.hidden {
+  &--desktop {
+    @include not-gadgets {
+      display: none !important;
+    }
+  }
+
+  &--gadgets {
+    @include gadgets {
+      display: none !important;
+    }
+  }
+
+  &--tablet {
+    @include sm {
+      display: none !important;
+    }
+  }
+
+  &--mobile {
+    @include xs {
+      display: none !important;
+    }
+  }
+}
+// stylelint-enable declaration-no-important

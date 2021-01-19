@@ -1,0 +1,37 @@
+// App common project styles
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+
+.switch {
+  display: inline-block;
+  background: $colors__white;
+  border: 1px solid $colors__border;
+  border-radius: $border-radius__small;
+  white-space: nowrap;
+  // следующая строчка не заработает без флага !important !!!
+  padding: ($gutter / 4) ($gutter / 2) !important; // перекрываем base в хэшах
+
+  > li {
+    display: inline-block;
+    @include text($font-family__sans, $font-size--normal, $font-weight__sans__regular);
+
+    a {
+      @include link__color($colors__primary, darken($colors__primary, $fade--percent));
+    }
+
+    // слэш между вариантами
+    &:not(:last-child) {
+      &:after {
+        margin-left: $gutter / 4;
+        margin-right: $gutter / 4;
+        text-align: center;
+        content: " / ";
+      }
+    }
+  }
+
+  // отступ между переключателями
+  & + .switch {
+    margin-left: $gutter;
+  }
+}
