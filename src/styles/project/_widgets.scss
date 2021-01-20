@@ -13,7 +13,7 @@
 
   > li {
     display: inline-block;
-    @include text($font-family__sans, $font-size--normal, $font-weight__sans__regular);
+    @include text($font-size--normal, $font-weight__sans__regular);
 
     a {
       @include link__color($colors__primary, darken($colors__primary, $fade--percent));

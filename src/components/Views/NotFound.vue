@@ -29,12 +29,12 @@ export default {
     h1 {
       color: $colors__primary;
       margin: 0;
-      @include text($font-family__sans, $font-size--large, $font-weight__sans__bold);
+      @include text($font-size--large, $font-weight__sans__bold);
     }
 
     h3 {
       margin: 0;
-      @include text($font-family__sans, $font-size--normal, $font-weight__sans__bold);
+      @include text($font-size--normal, $font-weight__sans__bold);
     }
   }
 </style>

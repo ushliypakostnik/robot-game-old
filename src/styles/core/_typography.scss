@@ -39,8 +39,8 @@ $font-weight__sans__bold: 700;
 
 // We use one, only one, Karl, a universal admixture for all cases !!!!!!!!!!
 
-@mixin text($font-family, $font-size, $font-weight) {
-  font-family: $font-family;
+@mixin text($font-size, $font-weight) {
+  font-family: $font-family__sans;
   font-size: $font-size;
   font-weight: $font-weight;
   letter-spacing: $normal-letter-spacing;
@@ -63,39 +63,39 @@ $font-weight__sans__bold: 700;
 
 p {
   margin-bottom: $gutter / 2;
-  @include text($font-family__sans, $font-size--small, $font-weight__sans__regular);
+  @include text($font-size--small, $font-weight__sans__regular);
 }
 
 h1 {
-  @include text($font-family__sans, $font-size--large, $font-weight__sans__bold);
+  @include text($font-size--large, $font-weight__sans__bold);
 
   @include xs {
-    @include text($font-family__sans, $font-size--normal, $font-weight__sans__bold);
+    @include text($font-size--normal, $font-weight__sans__bold);
   }
 }
 
 h2 {
-  @include text($font-family__sans, $font-size--large, $font-weight__sans__regular);
+  @include text($font-size--large, $font-weight__sans__regular);
 
   @include xs {
-    @include text($font-family__sans, $font-size--normal, $font-weight__sans__regular);
+    @include text($font-size--normal, $font-weight__sans__regular);
   }
 }
 
 h3 {
-  @include text($font-family__sans, $font-size--normal, $font-weight__sans__bold);
+  @include text($font-size--normal, $font-weight__sans__bold);
 }
 
 h4 {
-  @include text($font-family__sans, $font-size--small, $font-weight__sans__regular);
+  @include text($font-size--small, $font-weight__sans__regular);
 }
 
 h5 {
-  @include text($font-family__sans, $font-size--xsmall, $font-weight__sans__bold);
+  @include text($font-size--xsmall, $font-weight__sans__bold);
 }
 
 h6 {
-  @include text($font-family__sans, $font-size--xsmall, $font-weight__sans__regular);
+  @include text($font-size--xsmall, $font-weight__sans__regular);
 }
 
 strong {

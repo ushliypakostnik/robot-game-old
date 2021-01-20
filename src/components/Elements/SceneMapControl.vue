@@ -19,6 +19,7 @@ export default {
       scene: null,
       renderer: null,
 
+      constrol: null,
       cube: null,
       light: null,
       light1: null,
@@ -33,7 +34,7 @@ export default {
   },
 
   beforeDestroy() {
-    window.removeEventListener( 'resize', this.onWindowResize, false );
+    window.removeEventListener('resize', this.onWindowResize, false);
   },
 
   methods: {
@@ -43,6 +44,7 @@ export default {
 
       let container = document.getElementById('scene');
 
+      // eslint-disable-next-line max-len
       this.camera = new Three.PerspectiveCamera(50, container.clientWidth/container.clientHeight, 1, 4000);
       this.camera.position.x = 0;
       this.camera.position.y = 150;
@@ -50,10 +52,10 @@ export default {
 
       this.scene = new Three.Scene();
       this.scene.background = new Three.Color( 0x050505 );
-      this.scene.fog = new Three.Fog( 0x050505, 50, 1000 );
+      this.scene.fog = new Three.Fog(0x050505, 50, 1000);
 
       this.renderer = new Three.WebGLRenderer({antialias: true});
-      this.renderer.setPixelRatio( window.devicePixelRatio );
+      this.renderer.setPixelRatio(window.devicePixelRatio);
       this.renderer.setSize(container.clientWidth, container.clientHeight);
       this.renderer.shadowMap.enabled = true;
       this.renderer.shadowMap.type = Three.PCFSoftShadowMap;
@@ -110,26 +112,26 @@ export default {
 
       // Grass
 
-      const gt = new Three.TextureLoader().load( "./img/grass.jpg" );
-      const gg = new Three.PlaneBufferGeometry( 4000, 4000 );
-      const gm = new Three.MeshPhongMaterial( { color: 0xffaaaa, map: gt } );
+      const gt = new Three.TextureLoader().load("./img/grass.jpg");
+      const gg = new Three.PlaneBufferGeometry(4000, 4000);
+      const gm = new Three.MeshPhongMaterial({ color: 0xffaaaa, map: gt });
 
-      const ground = new Three.Mesh( gg, gm );
-      ground.rotation.x = - Math.PI / 2;
-      ground.material.map.repeat.set( 16, 16 );
-      ground.material.map.wrapS = ground.material.map.wrapT = Three.RepeatWrapping;
-      ground.material.map.encoding = Three.sRGBEncoding;
-      ground.receiveShadow = true;
+      this.ground = new Three.Mesh(gg, gm);
+      this.ground.rotation.x = - Math.PI / 2;
+      this.ground.material.map.repeat.set(16, 16);
+      this.ground.material.map.wrapS = this.ground.material.map.wrapT = Three.RepeatWrapping;
+      this.ground.material.map.encoding = Three.sRGBEncoding;
+      this.ground.receiveShadow = true;
 
-      this.scene.add(ground);
+      this.scene.add(this.ground);
 
       // Controls
-      const controls = new OrbitControls( this.camera, this.renderer.domElement );
-      controls.addEventListener( 'change', this.render );
-      controls.update();
+      this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+      this.controls.addEventListener('change', this.render);
+      this.controls.update();
 
       // Resize
-      window.addEventListener( 'resize', this.onWindowResize, false );
+      window.addEventListener('resize', this.onWindowResize, false);
     },
 
     animate() {
