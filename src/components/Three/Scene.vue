@@ -12,7 +12,7 @@ import { createNamespacedHelpers } from 'vuex';
 
 import { PointerLockControls } from './Modules/Controls/PointerLockControls';
 import { TGALoader } from './Modules/Utils/TGALoader';
-import { Capsule } from './Modules/Utils/Capsule';
+// import { ImprovedNoise } from './Modules/Utils/ImprovedNoise.js';
 import { Sky } from './Modules/Elements/Sky';
 
 const { mapGetters } = createNamespacedHelpers('utilities');
@@ -56,15 +56,11 @@ export default {
       objects: [],
       ammos: [],
       ammoIdx: 0,
-      isFirstClick: false,
 
       sky: null,
       sun: null,
       light: null,
       ground: null,
-
-      playerCollider: null,
-      playerDirection: null,
     };
   },
 
@@ -77,8 +73,6 @@ export default {
     this.mouse = new Three.Vector2();
     this.sun = new Three.Vector3();
     this.playerDirection = new Three.Vector3();
-    // eslint-disable-next-line max-len
-    this.playerCollider = new Capsule(new Three.Vector3(0, 0.35, 0), new Three.Vector3(0, 1, 0), 0.35);
 
     this.init();
     this.animate();
@@ -104,7 +98,7 @@ export default {
       const container = document.getElementById('scene');
 
       // eslint-disable-next-line max-len
-      this.camera = new Three.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 1, 1000);
+      this.camera = new Three.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 1, 4000);
       this.camera.position.y = UNDER_FLOOR;
 
       this.scene = new Three.Scene();
@@ -173,22 +167,24 @@ export default {
 
       // Objects
 
-      const loader = new TGALoader();
-      const geometry = new Three.BoxBufferGeometry(50, 50, 50).toNonIndexed();
+      // Boxes
+
+      const loader1 = new TGALoader();
+      const BoxGeometry = new Three.BoxBufferGeometry(50, 50, 50).toNonIndexed();
 
       // eslint-disable-next-line no-plusplus
       for (let i = 0; i < 10; i++) {
-        const texture = loader.load('./images/textures/box.tga');
-        const material = new Three.MeshPhongMaterial({ color: 0xffffff, map: texture });
+        const BoxTexture = loader1.load('./images/textures/box.tga');
+        const BoxMaterial = new Three.MeshPhongMaterial({ color: 0xffffff, map: BoxTexture });
 
-        const mesh = new Three.Mesh(geometry, material);
+        const box = new Three.Mesh(BoxGeometry, BoxMaterial);
 
-        mesh.position.x = Math.floor(Math.random() * 20 - 10) * 30;
-        mesh.position.y = Math.floor(19);
-        mesh.position.z = Math.floor(Math.random() * 20 - 10) * 30;
+        box.position.x = Math.floor(Math.random() * 20 - 10) * 30;
+        box.position.y = Math.floor(19);
+        box.position.z = Math.floor(Math.random() * 20 - 10) * 30;
 
-        this.scene.add(mesh);
-        this.objects.push(mesh);
+        this.scene.add(box);
+        this.objects.push(box);
       }
 
       // Grass
@@ -250,8 +246,6 @@ export default {
         ammo.castShadow = true;
         ammo.receiveShadow = true;
 
-        this.scene.add(ammo);
-
         this.ammos.push({
           mesh: ammo,
           collider: new Three.Sphere(new Three.Vector3(0, -100, 0), AMMO_RADIUS),
@@ -279,6 +273,7 @@ export default {
     shot() {
       if (this.controls.isLocked) {
         const ammo = this.ammos[this.ammoIdx];
+        this.scene.add(ammo.mesh);
         this.camera.getWorldDirection(this.playerDirection);
         ammo.collider.center.copy(this.controls.getObject().position);
         ammo.collider.center.y -= 10;
