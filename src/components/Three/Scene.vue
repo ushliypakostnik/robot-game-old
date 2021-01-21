@@ -12,6 +12,7 @@ import { createNamespacedHelpers } from 'vuex';
 
 import { PointerLockControls } from './Modules/Controls/PointerLockControls';
 import { TGALoader } from './Modules/Utils/TGALoader';
+import { GLTFLoader } from './Modules/Utils/GLTFLoader';
 // import { ImprovedNoise } from './Modules/Utils/ImprovedNoise.js';
 import { Sky } from './Modules/Elements/Sky';
 
@@ -56,6 +57,8 @@ export default {
       objects: [],
       ammos: [],
       ammoIdx: 0,
+
+      mixer: null,
 
       sky: null,
       sun: null,
@@ -103,7 +106,7 @@ export default {
 
       this.scene = new Three.Scene();
       this.scene.background = new Three.Color(0x7844c1);
-      this.scene.fog = new Three.Fog(0x050505, 50, 1000);
+      this.scene.fog = new Three.Fog(0x4542a0, 50, 1000);
 
       this.renderer = new Three.WebGLRenderer({ antialias: true });
       this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -187,9 +190,23 @@ export default {
         this.objects.push(box);
       }
 
+      // Horse
+      const loader2 = new GLTFLoader();
+      loader2.load('./images/models/Horse.glb', (gltf) => {
+        const horse = gltf.scene.children[0];
+        horse.scale.set(0.25, 0.25, 0.25);
+        horse.position.set(30, 0, 50);
+
+        this.scene.add(horse);
+        this.objects.push(horse);
+
+        this.mixer = new Three.AnimationMixer(horse);
+        this.mixer.clipAction(gltf.animations[0]).setDuration(1).play();
+      });
+
       // Grass
 
-      let gg = new Three.PlaneBufferGeometry(4000, 4000, 100, 100);
+      let gg = new Three.PlaneBufferGeometry(10000, 10000, 100, 100);
 
       // Vertex displacement
 
@@ -213,7 +230,7 @@ export default {
 
       this.ground = new Three.Mesh(gg, gm);
       this.ground.rotation.x = -Math.PI / 2;
-      this.ground.material.map.repeat.set(16, 16);
+      this.ground.material.map.repeat.set(40, 40);
       // eslint-disable-next-line no-multi-assign
       this.ground.material.map.wrapS = this.ground.material.map.wrapT = Three.RepeatWrapping;
       this.ground.material.map.encoding = Three.sRGBEncoding;
@@ -357,6 +374,8 @@ export default {
 
       const time = performance.now();
       const delta = (time - this.prevTime) / 1000;
+
+      if (this.mixer) this.mixer.update(delta);
 
       if (this.controls.isLocked) {
         // Check objects

@@ -187,13 +187,13 @@ export default {
 
       // Grass
 
-      let gg = new Three.PlaneBufferGeometry( 4000, 4000, 100, 100);
+      let gg = new Three.PlaneBufferGeometry(4000, 4000, 100, 100);
 
       // Vertex displacement
 
       let position = gg.attributes.position;
 
-      for ( let i = 0, l = position.count; i < l; i ++ ) {
+      for (let i = 0, l = position.count; i < l; i++) {
 
         this.vertex.fromBufferAttribute( position, i );
 
