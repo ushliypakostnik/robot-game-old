@@ -3,12 +3,14 @@ import storage from '@/utils/storage';
 
 const initialState = {
   language: null,
+  start: false,
 };
 
 const state = initialState;
 
 const getters = {
   language: state => state.language,
+  start: state => state.start,
 };
 
 const actions = {
@@ -16,11 +18,19 @@ const actions = {
     commit('changeLanguage', language);
     storage.rememberLanguage(language);
   },
+
+  changeStart: ({ commit }, start) => {
+    commit('changeStart', start);
+  },
 };
 
 const mutations = {
   changeLanguage: (state, language) => {
     state.language = language;
+  },
+
+  changeStart: (state, start) => {
+    state.start = start;
   },
 };
 

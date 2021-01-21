@@ -2,32 +2,29 @@
   <div
     id="scene"
     class="scene"
-  >
-    <div
-      id="blocker"
-      class="blocker"
-    >
-
-      <div
-        id="instructions"
-        class="instructions"
-      >
-        <h3>Click to play</h3>
-        <h4>Move: WASD</h4>
-        <h4>Jump: SPACE</h4>
-        <h4>Look: MOUSE</h4>
-      </div>
-
-    </div>
-  </div>
+  />
 </template>
 
 <script>
 import * as Three from 'three';
 
-import { PointerLockControls } from './Three/PointerLockControls.js';
-import { TGALoader } from './Three/TGALoader.js';
-import { Sky } from './Three/Sky.js';
+import { createNamespacedHelpers } from 'vuex';
+
+// Controls
+import { PointerLockControls } from './Modules/Controls/PointerLockControls';
+
+// Utils
+import { TGALoader } from './Modules/Utils/TGALoader';
+
+// Elements
+import { Sky } from './Modules/Elements/Sky';
+
+// Postprocessing
+import { EffectComposer } from './Modules/Postprocessing/EffectComposer';
+import { RenderPass } from './Modules/Postprocessing/RenderPass';
+import { FilmPass } from './Modules/Postprocessing/FilmPass';
+
+const { mapGetters } = createNamespacedHelpers('utilities');
 
 const UNDER_FLOOR = 20;
 
@@ -39,6 +36,8 @@ export default {
       camera: null,
       scene: null,
       renderer: null,
+
+      composer: null,
 
       prevTime: null,
       velocity: null,
@@ -82,9 +81,15 @@ export default {
 
   beforeDestroy() {
     window.removeEventListener( 'resize', this.onWindowResize, false );
-    window.removeEventListener( 'keydown', this.onKeyDown, false );
-    window.removeEventListener( 'keyup', this.onKeyUp, false );
-    window.removeEventListener( 'mousemove', this.onMouseMove, false );
+    document.removeEventListener( 'keydown', this.onKeyDown, false );
+    document.removeEventListener( 'keyup', this.onKeyUp, false );
+    document.removeEventListener( 'mousemove', this.onMouseMove, false );
+  },
+
+  computed: {
+    ...mapGetters({
+      start: 'start',
+    }),
   },
 
   methods: {
@@ -106,6 +111,7 @@ export default {
       this.renderer.setPixelRatio(window.devicePixelRatio);
       this.renderer.setSize(container.clientWidth, container.clientHeight);
 
+      // For Sky
       this.renderer.outputEncoding = Three.sRGBEncoding;
       this.renderer.toneMapping = Three.ACESFilmicToneMapping;
       this.renderer.toneMappingExposure = 0.5;
@@ -216,34 +222,31 @@ export default {
       // Controls
       this.controls = new PointerLockControls(this.camera, this.renderer.domElement);
 
-      const blocker = document.getElementById('blocker');
-      const instructions = document.getElementById('instructions');
-
-      blocker.addEventListener('click',  () => {
-        this.controls.lock();
-      }, false);
-
-      this.controls.addEventListener( 'lock', () => {
-        instructions.style.display = 'none';
-        blocker.style.display = 'none';
-      });
-
       this.controls.addEventListener( 'unlock', () => {
-        blocker.style.display = 'flex';
-        instructions.style.display = '';
+        this.$store.dispatch('utilities/changeStart', false);
       });
 
       this.scene.add(this.controls.getObject());
 
+      // Raycasters
+
       this.raycasterDown = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, -1, 0), 0, 10);
       this.raycasterMouse = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, -1, 0), 0, 10);
 
-      window.addEventListener('keydown', this.onKeyDown, false);
-      window.addEventListener('keyup', this.onKeyUp, false);
-      window.addEventListener('mousemove', this.onMouseMove, false);
-
-      // Resize
+      // Listeners
+      document.addEventListener('keydown', this.onKeyDown, false);
+      document.addEventListener('keyup', this.onKeyUp, false);
+      document.addEventListener('mousemove', this.onMouseMove, false);
       window.addEventListener('resize', this.onWindowResize, false);
+
+      // Postprocessing
+      const renderModel = new RenderPass(this.scene, this.camera);
+      const effectFilm = new FilmPass(0.35, 0.75, 2048, false);
+
+      this.composer = new EffectComposer(this.renderer);
+
+      this.composer.addPass(renderModel);
+      this.composer.addPass(effectFilm);
     },
 
     onMouseMove(event) {
@@ -378,10 +381,17 @@ export default {
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(window.innerWidth, window.innerHeight);
+      this.composer.setSize(window.innerWidth, window.innerHeight);
     },
 
     render() {
-      this.renderer.render(this.scene, this.camera);
+      this.composer.render();
+    },
+  },
+
+  watch: {
+    start(value) {
+      if (value) this.controls.lock();
     },
   },
 };
@@ -393,26 +403,5 @@ export default {
   .scene {
     width: 100vw;
     height: 100vh;
-  }
-
-  .blocker {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .instructions {
-    text-align: center;
-    color: #ffffff;
-    cursor: pointer;
-    @include text($font-size--large, $font-weight__sans__bold);
-  }
-
-  h3, h4 {
-    margin: 0;
   }
 </style>

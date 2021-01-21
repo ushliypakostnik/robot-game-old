@@ -5,11 +5,9 @@
 .switch {
   display: inline-block;
   background: $colors__white;
-  border: 1px solid $colors__border;
-  border-radius: $border-radius__small;
+  border: $border-width solid $colors__border;
   white-space: nowrap;
-  // следующая строчка не заработает без флага !important !!!
-  padding: ($gutter / 4) ($gutter / 2) !important; // перекрываем base в хэшах
+  padding: ($gutter / 4) ($gutter / 2);
 
   > li {
     display: inline-block;

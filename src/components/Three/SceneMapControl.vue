@@ -8,7 +8,7 @@
 <script>
 import * as Three from 'three';
 
-import { OrbitControls } from './Three/OrbitControls.js';
+import { OrbitControls } from './Modules/Controls/OrbitControls';
 
 export default {
   name: 'Scene2',
@@ -53,12 +53,13 @@ export default {
       this.scene = new Three.Scene();
       this.scene.background = new Three.Color( 0x050505 );
       this.scene.fog = new Three.Fog(0x050505, 50, 1000);
-
       this.renderer = new Three.WebGLRenderer({antialias: true});
       this.renderer.setPixelRatio(window.devicePixelRatio);
       this.renderer.setSize(container.clientWidth, container.clientHeight);
+
       this.renderer.shadowMap.enabled = true;
       this.renderer.shadowMap.type = Three.PCFSoftShadowMap;
+
       container.appendChild(this.renderer.domElement);
 
       this.scene.add(this.camera);

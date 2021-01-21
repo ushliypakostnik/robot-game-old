@@ -6,7 +6,7 @@
 
 <script>
 import Layout from '@/components/Layout/Layout.vue';
-import Scene from '@/components/Elements/Scene.vue';
+import Scene from '@/components/Three/Scene.vue';
 
 export default {
   name: 'Home',

@@ -36,16 +36,28 @@ export const DESIGN = {
 
 export const LOCALES = {
   [LANGUAGES[0].name]: {
-    home: {
-      title: 'Vue cli based frontend boilerplate with i18next and themezation',
+    layout: {
+      text1: 'Shot: LEFT MOUSE',
+      text2: 'Move: WASD',
+      text3: 'Jump SPACE',
+      text4: 'Run: Shift',
+      text5: 'Look: MOUSE',
+      text6: 'Exit: Ecs',
+      startbutton: 'Start Game',
     },
     page404: {
       text: 'Page not found!!!',
     },
   },
   [LANGUAGES[1].name]: {
-    home: {
-      title: 'Основаннный на Vue cli стартовый проект фронтенда c i18next и темезацией',
+    layout: {
+      text1: 'Выстрел: Левая кнопка мыши',
+      text2: 'Движение: WASD',
+      text3: 'Прыжок SPACE',
+      text4: 'Бежать: Shift',
+      text5: 'Осмотреться: MOUSE',
+      text6: 'Выйти: Ecs',
+      startbutton: 'Начать игру',
     },
     page404: {
       text: 'Страница не найдена!!!',

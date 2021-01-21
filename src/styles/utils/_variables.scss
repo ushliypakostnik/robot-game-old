@@ -13,34 +13,11 @@ $gutter: 20px;
 
 $border-width: 2px;
 
-$border-radius__large: 12px;
-$border-radius__small: 7px;
-
-$controls__height: 70px;
-
-
-// Elements
-//////////////////////////////////////////////////////
-
-
-// Buttons
-
-$buttons__border-radius: $border-radius__small;
-
-$buttons__height: $controls__height;
-
-
-// Inputs
-
-$inputs__height: $controls__height;
-
 
 // Views
 //////////////////////////////////////////////////////
 
 $loader__size--default: 100px;
-
-$header__height: 70px;
 
 
 // Layouts
@@ -95,8 +72,10 @@ $colors__link--hover: darken(#44529c, $fade);
 
 $colors__shadows: $colors__black;
 
-$colors__border: $colors__grays--lighter !default;
-$colors__placeholder: $colors__border !default;
+$colors__border: $colors__white;
+
+$colors__gate: rgba(0, 0, 0, 0.5);
+$colors__placeholder: rgba(255, 255, 255, 0.5);
 
 
 // Breackpoints and containers
