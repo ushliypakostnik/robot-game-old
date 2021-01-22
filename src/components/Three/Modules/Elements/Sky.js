@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {
   BackSide,
   BoxBufferGeometry,

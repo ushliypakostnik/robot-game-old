@@ -4,7 +4,6 @@ export const API_URL = isProd ? apiUrl || 'https://???' : apiUrl || 'http://loca
 
 export const LOCALSTORAGE = {
   LANGUAGE: 'language',
-  THEME: 'theme',
 };
 
 /* export const SESSIONSTORAGE = {
@@ -18,19 +17,26 @@ export const LANGUAGES = [
 // Auto language
 export const AUTO_LANG = localStorage.getItem(LOCALSTORAGE.LANGUAGE) || null;
 
-export const THEMES = [
-  { id: 1, name: 'light' },
-  { id: 2, name: 'dark' },
-];
-
-// Auto theme
-const theme = localStorage.getItem(LOCALSTORAGE.THEME) || null;
-export const AUTO_THEME = theme || THEMES[1].name;
-
 export const DESIGN = {
   BREAKPOINTS: {
-    tablet: 768,
-    desktop: 1240,
+    desktop: 1025,
+  },
+  COLORS: {
+    primary: '##722f37',
+    primary0x: 0x722f37,
+  },
+};
+
+export const OBJECTS = {
+  HORSES: {
+    start: [
+      [30, 50],
+      [200, -30],
+      [-60, 220],
+      [150, -100],
+      [-100, 220],
+    ],
+    velocity: 150,
   },
 };
 
@@ -42,8 +48,9 @@ export const LOCALES = {
       text3: 'Jump SPACE',
       text4: 'Run: Shift',
       text5: 'Look: MOUSE',
-      text6: 'Exit: Ecs',
-      startbutton: 'Start Game',
+      text6: 'Pause: Ecs',
+      startbutton: 'Play',
+      gadgetstext: 'You need a PC keyboard to play',
     },
     page404: {
       text: 'Page not found!!!',
@@ -56,8 +63,9 @@ export const LOCALES = {
       text3: 'Прыжок SPACE',
       text4: 'Бежать: Shift',
       text5: 'Осмотреться: MOUSE',
-      text6: 'Выйти: Ecs',
-      startbutton: 'Начать игру',
+      text6: 'Pause: Ecs',
+      startbutton: 'Играть',
+      gadgetstext: 'Для того чтобы играть нужна клавиатура персонального компьютера',
     },
     page404: {
       text: 'Страница не найдена!!!',

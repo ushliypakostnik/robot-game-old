@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Pass } from './Pass.js';
 
 var MaskPass = function ( scene, camera ) {

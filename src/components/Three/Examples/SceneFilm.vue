@@ -11,18 +11,18 @@ import * as Three from 'three';
 import { createNamespacedHelpers } from 'vuex';
 
 // Controls
-import { PointerLockControls } from './Modules/Controls/PointerLockControls';
+import { PointerLockControls } from '@/components/Three/Modules/Controls/PointerLockControls';
 
 // Utils
-import { TGALoader } from './Modules/Utils/TGALoader';
+import { TGALoader } from '@/components/Three/Modules/Utils/TGALoader';
 
 // Elements
-import { Sky } from './Modules/Elements/Sky';
+import { Sky } from '@/components/Three/Modules/Elements/Sky';
 
 // Postprocessing
-import { EffectComposer } from './Modules/Postprocessing/EffectComposer';
-import { RenderPass } from './Modules/Postprocessing/RenderPass';
-import { FilmPass } from './Modules/Postprocessing/FilmPass';
+import { EffectComposer } from '@/components/Three/Modules/Postprocessing/EffectComposer';
+import { RenderPass } from '@/components/Three/Modules/Postprocessing/RenderPass';
+import { FilmPass } from '@/components/Three/Modules/Postprocessing/FilmPass';
 
 const { mapGetters } = createNamespacedHelpers('utilities');
 
@@ -397,11 +397,9 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-  @import "@/styles/_stylebase.scss";
-
-  .scene {
-    width: 100vw;
-    height: 100vh;
-  }
+<style scoped>
+.scene {
+  width: 100vw;
+  height: 100vh;
+}
 </style>

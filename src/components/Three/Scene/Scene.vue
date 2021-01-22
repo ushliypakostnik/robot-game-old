@@ -8,13 +8,17 @@
 <script>
 import * as Three from 'three';
 
+import { DESIGN } from '@/utils/constants';
+
 import { createNamespacedHelpers } from 'vuex';
 
-import { PointerLockControls } from './Modules/Controls/PointerLockControls';
-import { TGALoader } from './Modules/Utils/TGALoader';
-import { GLTFLoader } from './Modules/Utils/GLTFLoader';
-// import { ImprovedNoise } from './Modules/Utils/ImprovedNoise.js';
-import { Sky } from './Modules/Elements/Sky';
+import { PointerLockControls } from '@/components/Three/Modules/Controls/PointerLockControls';
+import { TGALoader } from '@/components/Three/Modules/Utils/TGALoader';
+import { GLTFLoader } from '@/components/Three/Modules/Utils/GLTFLoader';
+// import { ImprovedNoise } from '@/components/Three/Modules/Utils/ImprovedNoise.js';
+import { Sky } from '@/components/Three/Modules/Elements/Sky';
+
+import Horses from './Horses';
 
 const { mapGetters } = createNamespacedHelpers('utilities');
 
@@ -32,13 +36,13 @@ export default {
       scene: null,
       renderer: null,
 
+      controls: null,
+
       prevTime: null,
       velocity: null,
       direction: null,
       vertex: null,
       color: null,
-
-      controls: null,
 
       moveForward: false,
       moveBackward: false,
@@ -54,16 +58,15 @@ export default {
       raycasterLeft: null,
       mouse: null,
 
-      objects: [],
-      ammos: [],
-      ammoIdx: 0,
-
-      mixer: null,
-
       sky: null,
       sun: null,
       light: null,
       ground: null,
+
+      objects: [],
+      ammos: [],
+      ammoIdx: 0,
+      horses: null,
     };
   },
 
@@ -90,14 +93,13 @@ export default {
 
   computed: {
     ...mapGetters({
-      start: 'start',
+      pause: 'pause',
     }),
   },
 
   methods: {
     init() {
       // Core
-
       const container = document.getElementById('scene');
 
       // eslint-disable-next-line max-len
@@ -174,11 +176,13 @@ export default {
 
       const loader1 = new TGALoader();
       const BoxGeometry = new Three.BoxBufferGeometry(50, 50, 50).toNonIndexed();
+      const BoxTexture = loader1.load('./images/textures/box.tga', () => {
+        this.render();
+      });
+      const BoxMaterial = new Three.MeshPhongMaterial({ color: 0xffffff, map: BoxTexture });
 
       // eslint-disable-next-line no-plusplus
       for (let i = 0; i < 10; i++) {
-        const BoxTexture = loader1.load('./images/textures/box.tga');
-        const BoxMaterial = new Three.MeshPhongMaterial({ color: 0xffffff, map: BoxTexture });
 
         const box = new Three.Mesh(BoxGeometry, BoxMaterial);
 
@@ -191,18 +195,8 @@ export default {
       }
 
       // Horse
-      const loader2 = new GLTFLoader();
-      loader2.load('./images/models/Horse.glb', (gltf) => {
-        const horse = gltf.scene.children[0];
-        horse.scale.set(0.25, 0.25, 0.25);
-        horse.position.set(30, 0, 50);
-
-        this.scene.add(horse);
-        this.objects.push(horse);
-
-        this.mixer = new Three.AnimationMixer(horse);
-        this.mixer.clipAction(gltf.animations[0]).setDuration(1).play();
-      });
+      this.horses = new Horses();
+      this.horses.init(this.scene, this.objects);
 
       // Grass
 
@@ -225,7 +219,9 @@ export default {
 
       gg = gg.toNonIndexed(); // ensure each face has unique vertices
 
-      const gt = new Three.TextureLoader().load('./images/textures/grass.jpg');
+      const gt = new Three.TextureLoader().load('./images/textures/grass.jpg', () => {
+        this.render();
+      });
       const gm = new Three.MeshPhongMaterial({ color: 0xffaaaa, map: gt });
 
       this.ground = new Three.Mesh(gg, gm);
@@ -242,11 +238,11 @@ export default {
       this.controls = new PointerLockControls(this.camera, this.renderer.domElement);
 
       this.controls.addEventListener('unlock', () => {
-        this.$store.dispatch('utilities/changeStart', false);
+        this.$store.dispatch('utilities/changePause', true);
       });
 
       this.controls.addEventListener('lock', () => {
-        this.$store.dispatch('utilities/changeStart', true);
+        this.$store.dispatch('utilities/changePause', false);
       });
 
       this.scene.add(this.controls.getObject());
@@ -255,7 +251,7 @@ export default {
       // eslint-disable-next-line max-len
       const ammoGeometry = new Three.SphereBufferGeometry(AMMO_RADIUS, 32, 32);
       // eslint-disable-next-line max-len
-      const ammoMaterial = new Three.MeshStandardMaterial({ color: 0xa82333, roughness: 0.8, metalness: 0.5 });
+      const ammoMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.primary0x, roughness: 0.8, metalness: 0.5 });
 
       // eslint-disable-next-line no-plusplus
       for (let i = 0; i < NUM_AMMO; i++) {
@@ -285,6 +281,9 @@ export default {
       document.addEventListener('keyup', this.onKeyUp, false);
       document.addEventListener('mousemove', this.onMouseMove, false);
       document.addEventListener('click', this.shot, false);
+
+      // First render
+      this.render();
     },
 
     shot() {
@@ -375,7 +374,7 @@ export default {
       const time = performance.now();
       const delta = (time - this.prevTime) / 1000;
 
-      if (this.mixer) this.mixer.update(delta);
+      this.horses.animate(delta);
 
       if (this.controls.isLocked) {
         // Check objects
@@ -469,7 +468,7 @@ export default {
 
       this.prevTime = time;
 
-      this.render();
+      if (this.controls.isLocked) this.render();
     },
 
     onWindowResize() {
@@ -484,18 +483,18 @@ export default {
   },
 
   watch: {
-    start(value) {
-      if (value) this.controls.lock();
+    pause(value) {
+      if (!value) this.controls.lock();
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-  @import "@/styles/_stylebase.scss";
+@import "@/styles/_main.scss";
 
-  .scene {
-    width: 100vw;
-    height: 100vh;
-  }
+.scene {
+  width: 100vw;
+  height: 100vh;
+}
 </style>

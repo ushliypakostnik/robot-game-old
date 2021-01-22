@@ -1,7 +1,7 @@
 {
-  "name": "vue-auth",
+  "name": "test-game",
   "version": "2.0.0",
-  "description": "Vue cli based frontend boilerplate",
+  "description": "Browser Game on Three and Vue",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -14,7 +14,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ushliypakostnik/vue-auth"
+    "url": "https://github.com/ushliypakostnik/vue-scss-i18next-three"
   },
   "dependencies": {
     "@panter/vue-i18next": "^0.15.1",
@@ -24,6 +24,7 @@
     "i18next-browser-languagedetector": "^4.0.1",
     "js-cookie": "^2.2.1",
     "register-service-worker": "^1.6.2",
+    "resource-loader": "^4.0.0-rc4",
     "three": "^0.124.0",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",

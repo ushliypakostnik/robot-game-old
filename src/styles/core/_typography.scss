@@ -68,18 +68,10 @@ p {
 
 h1 {
   @include text($font-size--large, $font-weight__sans__bold);
-
-  @include xs {
-    @include text($font-size--normal, $font-weight__sans__bold);
-  }
 }
 
 h2 {
   @include text($font-size--large, $font-weight__sans__regular);
-
-  @include xs {
-    @include text($font-size--normal, $font-weight__sans__regular);
-  }
 }
 
 h3 {

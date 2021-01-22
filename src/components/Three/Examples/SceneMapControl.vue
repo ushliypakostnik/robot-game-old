@@ -8,7 +8,7 @@
 <script>
 import * as Three from 'three';
 
-import { OrbitControls } from './Modules/Controls/OrbitControls';
+import { OrbitControls } from '@/components/Three/Modules/Controls/OrbitControls';
 
 export default {
   name: 'Scene2',
@@ -154,11 +154,9 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-  @import "@/styles/_stylebase.scss";
-
-  .scene {
-    width: 100vw;
-    height: 100vh;
-  }
+<style scoped>
+.scene {
+  width: 100vw;
+  height: 100vh;
+}
 </style>

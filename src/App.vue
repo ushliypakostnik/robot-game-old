@@ -1,17 +1,21 @@
 <template>
   <div id="app">
-    <router-view />
+    <Layout />
   </div>
 </template>
 
 <script>
+import Layout from './components/Layout/Layout';
+
 export default {
   name: 'App',
+
+  components: { Layout },
 };
 </script>
 
-<style src="./styles/_main.scss" lang="scss">
-  #app {
-    min-height: 100vh;
-  }
+<style>
+#app {
+  min-height: 100vh;
+}
 </style>

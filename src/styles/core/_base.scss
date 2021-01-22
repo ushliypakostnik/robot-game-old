@@ -27,10 +27,6 @@ body {
 
   // Normal text
   @include text($font-size--small, $font-weight__sans__regular);
-
-  ::selection {
-    background: fade-out($colors__second, $fade * 3);
-  }
 }
 
 // stylelint-disable declaration-no-important, no-descending-specificity, block-opening-brace-newline-after, block-closing-brace-newline-before, rule-empty-line-before, block-opening-brace-space-before

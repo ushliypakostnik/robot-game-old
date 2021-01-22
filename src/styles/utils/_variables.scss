@@ -11,40 +11,21 @@ $images__path--root: "assets/images/";
 
 $gutter: 20px;
 
-$border-width: 2px;
-
-
-// Views
-//////////////////////////////////////////////////////
-
-$loader__size--default: 100px;
+$border-width: 3px;
 
 
 // Layouts
 //////////////////////////////////////////////////////
 
-$layouts__modal: 2500;
-$layouts__fixed: 2000;
-$layouts__popups: 1500;
-$layouts__content: 1000;
-
+$layouts__1: 1000;
+$layouts__2: 2500;
 
 // Effects
 //////////////////////////////////////////////////////
 
-$fade: 0.2;
-$fade--percent: 8%;
-
-$shadows__coords-x: 0;
-$shadows__coords-y: 0;
-$shadows__size: 10px;
-$shadows__stretch: 0;
-
 $transition-duration: 0.2s;
 $transition-timing-function: ease-in-out;
 $transition-delay: 0s;
-
-$animation-duration: $transition-duration * 3;
 
 
 // Colors
@@ -55,17 +36,7 @@ $animation-duration: $transition-duration * 3;
 $colors__white: #fff;
 $colors__black: #000;
 
-$colors__primary: #b0b2f0;
-$colors__second: #d930aa;
-
-
-// Grays
-$colors__grays--lighter: #fafafa;
-
-
-// Links
-$colors__link: $colors__primary;
-$colors__link--hover: darken(#44529c, $fade);
+$colors__primary: #722f37;
 
 
 // Borders and shadows
@@ -74,28 +45,14 @@ $colors__shadows: $colors__black;
 
 $colors__border: $colors__white;
 
-$colors__gate: rgba(0, 0, 0, 0.5);
-$colors__placeholder: rgba(255, 255, 255, 0.5);
+$colors__white--transparent: rgba(255, 255, 255, 0.5);
+$colors__black--transparent: rgba(0, 0, 0, 0.5);
+
+$colors__gate: $colors__black--transparent;
+$colors__placeholder: $colors__white--transparent;
 
 
-// Breackpoints and containers
+// Breackpoints
 //////////////////////////////////////////////////////
 
-// Minimum Supported Width
-$breakpoints__min:                 320px;
-
-// Extra small screen / XS / phone
-$breakpoints__xs:                  359px;
-
-// Small screen / SM / tablet
-$breakpoints__sm:                  768px;
-
-// Medium screen / MD desktop / нетбуки типо чтоле
-$breakpoints__md:                  1025px;
-
-// Large screen / LG desktop / небольшие экраны - ноуты
-$breakpoints__lg:                  1240px;
-
-$breakpoints__xs_max:              ($breakpoints__sm - 1);
-$breakpoints__sm_max:              ($breakpoints__md - 1);
-$breakpoints__md_max:              ($breakpoints__lg - 1);
+$breakpoints__desktop: 1025px;

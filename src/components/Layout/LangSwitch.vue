@@ -1,6 +1,8 @@
 <template>
   <ul class="switch">
     <li
+      class="switch__item"
+      :class="value === language && 'switch__item--active'"
       v-for="value in languages"
       v-bind:key="value"
     >
@@ -44,3 +46,4 @@ export default {
   },
 };
 </script>
+

@@ -1,11 +1,13 @@
 <template>
-  <div class="layout">
+  <div
+    v-if="isDesktop"
+    class="layout"
+  >
     <div
-      v-if="!start"
-      class="blocker"
+      v-if="pause"
+      class="layout__blocker"
     >
-
-      <div class="instructions">
+      <div class="layout__instructions">
         <h4>{{ $t('layout.text1') }}</h4>
         <h4>{{ $t('layout.text2') }}</h4>
         <h4>{{ $t('layout.text3') }}</h4>
@@ -15,46 +17,79 @@
         <button
           class="button"
           type="button"
-          @click.prevent.stop="changeStart(true)"
+          @click.prevent.stop="changePause(false)"
         >{{ $t('layout.startbutton') }}</button>
+        <div class="switch__wrapper">
+          <LangSwitch />
+        </div>
       </div>
-
     </div>
-
-    <slot />
+    <Scene />
   </div>
+  <GadgetsGate v-else />
 </template>
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import ScreenHelper from '@/utils/screen-helper';
+
+import Scene from '@/components/Three/Scene/Scene.vue';
+import GadgetsGate from '@/components/Layout/GadgetsGate.vue';
+import LangSwitch from '@/components/Layout/LangSwitch.vue';
 
 const { mapGetters } = createNamespacedHelpers('utilities');
 
 export default {
   name: 'Layout',
 
+  components: {
+    Scene,
+    GadgetsGate,
+    LangSwitch,
+  },
+
+  data() {
+    return {
+      isDesktop: null,
+    };
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('resize', this.onWindowResize, false);
+  },
+
+  mounted() {
+    window.addEventListener('resize', this.onWindowResize, false);
+    this.onWindowResize();
+  },
+
   computed: {
     ...mapGetters({
-      start: 'start',
+      pause: 'pause',
     }),
   },
 
   methods: {
-    changeStart(start) {
-      this.$store.dispatch('utilities/changeStart', start);
+    changePause(pause) {
+      this.$store.dispatch('utilities/changePause', pause);
+    },
+
+    onWindowResize() {
+      if (ScreenHelper.isDesktop()) {
+        this.isDesktop = true;
+      } else this.isDesktop = false;
     },
   },
 };
 </script>
 
-<style lang="scss" scoped>
-  @import "@/styles/_stylebase.scss";
+<style lang="scss">
+@import "@/styles/_main.scss";
 
-  .layout {
-    height: 100vh;
-  }
+.layout {
+  height: 100vh;
 
-  .blocker {
+  &__blocker {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -64,24 +99,19 @@ export default {
     align-items: center;
   }
 
-  .instructions {
+  &__instructions {
     text-align: center;
     color: $colors__white;
-    cursor: pointer;
-    @include text($font-size--large, $font-weight__sans__bold);
   }
+}
 
-  .button {
-    background: transparent;
-    color: $colors__white;
-    padding: 10px 40px;
-    border: $border-width solid $colors__border;
-    box-shadow: none;
-    text-transform: uppercase;
-    @include text($font-size--normal, $font-weight__sans__bold);
-  }
+.button {
+  margin-top: $gutter * 2;
+  margin-bottom: $gutter * 2;
+}
 
-  h3, h4 {
-    margin: 0;
-  }
+h3,
+h4 {
+  margin: 0;
+}
 </style>

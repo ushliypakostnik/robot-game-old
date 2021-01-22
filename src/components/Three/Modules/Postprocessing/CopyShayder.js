@@ -1,7 +1,7 @@
 /**
  * Full-screen textured quad shader
  */
-
+/* eslint-disable */
 var CopyShader = {
 
   uniforms: {
