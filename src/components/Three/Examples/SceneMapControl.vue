@@ -126,7 +126,7 @@ export default {
 
       this.scene.add(this.ground);
 
-      // Controls
+      // Ammo
       this.controls = new OrbitControls(this.camera, this.renderer.domElement);
       this.controls.addEventListener('change', this.render);
       this.controls.update();

@@ -7,7 +7,6 @@ import { GLTFLoader } from '@/components/Three/Modules/Utils/GLTFLoader';
 
 function Horses() {
   const horses = [];
-  const mixers = [];
 
   this.init = function(scene, objects) {
     const loader2 = new GLTFLoader();
@@ -25,18 +24,18 @@ function Horses() {
         const accelerationVelocity = Math.random();
         const accelerationBend = Math.random();
 
+        const mixer = new Three.AnimationMixer(horse);
+        mixer.clipAction(gltf.animations[0]).setDuration(1).play();
+
         horses.push({
           mesh: horse,
+          mixer,
           bend,
           accelerationVelocity,
           accelerationBend,
         });
         scene.add(horse);
         objects.push(horse);
-
-        const mixer = new Three.AnimationMixer(horse);
-        mixers.push(mixer);
-        mixer.clipAction(gltf.animations[0]).setDuration(1).play();
       }
     });
   };
@@ -55,13 +54,11 @@ function Horses() {
       if (decisionAccelerationBend) horse.accelerationVelocity = Math.random() + 0.5;
 
       horse.mesh.position.add(horse.mesh.getWorldDirection().multiplyScalar((OBJECTS.HORSES.velocity * horse.accelerationVelocity) * delta));
-    });
 
-    if (mixers.length > 0) {
-      mixers.forEach((mixer) => {
-        mixer.update(delta);
-      });
-    }
+      if (horse.mixer) {
+        horse.mixer.update(delta);
+      }
+    });
   };
 }
 

@@ -10,7 +10,7 @@ import * as Three from 'three';
 
 import { createNamespacedHelpers } from 'vuex';
 
-// Controls
+// Ammo
 import { PointerLockControls } from '@/components/Three/Modules/Controls/PointerLockControls';
 
 // Utils
@@ -219,7 +219,7 @@ export default {
 
       this.scene.add(this.ground);
 
-      // Controls
+      // Ammo
       this.controls = new PointerLockControls(this.camera, this.renderer.domElement);
 
       this.controls.addEventListener( 'unlock', () => {

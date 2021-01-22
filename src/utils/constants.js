@@ -25,6 +25,10 @@ export const DESIGN = {
     primary: '##722f37',
     primary0x: 0x722f37,
   },
+  UNDER_FLOOR: 20,
+  AMMO_GRAVITY: 5,
+  NUM_AMMO: 20,
+  AMMO_RADIUS: 5,
 };
 
 export const OBJECTS = {
@@ -37,6 +41,17 @@ export const OBJECTS = {
       [-100, 220],
     ],
     velocity: 150,
+  },
+  BOXES: {
+    size: 50,
+    position: [
+      [100, 20, 100],
+      [100, 70, 100],
+      [50, 20, 100],
+      [150, 20, 100],
+      [150, 70, 100],
+      [150, 120, 100],
+    ],
   },
 };
 

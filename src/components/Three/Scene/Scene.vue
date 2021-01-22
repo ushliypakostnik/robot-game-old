@@ -13,19 +13,14 @@ import { DESIGN } from '@/utils/constants';
 import { createNamespacedHelpers } from 'vuex';
 
 import { PointerLockControls } from '@/components/Three/Modules/Controls/PointerLockControls';
-import { TGALoader } from '@/components/Three/Modules/Utils/TGALoader';
-import { GLTFLoader } from '@/components/Three/Modules/Utils/GLTFLoader';
 // import { ImprovedNoise } from '@/components/Three/Modules/Utils/ImprovedNoise.js';
-import { Sky } from '@/components/Three/Modules/Elements/Sky';
 
+import Atmosphere from './Atmosphere';
+import Grass from './Grass';
+import Boxes from './Boxes';
 import Horses from './Horses';
 
 const { mapGetters } = createNamespacedHelpers('utilities');
-
-const UNDER_FLOOR = 20;
-const AMMO_GRAVITY = 5;
-const NUM_AMMO = 20;
-const AMMO_RADIUS = 5;
 
 export default {
   name: 'Scene',
@@ -41,7 +36,6 @@ export default {
       prevTime: null,
       velocity: null,
       direction: null,
-      vertex: null,
       color: null,
 
       moveForward: false,
@@ -58,15 +52,15 @@ export default {
       raycasterLeft: null,
       mouse: null,
 
-      sky: null,
-      sun: null,
-      light: null,
+      atmosphere: null,
       ground: null,
 
-      objects: [],
+      objects: [], // все объекты
+      boxes: null,
+      horses: null,
+
       ammos: [],
       ammoIdx: 0,
-      horses: null,
     };
   },
 
@@ -74,11 +68,8 @@ export default {
     this.prevTime = performance.now();
     this.velocity = new Three.Vector3();
     this.direction = new Three.Vector3();
-    this.vertex = new Three.Vector3();
     this.color = new Three.Color();
     this.mouse = new Three.Vector2();
-    this.sun = new Three.Vector3();
-    this.playerDirection = new Three.Vector3();
 
     this.init();
     this.animate();
@@ -100,11 +91,12 @@ export default {
   methods: {
     init() {
       // Core
+
       const container = document.getElementById('scene');
 
       // eslint-disable-next-line max-len
       this.camera = new Three.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 1, 4000);
-      this.camera.position.y = UNDER_FLOOR;
+      this.camera.position.y = DESIGN.UNDER_FLOOR;
 
       this.scene = new Three.Scene();
       this.scene.background = new Three.Color(0x7844c1);
@@ -114,127 +106,29 @@ export default {
       this.renderer.setPixelRatio(window.devicePixelRatio);
       this.renderer.setSize(container.clientWidth, container.clientHeight);
 
-      // For Sky
-      this.renderer.outputEncoding = Three.sRGBEncoding;
-      this.renderer.toneMapping = Three.ACESFilmicToneMapping;
-      this.renderer.toneMappingExposure = 0.5;
-
-      this.renderer.shadowMap.enabled = true;
-      this.renderer.shadowMap.type = Three.PCFSoftShadowMap;
-
       container.appendChild(this.renderer.domElement);
 
       this.scene.add(this.camera);
 
-      // Sky
-
-      this.sky = new Sky();
-      this.sky.scale.setScalar(450000);
-      this.scene.add(this.sky);
-
-      const effectController = {
-        turbidity: 10,
-        rayleigh: 3,
-        mieCoefficient: 0.005,
-        mieDirectionalG: 0.7,
-        inclination: 0.49, // elevation / inclination
-        azimuth: 0.25, // Facing front,
-        exposure: this.renderer.toneMappingExposure,
-      };
-
-      const { uniforms } = this.sky.material;
-      /* eslint-disable dot-notation */
-      uniforms['turbidity'].value = effectController.turbidity;
-      uniforms['rayleigh'].value = effectController.rayleigh;
-      uniforms['mieCoefficient'].value = effectController.mieCoefficient;
-      uniforms['mieDirectionalG'].value = effectController.mieDirectionalG;
-      /* eslint-enable dot-notation */
-
-      const theta = Math.PI * (effectController.inclination - 0.5);
-      const phi = 2 * Math.PI * (effectController.azimuth - 0.5);
-
-      this.sun.x = Math.cos(phi);
-      this.sun.y = Math.sin(phi) * Math.sin(theta);
-      this.sun.z = Math.sin(phi) * Math.cos(theta);
-
-      // eslint-disable-next-line dot-notation
-      uniforms['sunPosition'].value.copy(this.sun);
-
-      this.renderer.toneMappingExposure = effectController.exposure;
-
-      // Light
-
-      this.light = new Three.HemisphereLight(0xeeeeff, 0x777788, 0.75);
-      this.light.position.set(0.5, 1.0, 0.75).normalize();
-      this.scene.add(this.light);
-
-      this.scene.add(new Three.AmbientLight(0x222222));
+      // Atmosphere
+      this.atmosphere = new Atmosphere();
+      this.atmosphere.init(this.scene, this.renderer);
 
       // Objects
 
       // Boxes
-
-      const loader1 = new TGALoader();
-      const BoxGeometry = new Three.BoxBufferGeometry(50, 50, 50).toNonIndexed();
-      const BoxTexture = loader1.load('./images/textures/box.tga', () => {
-        this.render();
-      });
-      const BoxMaterial = new Three.MeshPhongMaterial({ color: 0xffffff, map: BoxTexture });
-
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < 10; i++) {
-
-        const box = new Three.Mesh(BoxGeometry, BoxMaterial);
-
-        box.position.x = Math.floor(Math.random() * 20 - 10) * 30;
-        box.position.y = Math.floor(19);
-        box.position.z = Math.floor(Math.random() * 20 - 10) * 30;
-
-        this.scene.add(box);
-        this.objects.push(box);
-      }
+      this.boxes = new Boxes();
+      this.boxes.init(this, this.scene, this.objects);
 
       // Horse
       this.horses = new Horses();
       this.horses.init(this.scene, this.objects);
 
       // Grass
+      this.ground = new Grass();
+      this.ground.init(this, this.scene);
 
-      let gg = new Three.PlaneBufferGeometry(10000, 10000, 100, 100);
-
-      // Vertex displacement
-
-      const { position } = gg.attributes;
-
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0, l = position.count; i < l; i++) {
-        this.vertex.fromBufferAttribute(position, i);
-
-        this.vertex.x += Math.random() * 20 - 10;
-        this.vertex.y += Math.random() * 1.5 + 1000;
-        this.vertex.z += Math.random() * 20 - 10;
-
-        position.setXYZ(i, this.vertex.x, this.vertex.y, this.vertex.z);
-      }
-
-      gg = gg.toNonIndexed(); // ensure each face has unique vertices
-
-      const gt = new Three.TextureLoader().load('./images/textures/grass.jpg', () => {
-        this.render();
-      });
-      const gm = new Three.MeshPhongMaterial({ color: 0xffaaaa, map: gt });
-
-      this.ground = new Three.Mesh(gg, gm);
-      this.ground.rotation.x = -Math.PI / 2;
-      this.ground.material.map.repeat.set(40, 40);
-      // eslint-disable-next-line no-multi-assign
-      this.ground.material.map.wrapS = this.ground.material.map.wrapT = Three.RepeatWrapping;
-      this.ground.material.map.encoding = Three.sRGBEncoding;
-      this.ground.receiveShadow = true;
-
-      this.scene.add(this.ground);
-
-      // Controls
+      // Ammo
       this.controls = new PointerLockControls(this.camera, this.renderer.domElement);
 
       this.controls.addEventListener('unlock', () => {
@@ -249,26 +143,26 @@ export default {
 
       // Ammo
       // eslint-disable-next-line max-len
-      const ammoGeometry = new Three.SphereBufferGeometry(AMMO_RADIUS, 32, 32);
+      const ammoGeometry = new Three.SphereBufferGeometry(DESIGN.AMMO_RADIUS, 32, 32);
       // eslint-disable-next-line max-len
       const ammoMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.primary0x, roughness: 0.8, metalness: 0.5 });
 
       // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < NUM_AMMO; i++) {
+      for (let i = 0; i < DESIGN.NUM_AMMO; i++) {
         const ammo = new Three.Mesh(ammoGeometry, ammoMaterial);
         ammo.castShadow = true;
         ammo.receiveShadow = true;
 
         this.ammos.push({
           mesh: ammo,
-          collider: new Three.Sphere(new Three.Vector3(0, -100, 0), AMMO_RADIUS),
+          collider: new Three.Sphere(new Three.Vector3(0, -100, 0), DESIGN.AMMO_RADIUS),
           velocity: new Three.Vector3(),
         });
       }
 
       // Raycasters
       /* eslint-disable max-len */
-      this.raycasterDown = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, -1, 0), 0, UNDER_FLOOR);
+      this.raycasterDown = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, -1, 0), 0, DESIGN.UNDER_FLOOR);
       this.raycasterForward = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, -1), 0, 10);
       this.raycasterBackward = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, 1), 0, 10);
       this.raycasterLeft = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(-1, 0, 0), 0, 10);
@@ -290,10 +184,10 @@ export default {
       if (this.controls.isLocked) {
         const ammo = this.ammos[this.ammoIdx];
         this.scene.add(ammo.mesh);
-        this.camera.getWorldDirection(this.playerDirection);
+        this.camera.getWorldDirection(this.direction);
         ammo.collider.center.copy(this.controls.getObject().position);
         ammo.collider.center.y -= 10;
-        ammo.velocity.copy(this.playerDirection).multiplyScalar(25);
+        ammo.velocity.copy(this.direction).multiplyScalar(25);
         this.ammoIdx = (this.ammoIdx + 1) % this.ammos.length;
       }
     },
@@ -387,26 +281,28 @@ export default {
         const onObject = intersections.length > 0;
 
         // Forward
-        this.raycasterForward.ray.origin.copy(this.controls.getObject().position);
-        this.raycasterBackward.ray.direction = new Three.Vector3(0, 0, -1);
+        const directionForward = this.camera.getWorldDirection();
+        this.raycasterForward.set(this.camera.getWorldPosition(), directionForward);
         intersections = this.raycasterForward.intersectObjects(this.objects);
         const onForward = intersections.length > 0;
 
         // Backward
-        this.raycasterBackward.ray.origin.copy(this.controls.getObject().position);
-        this.raycasterBackward.ray.direction = new Three.Vector3(0, 0, 1);
+        const directionBackward = directionForward.negate();
+        this.raycasterBackward.set(this.camera.getWorldPosition(), directionBackward);
         intersections = this.raycasterBackward.intersectObjects(this.objects);
         const onBackward = intersections.length > 0;
 
+        const y = new Three.Vector3(0, -1, 0);
+
         // Left
-        this.raycasterLeft.ray.origin.copy(this.controls.getObject().position);
-        this.raycasterLeft.ray.direction = new Three.Vector3(-1, 0, 0);
+        const directionLeft = new Three.Vector3(0, 0, 0).crossVectors(directionForward, y);
+        this.raycasterLeft.set(this.camera.getWorldPosition(), directionLeft);
         intersections = this.raycasterLeft.intersectObjects(this.objects);
         const onLeft = intersections.length > 0;
 
         // Right
-        this.raycasterRight.ray.origin.copy(this.controls.getObject().position);
-        this.raycasterRight.ray.direction = new Three.Vector3(1, 0, 0);
+        const directionRight = directionLeft.negate();
+        this.raycasterRight.set(this.camera.getWorldPosition(), directionRight);
         intersections = this.raycasterRight.intersectObjects(this.objects);
         const onRight = intersections.length > 0;
 
@@ -429,7 +325,7 @@ export default {
         if (onObject) {
           this.velocity.y = Math.max(0, this.velocity.y);
           this.canJump = true;
-        } else if (this.controls.getObject().position.y > UNDER_FLOOR) {
+        } else if (this.controls.getObject().position.y > DESIGN.UNDER_FLOOR) {
           this.controls.moveRight(-this.velocity.x * delta * 2.5);
           this.controls.moveForward(-this.velocity.z * delta * 2.5);
         }
@@ -446,9 +342,9 @@ export default {
 
         this.controls.getObject().position.y += (this.velocity.y * delta);
 
-        if (this.controls.getObject().position.y < UNDER_FLOOR) {
+        if (this.controls.getObject().position.y < DESIGN.UNDER_FLOOR) {
           this.velocity.y = 0;
-          this.controls.getObject().position.y = UNDER_FLOOR;
+          this.controls.getObject().position.y = DESIGN.UNDER_FLOOR;
 
           this.canJump = true;
         }
@@ -458,7 +354,7 @@ export default {
       this.ammos.forEach((ammo) => {
         ammo.collider.center.addScaledVector(ammo.velocity, delta * 20);
         // eslint-disable-next-line no-param-reassign
-        ammo.velocity.y -= AMMO_GRAVITY * delta;
+        ammo.velocity.y -= DESIGN.AMMO_GRAVITY * delta;
         const damping = Math.exp(-1.5 * delta) - 1;
         ammo.velocity.addScaledVector(ammo.velocity, damping);
         ammo.mesh.position.copy(ammo.collider.center);
