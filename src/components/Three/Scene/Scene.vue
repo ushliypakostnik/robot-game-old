@@ -6,21 +6,21 @@
 </template>
 
 <script>
+/* eslint-disable no-use-before-define, import/first, import/order */
 import * as Three from 'three';
+
+const { mapGetters } = createNamespacedHelpers('utilities');
 
 import { DESIGN } from '@/utils/constants';
 
 import { createNamespacedHelpers } from 'vuex';
 
 import { PointerLockControls } from '@/components/Three/Modules/Controls/PointerLockControls';
-// import { ImprovedNoise } from '@/components/Three/Modules/Utils/ImprovedNoise.js';
 
 import Atmosphere from './Atmosphere';
 import Grass from './Grass';
 import Boxes from './Boxes';
 import Horses from './Horses';
-
-const { mapGetters } = createNamespacedHelpers('utilities');
 
 export default {
   name: 'Scene',
@@ -268,7 +268,7 @@ export default {
       const time = performance.now();
       const delta = (time - this.prevTime) / 1000;
 
-      this.horses.animate(delta);
+      this.horses.animate(delta, this.objects);
 
       if (this.controls.isLocked) {
         // Check objects
@@ -318,9 +318,9 @@ export default {
         this.direction.normalize(); // this ensures consistent movements in all directions
 
         // eslint-disable-next-line max-len
-        if (this.moveForward || this.moveBackward) this.velocity.z -= this.direction.z * 400.0 * delta;
+        if (this.moveForward || this.moveBackward) this.velocity.z -= this.direction.z * DESIGN.HERO_SPEED * delta;
         // eslint-disable-next-line max-len
-        if (this.moveLeft || this.moveRight) this.velocity.x -= this.direction.x * 400.0 * delta;
+        if (this.moveLeft || this.moveRight) this.velocity.x -= this.direction.x * DESIGN.HERO_SPEED * delta;
 
         if (onObject) {
           this.velocity.y = Math.max(0, this.velocity.y);
