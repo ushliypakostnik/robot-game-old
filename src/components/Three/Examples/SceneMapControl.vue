@@ -111,7 +111,7 @@ export default {
       this.cube.position.y = 50;
       this.scene.add(this.cube);
 
-      // Grass
+      // Ground
 
       const gt = new Three.TextureLoader().load("./img/grass.jpg");
       const gg = new Three.PlaneBufferGeometry(4000, 4000);

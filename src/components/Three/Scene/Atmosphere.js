@@ -42,7 +42,6 @@ function Atmosphere() {
     renderer.toneMappingExposure = 0.5;
     renderer.toneMappingExposure = effectController.exposure;
 
-    // renderer.outputEncoding = Three.sRGBEncoding;
     renderer.shadowMap.enabled = true;
 
     // Light

@@ -1,6 +1,6 @@
 import * as Three from 'three';
 
-function Grass() {
+function Ground() {
   this.init = function(scope, scene) {
     const vertex = new Three.Vector3();
 
@@ -40,4 +40,4 @@ function Grass() {
   };
 }
 
-export default Grass;
+export default Ground;

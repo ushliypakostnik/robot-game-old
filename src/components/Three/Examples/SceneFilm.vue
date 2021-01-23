@@ -185,7 +185,7 @@ export default {
         this.objects.push(mesh);
       }
 
-      // Grass
+      // Ground
 
       let gg = new Three.PlaneBufferGeometry(4000, 4000, 100, 100);
 

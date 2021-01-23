@@ -18,7 +18,8 @@ import { createNamespacedHelpers } from 'vuex';
 import { PointerLockControls } from '@/components/Three/Modules/Controls/PointerLockControls';
 
 import Atmosphere from './Atmosphere';
-import Grass from './Grass';
+import Ground from './Ground';
+import Puddles from './Puddles';
 import Boxes from './Boxes';
 import Horses from './Horses';
 
@@ -54,8 +55,8 @@ export default {
 
       atmosphere: null,
       ground: null,
-
       objects: [], // все объекты
+      puddles: null,
       boxes: null,
       horses: null,
 
@@ -114,6 +115,14 @@ export default {
       this.atmosphere = new Atmosphere();
       this.atmosphere.init(this.scene, this.renderer);
 
+      // Ground
+      this.ground = new Ground();
+      this.ground.init(this, this.scene);
+
+      // Puddles
+      this.puddles = new Puddles();
+      this.puddles.init(this, this.scene, this.objects);
+
       // Objects
 
       // Boxes
@@ -123,10 +132,6 @@ export default {
       // Horse
       this.horses = new Horses();
       this.horses.init(this.scene, this.objects);
-
-      // Grass
-      this.ground = new Grass();
-      this.ground.init(this, this.scene);
 
       // Ammo
       this.controls = new PointerLockControls(this.camera, this.renderer.domElement);
@@ -274,6 +279,8 @@ export default {
 
       const time = performance.now();
       const delta = (time - this.prevTime) / 1000;
+
+      this.puddles.animate();
 
       this.horses.animate(delta, this.objects);
 
