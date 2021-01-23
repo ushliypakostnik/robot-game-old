@@ -26,7 +26,7 @@ function Ground() {
     const gt = new Three.TextureLoader().load('./images/textures/grass.jpg', () => {
       scope.render();
     });
-    const gm = new Three.MeshPhongMaterial({ color: 0xffaaaa, map: gt });
+    const gm = new Three.MeshLambertMaterial({ color: 0xffaaaa, map: gt });
 
     const ground = new Three.Mesh(gg, gm);
     ground.rotation.x = -Math.PI / 2;

@@ -3,7 +3,6 @@ import * as Three from 'three';
 import { Water } from '@/components/Three/Modules/Elements/Water';
 
 import { OBJECTS } from '@/utils/constants';
-import { randomInteger } from '@/utils/utilities';
 
 function Puddles() {
   let puddles = [];
