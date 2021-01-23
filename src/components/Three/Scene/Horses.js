@@ -19,6 +19,9 @@ function Horses() {
         horse.scale.set(0.25, 0.25, 0.25);
         horse.position.set(OBJECTS.HORSES.start[i][0], 0, OBJECTS.HORSES.start[i][1]);
 
+        horse.castShadow = true;
+        horse.receiveShadow = true;
+
         const rotate = randomInteger(-180, 180);
         const bend = randomInteger(-1, 1);
         horse.rotateY(rotate);

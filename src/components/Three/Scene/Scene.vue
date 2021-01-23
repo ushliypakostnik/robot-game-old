@@ -141,6 +141,13 @@ export default {
 
       this.scene.add(this.controls.getObject());
 
+      // Start on sun edge
+      /*
+      this.camera.position.x = -71.39220993244662;
+      this.camera.position.y = 20;
+      this.camera.position.z = -4954.530933873361;
+      */
+
       // Ammo
       // eslint-disable-next-line max-len
       const ammoGeometry = new Three.SphereBufferGeometry(DESIGN.AMMO_RADIUS, 32, 32);
@@ -363,6 +370,8 @@ export default {
       });
 
       this.prevTime = time;
+
+      console.log(this.controls.getObject().position);
 
       if (this.controls.isLocked) this.render();
     },

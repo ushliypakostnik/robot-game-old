@@ -18,6 +18,9 @@ function Boxes() {
       const box = new Three.Mesh(BoxGeometry, BoxMaterial);
       box.position.set(OBJECTS.BOXES.position[i][0], OBJECTS.BOXES.position[i][1], OBJECTS.BOXES.position[i][2]);
 
+      box.castShadow = true;
+      box.receiveShadow = true;
+
       // Random
       // box.position.x = Math.floor(Math.random() * 20 - 10) * 30;
       // box.position.y = Math.floor(19);

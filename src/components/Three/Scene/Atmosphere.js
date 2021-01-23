@@ -42,13 +42,47 @@ function Atmosphere() {
     renderer.toneMappingExposure = 0.5;
     renderer.toneMappingExposure = effectController.exposure;
 
+    // renderer.outputEncoding = Three.sRGBEncoding;
+    renderer.shadowMap.enabled = true;
+
     // Light
 
-    const light = new Three.HemisphereLight(0xeeeeff, 0x777788, 0.75);
+    // Hemisphere
+
+    const light = new Three.HemisphereLight(0x643BF7, 0x295826, 0.5);
     light.position.set(0.5, 1.0, 0.75).normalize();
     scene.add(light);
 
-    scene.add(new Three.AmbientLight(0x222222));
+    // Ambient
+
+    scene.add(new Three.AmbientLight(0x221111));
+
+    // Directional
+
+    const dirLight = new Three.DirectionalLight(0xda4531, 1);
+    // #feb15f, #ffcf48
+    // dirLight.color.setHSL(0.1, 1, 0.95);
+    dirLight.position.set(-10000, 40000000, -1000000000);
+    scene.add(dirLight);
+
+    dirLight.castShadow = true;
+    dirLight.shadowDarkness = 1;
+
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+
+    const d = 1000;
+
+    dirLight.shadow.camera.left = -d;
+    dirLight.shadow.camera.right = d;
+    dirLight.shadow.camera.top = d;
+    dirLight.shadow.camera.bottom = -d;
+
+    dirLight.shadow.camera.far = 10000;
+    dirLight.shadow.bias = -0.0001;
+
+    // const dirLightHelper = new Three.DirectionalLightHelper( dirLight, 10 );
+    // scene.add( dirLightHelper );
   };
 }
 
