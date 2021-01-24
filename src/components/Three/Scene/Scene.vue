@@ -103,12 +103,12 @@ export default {
       const container = document.getElementById('scene');
 
       // eslint-disable-next-line max-len
-      this.camera = new Three.PerspectiveCamera(70, container.clientWidth / container.clientHeight, 1, DESIGN.GROUND_SIZE / 2);
+      this.camera = new Three.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 1, DESIGN.GROUND_SIZE / 2);
       this.camera.position.y = DESIGN.UNDER_FLOOR;
 
       this.scene = new Three.Scene();
       this.scene.background = new Three.Color(0x7844c1);
-      this.scene.fog = new Three.Fog(0x4542a0, 50, 1000);
+      this.scene.fog = new Three.Fog(0x4542a0, 50, DESIGN.GROUND_SIZE / 15);
 
       this.renderer = new Three.WebGLRenderer({ antialias: true });
       this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -117,6 +117,7 @@ export default {
       container.appendChild(this.renderer.domElement);
 
       this.scene.add(this.camera);
+      // console.log(this.camera.position.x, this.camera.position.y, this.camera.position.z)
 
       // Atmosphere
       this.atmosphere = new Atmosphere();
@@ -254,7 +255,7 @@ export default {
           break;
 
         case 32: // space
-          if (this.canJump === true) this.velocity.y += 350;
+          if (this.canJump === true) this.velocity.y += DESIGN.HERO_JUMP;
           this.canJump = false;
           break;
 
@@ -296,7 +297,7 @@ export default {
     animate() {
       requestAnimationFrame(this.animate);
 
-      console.log(this.controls.getObject().position.x, this.controls.getObject().position.z);
+      // console.log(this.controls.getObject().position.x, this.controls.getObject().position.z);
 
       const time = performance.now();
       const delta = (time - this.prevTime) / 1000;
@@ -314,42 +315,44 @@ export default {
 
         // Down
         this.raycasterDown.ray.origin.copy(this.controls.getObject().position);
-        this.raycasterDown.ray.origin.y -= 10;
+        this.raycasterDown.ray.origin.y -= DESIGN.UNDER_FLOOR;
         intersections = this.raycasterDown.intersectObjects(this.objects);
         const onObject = intersections.length > 0;
+
+        const distance = this.moveRun ? 5 : 2.5;
 
         // Forward
         const directionForward = this.camera.getWorldDirection();
         this.raycasterForward.set(this.camera.getWorldPosition(), directionForward);
         intersections = this.raycasterForward.intersectObjects(this.objects);
-        const onForward = intersections.length > 0;
+        const onForward = intersections.length > 0 ? intersections[0].distance < distance : false;
 
         // Backward
         const directionBackward = directionForward.negate();
         this.raycasterBackward.set(this.camera.getWorldPosition(), directionBackward);
         intersections = this.raycasterBackward.intersectObjects(this.objects);
-        const onBackward = intersections.length > 0;
+        const onBackward = intersections.length > 0 ? intersections[0].distance < distance : false;
 
         const y = new Three.Vector3(0, -1, 0);
 
-        // Left
-        const directionLeft = new Three.Vector3(0, 0, 0).crossVectors(directionForward, y);
-        this.raycasterLeft.set(this.camera.getWorldPosition(), directionLeft);
-        intersections = this.raycasterLeft.intersectObjects(this.objects);
-        const onLeft = intersections.length > 0;
-
         // Right
-        const directionRight = directionLeft.negate();
+        const directionRight = new Three.Vector3(0, 0, 0).crossVectors(directionForward, y);
         this.raycasterRight.set(this.camera.getWorldPosition(), directionRight);
         intersections = this.raycasterRight.intersectObjects(this.objects);
-        const onRight = intersections.length > 0;
+        const onRight = intersections.length > 0 ? intersections[0].distance < distance : false;
+
+        // Left
+        const directionLeft = directionRight.negate();
+        this.raycasterLeft.set(this.camera.getWorldPosition(), directionLeft);
+        intersections = this.raycasterLeft.intersectObjects(this.objects);
+        const onLeft = intersections.length > 0 ? intersections[0].distance < distance : false;
 
         const collision = onForward || onBackward || onLeft || onRight;
 
         this.velocity.x -= this.velocity.x * 10 * delta;
         this.velocity.z -= this.velocity.z * 10 * delta;
 
-        this.velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
+        this.velocity.y -= 9.8 * DESIGN.HERO_MASS * delta;
 
         this.direction.z = Number(this.moveForward) - Number(this.moveBackward);
         this.direction.x = Number(this.moveRight) - Number(this.moveLeft);
@@ -363,19 +366,25 @@ export default {
         if (onObject) {
           this.velocity.y = Math.max(0, this.velocity.y);
           this.canJump = true;
-        } else if (this.controls.getObject().position.y > DESIGN.UNDER_FLOOR) {
-          this.controls.moveRight(-this.velocity.x * delta * 2.5);
-          this.controls.moveForward(-this.velocity.z * delta * 2.5);
         }
 
+        const run = this.moveRun ? 2.5 : 1;
         if (!collision) {
-          const run = this.moveRun ? 2.5 : 1;
           this.controls.moveRight(-this.velocity.x * delta * run);
           this.controls.moveForward(-this.velocity.z * delta * run);
         } else {
-          const run = this.moveRun ? 2 : 1;
-          this.controls.moveRight(this.velocity.x * delta * 5 * run);
-          this.controls.moveForward(this.velocity.z * delta * 5 * run);
+          console.log('BBBBBBBBBBBBB', this.moveLeft, this.moveRight);
+          if ((onForward && this.moveForward) ||
+              (onBackward && this.moveBackward) ||
+              (onLeft && this.moveLeft) ||
+              (onRight && this.moveRight)) {
+            this.moveRun = false;
+            this.velocity.z = 0;
+            this.velocity.x = 0;
+          } else {
+            this.controls.moveRight(-this.velocity.x * delta * run);
+            this.controls.moveForward(-this.velocity.z * delta * run);
+          }
         }
 
         this.controls.getObject().position.y += (this.velocity.y * delta);

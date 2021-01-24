@@ -63,7 +63,7 @@ function Atmosphere() {
     const dirLight = new Three.DirectionalLight(0xf9d71c, 1);
     // #feb15f, #ffcf48
     // dirLight.color.setHSL(0.1, 1, 0.95);
-    dirLight.position.set(0, DESIGN.GROUND_SIZE * 2, 0);
+    dirLight.position.set(0, DESIGN.GROUND_SIZE, 0);
     scene.add(dirLight);
 
     dirLight.castShadow = true;
@@ -72,14 +72,14 @@ function Atmosphere() {
     dirLight.shadow.mapSize.width = 2048;
     dirLight.shadow.mapSize.height = 2048;
 
-    const d = DESIGN.GROUND_SIZE * 2;
+    const d = 1;
 
     dirLight.shadow.camera.left = -d;
     dirLight.shadow.camera.right = d;
     dirLight.shadow.camera.top = d;
     dirLight.shadow.camera.bottom = -d;
 
-    dirLight.shadow.camera.far = DESIGN.GROUND_SIZE * 2;
+    dirLight.shadow.camera.far = DESIGN.GROUND_SIZE;
     dirLight.shadow.bias = -0.0001;
 
     // const dirLightHelper = new Three.DirectionalLightHelper( dirLight, 10 );
