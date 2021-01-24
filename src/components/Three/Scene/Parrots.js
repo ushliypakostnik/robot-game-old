@@ -18,9 +18,9 @@ function Parrots() {
         const parrot = gltf.scene.clone(true).children[0];
         parrot.scale.set(1, 1, 1);
 
-        const x = randomInteger(-10000, 10000);
+        const x = randomInteger(-12500, 12500);
         const y = randomInteger(5, 500);
-        const z = randomInteger(-10000, 10000);
+        const z = randomInteger(-12500, 12500);
 
         console.log(parrot, x, y, z);
 
