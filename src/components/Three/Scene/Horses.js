@@ -67,7 +67,6 @@ function Horses() {
         horse.mesh.rotateY(horse.side * 45);
       } else {
         horse.beforeObject = false;
-
         horse.side = null;
 
         const decisionBend = randomInteger(1, 50) === 1;

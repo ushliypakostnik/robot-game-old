@@ -40,6 +40,7 @@ export default {
       prevTime: null,
       velocity: null,
       direction: null,
+      position: null,
       color: null,
 
       moveForward: false,
@@ -55,6 +56,10 @@ export default {
       raycasterRight: null,
       raycasterLeft: null,
       mouse: null,
+
+      x: null,
+      y: null,
+      z: null,
 
       atmosphere: null,
       ground: null,
@@ -76,8 +81,12 @@ export default {
     this.prevTime = performance.now();
     this.velocity = new Three.Vector3();
     this.direction = new Three.Vector3();
+    this.position = new Three.Vector3();
     this.color = new Three.Color();
     this.mouse = new Three.Vector2();
+    this.x = new Three.Vector3(1, 0, 0);
+    this.y = new Three.Vector3(0, -1, 0);
+    this.z = new Three.Vector3(0, 0, 1);
 
     this.init();
     this.animate();
@@ -313,46 +322,47 @@ export default {
         // Check objects
         let intersections;
 
-        // Down
-        this.raycasterDown.ray.origin.copy(this.controls.getObject().position);
-        this.raycasterDown.ray.origin.y -= DESIGN.UNDER_FLOOR;
-        intersections = this.raycasterDown.intersectObjects(this.objects);
-        const onObject = intersections.length > 0;
-
         const distance = this.moveRun ? 5 : 2.5;
 
         // Forward
         const directionForward = this.camera.getWorldDirection();
-        this.raycasterForward.set(this.camera.getWorldPosition(), directionForward);
+        this.raycasterForward.set(this.camera.getWorldPosition(this.position), directionForward);
         intersections = this.raycasterForward.intersectObjects(this.objects);
         const onForward = intersections.length > 0 ? intersections[0].distance < distance : false;
 
         // Backward
         const directionBackward = directionForward.negate();
-        this.raycasterBackward.set(this.camera.getWorldPosition(), directionBackward);
+        this.raycasterBackward.set(this.camera.getWorldPosition(this.position), directionBackward);
         intersections = this.raycasterBackward.intersectObjects(this.objects);
         const onBackward = intersections.length > 0 ? intersections[0].distance < distance : false;
 
-        const y = new Three.Vector3(0, -1, 0);
-
         // Right
-        const directionRight = new Three.Vector3(0, 0, 0).crossVectors(directionForward, y);
-        this.raycasterRight.set(this.camera.getWorldPosition(), directionRight);
+        const directionRight = new Three.Vector3(0, 0, 0).crossVectors(directionForward, this.y);
+        this.raycasterRight.set(this.camera.getWorldPosition(this.position), directionRight);
         intersections = this.raycasterRight.intersectObjects(this.objects);
         const onRight = intersections.length > 0 ? intersections[0].distance < distance : false;
 
         // Left
         const directionLeft = directionRight.negate();
-        this.raycasterLeft.set(this.camera.getWorldPosition(), directionLeft);
+        this.raycasterLeft.set(this.camera.getWorldPosition(this.position), directionLeft);
         intersections = this.raycasterLeft.intersectObjects(this.objects);
         const onLeft = intersections.length > 0 ? intersections[0].distance < distance : false;
 
         const collision = onForward || onBackward || onLeft || onRight;
 
+        // Down
+        const directionDown = new Three.Vector3(0, 0, 0).crossVectors(this.x, this.z);
+        this.raycasterDown.set(this.camera.getWorldPosition(this.position), directionDown);
+        this.raycasterDown.ray.origin.y -= DESIGN.UNDER_FLOOR;
+        intersections = this.raycasterDown.intersectObjects(this.objects);
+        const onObject = intersections.length > 0 ? intersections[0].distance < DESIGN.UNDER_FLOOR : false;
+
         this.velocity.x -= this.velocity.x * 10 * delta;
         this.velocity.z -= this.velocity.z * 10 * delta;
 
-        this.velocity.y -= 9.8 * DESIGN.HERO_MASS * delta;
+        if (this.velocity.y < 0) {
+          this.velocity.y -= 9.8 * DESIGN.HERO_MASS * delta / (-2.5 * this.velocity.y);
+        } else this.velocity.y -= 9.8 * DESIGN.HERO_MASS * delta;
 
         this.direction.z = Number(this.moveForward) - Number(this.moveBackward);
         this.direction.x = Number(this.moveRight) - Number(this.moveLeft);
@@ -364,6 +374,7 @@ export default {
         if (this.moveLeft || this.moveRight) this.velocity.x -= this.direction.x * DESIGN.HERO_SPEED * delta;
 
         if (onObject) {
+          console.log('onObject', this.velocity.y, this.controls.getObject().position.y);
           this.velocity.y = Math.max(0, this.velocity.y);
           this.canJump = true;
         }
@@ -373,7 +384,6 @@ export default {
           this.controls.moveRight(-this.velocity.x * delta * run);
           this.controls.moveForward(-this.velocity.z * delta * run);
         } else {
-          console.log('BBBBBBBBBBBBB', this.moveLeft, this.moveRight);
           if ((onForward && this.moveForward) ||
               (onBackward && this.moveBackward) ||
               (onLeft && this.moveLeft) ||
