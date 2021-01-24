@@ -25,10 +25,11 @@ function Mountains() {
       stone.position.x = OBJECTS.MOUNTAINS.position[i][0];
       stone.position.y = -10;
       stone.position.z = OBJECTS.MOUNTAINS.position[i][1];
-      stone.updateMatrix();
 
-      stone.castShadow = true;
-      stone.receiveShadow = true;
+      // stone.castShadow = true;
+      // stone.receiveShadow = true;
+
+      stone.updateMatrix();
       stone.matrixAutoUpdate = false;
 
       scene.add(stone);

@@ -1,6 +1,6 @@
 import * as Three from 'three';
 
-import { OBJECTS } from '@/utils/constants';
+import { DESIGN, OBJECTS } from '@/utils/constants';
 import { randomInteger } from '@/utils/utilities';
 
 import { GLTFLoader } from '@/components/Three/Modules/Utils/GLTFLoader';
@@ -16,18 +16,16 @@ function Parrots() {
       // eslint-disable-next-line no-plusplus
       for (let i = 0; i < OBJECTS.PARROTS.quantity; i++) {
         const parrot = gltf.scene.clone(true).children[0];
-        parrot.scale.set(1, 1, 1);
+        parrot.scale.set(0.4, 0.4, 0.4);
 
-        const x = randomInteger(-12500, 12500);
-        const y = randomInteger(5, 500);
-        const z = randomInteger(-12500, 12500);
-
-        console.log(parrot, x, y, z);
+        const x = randomInteger(-1 * DESIGN.GROUND_SIZE / 2, DESIGN.GROUND_SIZE / 2);
+        const y = randomInteger(5, 10);
+        const z = randomInteger(-1 * DESIGN.GROUND_SIZE / 2, DESIGN.GROUND_SIZE / 2);
 
         parrot.position.set(x, y, z);
 
-        parrot.castShadow = true;
-        parrot.receiveShadow = true;
+        // parrot.castShadow = true;
+        // parrot.receiveShadow = true;
 
         const rotate = randomInteger(-180, 180);
         const bend = randomInteger(-1, 1);
@@ -74,7 +72,6 @@ function Parrots() {
         parrot.mesh.rotateY(parrot.side * 45);
       } else {
         parrot.beforeObject = false;
-
         parrot.side = null;
 
         const decisionBend = randomInteger(1, 50) === 1;

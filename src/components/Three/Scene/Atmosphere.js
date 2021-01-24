@@ -12,11 +12,11 @@ function Atmosphere() {
     scene.add(sky);
 
     const effectController = {
-      turbidity: 0,
-      rayleigh: 0.1,
-      mieCoefficient: 0.1,
-      mieDirectionalG: 0,
-      inclination: 0, // elevation / inclination
+      turbidity: 4.7,
+      rayleigh: 1,
+      mieCoefficient: 0.07,
+      mieDirectionalG: 0.9,
+      inclination: 0.3, // elevation / inclination
       azimuth: 0.25, // Facing front,
       exposure: renderer.toneMappingExposure,
     };
@@ -50,37 +50,34 @@ function Atmosphere() {
 
     // Hemisphere
 
-    const light = new Three.HemisphereLight(0x0033ff, 0x295826, 1);
+    const light = new Three.HemisphereLight(0x6699ff, 0x295826, 1);
     light.position.set(0, DESIGN.GROUND_SIZE * 2, 0).normalize();
     scene.add(light);
 
     // Ambient
-
-    scene.add(new Three.AmbientLight(0x221111));
+    scene.add(new Three.AmbientLight(0x331111));
 
     // Directional
 
-    const dirLight = new Three.DirectionalLight(0xf9d71c, 1);
-    // #feb15f, #ffcf48
-    // dirLight.color.setHSL(0.1, 1, 0.95);
-    dirLight.position.set(0, DESIGN.GROUND_SIZE, 0);
-    scene.add(dirLight);
+    // const dirLight = new Three.DirectionalLight(0xf9d71c, 1);
+    // dirLight.position.set(0, DESIGN.GROUND_SIZE, 0);
+    // scene.add(dirLight);
 
-    dirLight.castShadow = true;
-    dirLight.shadowDarkness = 1;
+    // dirLight.castShadow = true;
+    // dirLight.shadowDarkness = 1;
 
-    dirLight.shadow.mapSize.width = 2048;
-    dirLight.shadow.mapSize.height = 2048;
+    // dirLight.shadow.mapSize.width = 2048;
+    // dirLight.shadow.mapSize.height = 2048;
 
-    const d = 1;
+    // const d = 1000;
 
-    dirLight.shadow.camera.left = -d;
-    dirLight.shadow.camera.right = d;
-    dirLight.shadow.camera.top = d;
-    dirLight.shadow.camera.bottom = -d;
+    // dirLight.shadow.camera.left = -d;
+    // dirLight.shadow.camera.right = d;
+    // dirLight.shadow.camera.top = d;
+    // dirLight.shadow.camera.bottom = -d;
 
-    dirLight.shadow.camera.far = DESIGN.GROUND_SIZE;
-    dirLight.shadow.bias = -0.0001;
+    // dirLight.shadow.camera.far = DESIGN.GROUND_SIZE;
+    // dirLight.shadow.bias = -0.0001;
 
     // const dirLightHelper = new Three.DirectionalLightHelper( dirLight, 10 );
     // scene.add( dirLightHelper );

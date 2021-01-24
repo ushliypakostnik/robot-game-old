@@ -32,7 +32,7 @@ function Ground() {
     const map = new Three.TextureLoader().load('./images/textures/grass.jpg', () => {
       scope.render();
     });
-    const material = new Three.MeshLambertMaterial({ color: 0xdd7799, map });
+    const material = new Three.MeshLambertMaterial({ color: 0xfaaaaa, map });
 
     const ground = new Three.Mesh(geometry, material);
     ground.rotation.x = -Math.PI / 2;
@@ -41,9 +41,9 @@ function Ground() {
     // eslint-disable-next-line no-multi-assign
     ground.material.map.wrapS = ground.material.map.wrapT = Three.RepeatWrapping;
     ground.material.map.encoding = Three.sRGBEncoding;
-    ground.receiveShadow = true;
+    // ground.receiveShadow = true;
     ground.updateMatrix();
-    // ground.matrixAutoUpdate = false;
+    ground.matrixAutoUpdate = true;
 
     scene.add(ground);
   };

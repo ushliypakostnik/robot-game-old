@@ -20,9 +20,9 @@ function Stones() {
       for (let n = 0; n < elements; n++) {
         let radius;
         if (n === 0) {
-          radius = randomInteger(25, 100);
+          radius = randomInteger(10, 40);
         } else {
-          radius = randomInteger(5, 50);
+          radius = randomInteger(2, 20);
         }
 
         const geometry = new Three.OctahedronBufferGeometry(radius, randomInteger(0, 5));
@@ -30,15 +30,15 @@ function Stones() {
         const stone = new Three.Mesh(geometry, material);
 
         stone.position.x = OBJECTS.STONES.position[i][0] + randomInteger(25, 100) * yesOrNo();
-        stone.position.y = randomInteger(0, 10);
+        stone.position.y = randomInteger(-10, 10);
         stone.position.z =  OBJECTS.STONES.position[i][1] + randomInteger(25, 100) * yesOrNo();
 
-        if (stone.position.y - radius > -10) stone.position.y = -10;
+        if (stone.position.y - radius > -1) stone.position.y = -1;
+
+        // stone.castShadow = true;
+        // stone.receiveShadow = true;
 
         stone.updateMatrix();
-
-        stone.castShadow = true;
-        stone.receiveShadow = true;
         stone.matrixAutoUpdate = false;
 
         scene.add(stone);

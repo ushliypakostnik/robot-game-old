@@ -112,12 +112,12 @@ export default {
       const container = document.getElementById('scene');
 
       // eslint-disable-next-line max-len
-      this.camera = new Three.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 1, DESIGN.GROUND_SIZE / 2);
+      this.camera = new Three.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 1, DESIGN.GROUND_SIZE);
       this.camera.position.y = DESIGN.UNDER_FLOOR;
 
       this.scene = new Three.Scene();
       this.scene.background = new Three.Color(0x7844c1);
-      this.scene.fog = new Three.Fog(0x4542a0, 50, DESIGN.GROUND_SIZE / 15);
+      this.scene.fog = new Three.Fog(0x4542a0, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE);
 
       this.renderer = new Three.WebGLRenderer({ antialias: true });
       this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -146,7 +146,6 @@ export default {
       this.boxes = new Boxes();
       this.boxes.init(this, this.scene, this.objects);
 
-      /*
       // Stones and mountains
       this.stones = new Stones();
       this.stones.init(this, this.scene, this.objects);
@@ -160,7 +159,6 @@ export default {
       // Parrots
       this.parrots = new Parrots();
       this.parrots.init(this.scene, this.objects);
-      */
 
       // Ammo
       this.controls = new PointerLockControls(this.camera, this.renderer.domElement);
@@ -186,18 +184,24 @@ export default {
       // eslint-disable-next-line max-len
       const ammoGeometry = new Three.SphereBufferGeometry(DESIGN.AMMO_RADIUS, 32, 32);
       // eslint-disable-next-line max-len
-      const ammoMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.primary0x, roughness: 0.8, metalness: 0.5 });
+      const ammoMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.primaryDark0x, roughness: 0.8, metalness: 0.5 });
 
       // eslint-disable-next-line no-plusplus
       for (let i = 0; i < DESIGN.NUM_AMMO; i++) {
         const ammo = new Three.Mesh(ammoGeometry, ammoMaterial);
+        ammo.scale.set(1, 1, 1);
+        ammo.position.y = DESIGN.UNDER_FLOOR - 0.2;
         ammo.castShadow = true;
         ammo.receiveShadow = true;
 
         this.ammos.push({
           mesh: ammo,
-          collider: new Three.Sphere(new Three.Vector3(0, -100, 0), DESIGN.AMMO_RADIUS),
+          collider: new Three.Sphere(new Three.Vector3(0, 0, 0), DESIGN.AMMO_RADIUS),
           velocity: new Three.Vector3(),
+          onFly: false,
+          onGround: false,
+          scale: 1,
+          off: false,
         });
       }
 
@@ -224,11 +228,13 @@ export default {
     shot() {
       if (this.controls.isLocked) {
         const ammo = this.ammos[this.ammoIdx];
+        ammo.onFly = true;
         this.scene.add(ammo.mesh);
         this.camera.getWorldDirection(this.direction);
         ammo.collider.center.copy(this.controls.getObject().position);
-        ammo.collider.center.y -= 10;
+        ammo.collider.center.y -= 0.5;
         ammo.velocity.copy(this.direction).multiplyScalar(25);
+        console.log('CCCC', ammo.mesh.position.y);
         this.ammoIdx = (this.ammoIdx + 1) % this.ammos.length;
       }
     },
@@ -313,16 +319,14 @@ export default {
 
       this.puddles.animate();
 
-      /*
       this.horses.animate(delta, this.objects);
       this.parrots.animate(delta, this.objects);
-       */
 
       if (this.controls.isLocked) {
         // Check objects
         let intersections;
 
-        const distance = this.moveRun ? 5 : 2.5;
+        const distance = this.moveRun ? 20 : 5;
 
         // Forward
         const directionForward = this.camera.getWorldDirection();
@@ -409,14 +413,42 @@ export default {
 
       // Ammo
       this.ammos.forEach((ammo) => {
-        ammo.collider.center.addScaledVector(ammo.velocity, delta * 20);
-        // eslint-disable-next-line no-param-reassign
-        ammo.velocity.y -= DESIGN.AMMO_GRAVITY * delta;
-        const damping = Math.exp(-1.5 * delta) - 1;
-        ammo.velocity.addScaledVector(ammo.velocity, damping);
-        ammo.mesh.position.copy(ammo.collider.center);
-        // eslint-disable-next-line no-param-reassign
-        if (ammo.mesh.position.y < 0) ammo.mesh.position.y = 0;
+        if (ammo.onFly || ammo.onGround) {
+          ammo.collider.center.addScaledVector(ammo.velocity, delta * 5);
+          // eslint-disable-next-line no-param-reassign
+          ammo.velocity.y -= DESIGN.AMMO_GRAVITY * delta;
+          const damping = Math.exp(-1.5 * delta) - 1;
+          ammo.velocity.addScaledVector(ammo.velocity, damping);
+          ammo.mesh.position.copy(ammo.collider.center);
+
+          if (ammo.mesh.position.y < 0) {
+            ammo.mesh.position.y = 0;
+            ammo.onFly = false;
+            ammo.onGround = true;
+          }
+        }
+
+        if (ammo.onGround) {
+          if (ammo.scale > 4) ammo.off = true;
+
+          if (ammo.off) {
+            ammo.scale -= delta * 2;
+            ammo.mesh.scale.x = ammo.scale;
+            ammo.mesh.scale.z = ammo.scale;
+
+            if (ammo.scale < 0.5) {
+              ammo.mesh.position.y = -1;
+              ammo.onGround = false;
+              ammo.false = true;
+              ammo.off = false;
+              ammo.scale = 1;
+              ammo.mesh.scale.set(1, 1, 1);
+            }
+          } else {
+            ammo.scale += delta;
+            ammo.mesh.scale.set(ammo.scale, 1 / ammo.scale, ammo.scale);
+          }
+        }
       });
 
       this.prevTime = time;

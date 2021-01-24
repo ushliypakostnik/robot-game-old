@@ -16,11 +16,11 @@ function Horses() {
       // eslint-disable-next-line no-plusplus
       for (let i = 0; i < OBJECTS.HORSES.start.length; i++) {
         const horse = gltf.scene.clone(true).children[0];
-        horse.scale.set(0.25, 0.25, 0.25);
+        horse.scale.set(OBJECTS.HORSES.size, OBJECTS.HORSES.size, OBJECTS.HORSES.size);
         horse.position.set(OBJECTS.HORSES.start[i][0], 0, OBJECTS.HORSES.start[i][1]);
 
-        horse.castShadow = true;
-        horse.receiveShadow = true;
+        // horse.castShadow = true;
+        // horse.receiveShadow = true;
 
         const rotate = randomInteger(-180, 180);
         const bend = randomInteger(-1, 1);

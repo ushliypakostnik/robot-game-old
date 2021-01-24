@@ -18,8 +18,8 @@ function Boxes() {
       const box = new Three.Mesh(geometry, material);
       box.position.set(OBJECTS.BOXES.position[i][0], OBJECTS.BOXES.position[i][1], OBJECTS.BOXES.position[i][2]);
 
-      box.castShadow = true;
-      box.receiveShadow = true;
+      // box.castShadow = true;
+      // box.receiveShadow = true;
       box.updateMatrix();
       box.matrixAutoUpdate = false;
 
