@@ -74,6 +74,11 @@ export default {
       ammos: [],
       ammoIdx: 0,
       ammodirection: null,
+
+      audioLoader: null,
+      listener: null,
+      steps: null,
+      run: null,
     };
   },
 
@@ -132,6 +137,39 @@ export default {
       this.atmosphere = new Atmosphere();
       this.atmosphere.init(this.scene, this.renderer);
 
+      this.audioLoader = new Three.AudioLoader();
+      this.listener = new Three.AudioListener();
+      this.camera.add(this.listener);
+
+      const stepsGeometry = new Three.SphereBufferGeometry( 2, 32, 32 );
+      const stepsMaterial = new Three.MeshStandardMaterial( { color: 0xff0000 } );
+
+      this.steps = new Three.Mesh(stepsGeometry, stepsMaterial);
+      this.steps.position.set(this.camera.position);
+      this.steps.visible = false;
+
+      this.audioLoader.load( './audio/steps.mp3', (buffer) => {
+        const audio = new Three.PositionalAudio(this.listener);
+        audio.setBuffer(buffer);
+        audio.setLoop(true);
+
+        this.steps.add(audio);
+        this.scene.add(this.steps);
+      });
+
+      this.run = new Three.Mesh(stepsGeometry, stepsMaterial);
+      this.run.position.set(this.camera.position);
+      this.run.visible = false;
+
+      this.audioLoader.load( './audio/run.mp3', (buffer) => {
+        const audio = new Three.PositionalAudio(this.listener);
+        audio.setBuffer(buffer);
+        audio.setLoop(true);
+
+        this.run.add(audio);
+        this.scene.add(this.run);
+      });
+
       // Ground
       this.ground = new Ground();
       this.ground.init(this, this.scene);
@@ -184,7 +222,7 @@ export default {
       // eslint-disable-next-line max-len
       const ammoGeometry = new Three.SphereBufferGeometry(DESIGN.AMMO_RADIUS, 32, 32);
       // eslint-disable-next-line max-len
-      const ammoMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.primaryDark0x, roughness: 0.8, metalness: 0.5 });
+      const ammoMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.primary0x, roughness: 0.8, metalness: 0.5 });
 
       // eslint-disable-next-line no-plusplus
       for (let i = 0; i < DESIGN.NUM_AMMO; i++) {
@@ -234,7 +272,6 @@ export default {
         ammo.collider.center.copy(this.controls.getObject().position);
         ammo.collider.center.y -= 0.5;
         ammo.velocity.copy(this.direction).multiplyScalar(25);
-        console.log('CCCC', ammo.mesh.position.y);
         this.ammoIdx = (this.ammoIdx + 1) % this.ammos.length;
       }
     },
@@ -329,7 +366,7 @@ export default {
         const distance = this.moveRun ? 20 : 5;
 
         // Forward
-        const directionForward = this.camera.getWorldDirection();
+        const directionForward = this.camera.getWorldDirection(this.direction);
         this.raycasterForward.set(this.camera.getWorldPosition(this.position), directionForward);
         intersections = this.raycasterForward.intersectObjects(this.objects);
         const onForward = intersections.length > 0 ? intersections[0].distance < distance : false;
@@ -378,7 +415,6 @@ export default {
         if (this.moveLeft || this.moveRight) this.velocity.x -= this.direction.x * DESIGN.HERO_SPEED * delta;
 
         if (onObject) {
-          console.log('onObject', this.velocity.y, this.controls.getObject().position.y);
           this.velocity.y = Math.max(0, this.velocity.y);
           this.canJump = true;
         }
@@ -450,6 +486,26 @@ export default {
           }
         }
       });
+
+      if (this.steps) {
+        this.steps.position.set(
+          this.controls.getObject().position.x,
+          this.controls.getObject().position.y,
+          this.controls.getObject().position.z,
+        );
+        this.run.position.set(
+          this.controls.getObject().position.x,
+          this.controls.getObject().position.y,
+          this.controls.getObject().position.z,
+        );
+        if (this.moveForward || this.moveBackward || this.moveLeft || this.moveRight) {
+          if (this.moveRun) this.run.children[0].play();
+          else this.steps.children[0].play();
+        } else {
+          if (this.run.children[0].isPlaying) this.run.children[0].pause();
+          if (this.steps.children[0].isPlaying) this.steps.children[0].pause();
+        }
+      }
 
       this.prevTime = time;
 

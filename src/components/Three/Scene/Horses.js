@@ -9,6 +9,7 @@ import { GLTFLoader } from '@/components/Three/Modules/Utils/GLTFLoader';
 function Horses() {
   const horses = [];
   let raycaster;
+  const direction = new Three.Vector3();
 
   this.init = function (scene, objects) {
     const loader = new GLTFLoader();
@@ -52,7 +53,7 @@ function Horses() {
   this.animate = function (delta, objects) {
     horses.forEach((horse) => {
       // Raycast
-      const directionForward = horse.mesh.getWorldDirection();
+      const directionForward = horse.mesh.getWorldDirection(direction);
       raycaster.set(horse.mesh.position, directionForward);
       const intersections = raycaster.intersectObjects(objects);
       const beforeObject = intersections.length > 0;
@@ -63,7 +64,7 @@ function Horses() {
           horse.side = randomInteger(-1, 1);
         }
         // eslint-disable-next-line max-len
-        horse.mesh.position.add(horse.mesh.getWorldDirection().negate().multiplyScalar((OBJECTS.HORSES.velocity * horse.accelerationVelocity) * delta));
+        horse.mesh.position.add(horse.mesh.getWorldDirection(direction).negate().multiplyScalar((OBJECTS.HORSES.velocity * horse.accelerationVelocity) * delta));
         horse.mesh.rotateY(horse.side * 45);
       } else {
         horse.beforeObject = false;
@@ -81,7 +82,7 @@ function Horses() {
         if (decisionAccelerationVelocity) horse.accelerationVelocity = Math.random() + 0.5;
 
         // eslint-disable-next-line max-len
-        horse.mesh.position.add(horse.mesh.getWorldDirection().multiplyScalar((OBJECTS.HORSES.velocity * horse.accelerationVelocity) * delta));
+        horse.mesh.position.add(horse.mesh.getWorldDirection(direction).multiplyScalar((OBJECTS.HORSES.velocity * horse.accelerationVelocity) * delta));
       }
 
       if (horse.mixer) {

@@ -12,11 +12,11 @@ function Atmosphere() {
     scene.add(sky);
 
     const effectController = {
-      turbidity: 4.7,
+      turbidity: 2,
       rayleigh: 1,
       mieCoefficient: 0.07,
       mieDirectionalG: 0.9,
-      inclination: 0.3, // elevation / inclination
+      inclination: 0.45, // elevation / inclination
       azimuth: 0.25, // Facing front,
       exposure: renderer.toneMappingExposure,
     };
@@ -44,7 +44,7 @@ function Atmosphere() {
     renderer.toneMappingExposure = 0.5;
     renderer.toneMappingExposure = effectController.exposure;
 
-    renderer.shadowMap.enabled = true;
+    // renderer.shadowMap.enabled = true;
 
     // Light
 

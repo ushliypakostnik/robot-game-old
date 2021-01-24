@@ -9,6 +9,7 @@ import { GLTFLoader } from '@/components/Three/Modules/Utils/GLTFLoader';
 function Parrots() {
   const parrots = [];
   let raycaster;
+  const direction = new Three.Vector3();
 
   this.init = function (scene, objects) {
     const loader = new GLTFLoader();
@@ -57,7 +58,7 @@ function Parrots() {
   this.animate = function (delta, objects) {
     parrots.forEach((parrot) => {
       // Raycast
-      const directionForward = parrot.mesh.getWorldDirection();
+      const directionForward = parrot.mesh.getWorldDirection(direction);
       raycaster.set(parrot.mesh.position, directionForward);
       const intersections = raycaster.intersectObjects(objects);
       const beforeObject = intersections.length > 0;
@@ -68,7 +69,7 @@ function Parrots() {
           parrot.side = randomInteger(-1, 1);
         }
         // eslint-disable-next-line max-len
-        parrot.mesh.position.add(parrot.mesh.getWorldDirection().negate().multiplyScalar((OBJECTS.PARROTS.velocity * parrot.accelerationVelocity) * delta));
+        parrot.mesh.position.add(parrot.mesh.getWorldDirection(direction).negate().multiplyScalar((OBJECTS.PARROTS.velocity * parrot.accelerationVelocity) * delta));
         parrot.mesh.rotateY(parrot.side * 45);
       } else {
         parrot.beforeObject = false;
@@ -86,7 +87,7 @@ function Parrots() {
         if (decisionAccelerationVelocity) parrot.accelerationVelocity = Math.random() + 0.5;
 
         // eslint-disable-next-line max-len
-        parrot.mesh.position.add(parrot.mesh.getWorldDirection().multiplyScalar((OBJECTS.PARROTS.velocity * parrot.accelerationVelocity) * delta));
+        parrot.mesh.position.add(parrot.mesh.getWorldDirection(direction).multiplyScalar((OBJECTS.PARROTS.velocity * parrot.accelerationVelocity) * delta));
       }
 
       if (parrot.mixer) {
