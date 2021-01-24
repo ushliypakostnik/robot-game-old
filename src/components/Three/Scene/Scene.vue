@@ -103,7 +103,7 @@ export default {
       const container = document.getElementById('scene');
 
       // eslint-disable-next-line max-len
-      this.camera = new Three.PerspectiveCamera(70, container.clientWidth / container.clientHeight, 1, 5000);
+      this.camera = new Three.PerspectiveCamera(70, container.clientWidth / container.clientHeight, 1, DESIGN.GROUND_SIZE / 2);
       this.camera.position.y = DESIGN.UNDER_FLOOR;
 
       this.scene = new Three.Scene();
@@ -136,6 +136,7 @@ export default {
       this.boxes = new Boxes();
       this.boxes.init(this, this.scene, this.objects);
 
+      /*
       // Stones and mountains
       this.stones = new Stones();
       this.stones.init(this, this.scene, this.objects);
@@ -149,6 +150,7 @@ export default {
       // Parrots
       this.parrots = new Parrots();
       this.parrots.init(this.scene, this.objects);
+      */
 
       // Ammo
       this.controls = new PointerLockControls(this.camera, this.renderer.domElement);
@@ -294,15 +296,17 @@ export default {
     animate() {
       requestAnimationFrame(this.animate);
 
-      // console.log(this.controls.getObject().position.x, this.controls.getObject().position.z);
+      console.log(this.controls.getObject().position.x, this.controls.getObject().position.z);
 
       const time = performance.now();
       const delta = (time - this.prevTime) / 1000;
 
       this.puddles.animate();
 
+      /*
       this.horses.animate(delta, this.objects);
       this.parrots.animate(delta, this.objects);
+       */
 
       if (this.controls.isLocked) {
         // Check objects

@@ -35,6 +35,12 @@ function Stones() {
 
         if (stone.position.y - radius > -10) stone.position.y = -10;
 
+        stone.updateMatrix();
+
+        stone.castShadow = true;
+        stone.receiveShadow = true;
+        stone.matrixAutoUpdate = false;
+
         scene.add(stone);
         objects.push(stone);
       }

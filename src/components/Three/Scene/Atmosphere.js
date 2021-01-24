@@ -2,6 +2,8 @@ import * as Three from 'three';
 
 import { Sky } from '@/components/Three/Modules/Elements/Sky';
 
+import { DESIGN } from '@/utils/constants';
+
 function Atmosphere() {
   this.init = function(scene, renderer) {
     const sun = new Three.Vector3();
@@ -10,11 +12,11 @@ function Atmosphere() {
     scene.add(sky);
 
     const effectController = {
-      turbidity: 10,
-      rayleigh: 3,
-      mieCoefficient: 0.005,
-      mieDirectionalG: 0.7,
-      inclination: 0.49, // elevation / inclination
+      turbidity: 0,
+      rayleigh: 0.1,
+      mieCoefficient: 0.1,
+      mieDirectionalG: 0,
+      inclination: 0, // elevation / inclination
       azimuth: 0.25, // Facing front,
       exposure: renderer.toneMappingExposure,
     };
@@ -48,8 +50,8 @@ function Atmosphere() {
 
     // Hemisphere
 
-    const light = new Three.HemisphereLight(0x643BF7, 0x295826, 0.5);
-    light.position.set(0.5, 1.0, 0.75).normalize();
+    const light = new Three.HemisphereLight(0x0033ff, 0x295826, 1);
+    light.position.set(0, DESIGN.GROUND_SIZE * 2, 0).normalize();
     scene.add(light);
 
     // Ambient
@@ -58,10 +60,10 @@ function Atmosphere() {
 
     // Directional
 
-    const dirLight = new Three.DirectionalLight(0xda4531, 1);
+    const dirLight = new Three.DirectionalLight(0xf9d71c, 1);
     // #feb15f, #ffcf48
     // dirLight.color.setHSL(0.1, 1, 0.95);
-    dirLight.position.set(-10000, 40000000, -1000000000);
+    dirLight.position.set(0, DESIGN.GROUND_SIZE * 2, 0);
     scene.add(dirLight);
 
     dirLight.castShadow = true;
@@ -70,14 +72,14 @@ function Atmosphere() {
     dirLight.shadow.mapSize.width = 2048;
     dirLight.shadow.mapSize.height = 2048;
 
-    const d = 1000;
+    const d = DESIGN.GROUND_SIZE * 2;
 
     dirLight.shadow.camera.left = -d;
     dirLight.shadow.camera.right = d;
     dirLight.shadow.camera.top = d;
     dirLight.shadow.camera.bottom = -d;
 
-    dirLight.shadow.camera.far = 10000;
+    dirLight.shadow.camera.far = DESIGN.GROUND_SIZE * 2;
     dirLight.shadow.bias = -0.0001;
 
     // const dirLightHelper = new Three.DirectionalLightHelper( dirLight, 10 );

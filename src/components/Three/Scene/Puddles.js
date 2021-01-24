@@ -9,10 +9,10 @@ function Puddles() {
 
   this.init = function(scope, scene) {
     for (let i = 0; i < OBJECTS.PUDDLES.length; i++) {
-      const puddleGeometry = new Three.CircleBufferGeometry(OBJECTS.PUDDLES[i][2], 32);
+      const geometry = new Three.CircleBufferGeometry(OBJECTS.PUDDLES[i][2], 32);
 
       const puddle = new Water(
-        puddleGeometry,
+        geometry,
         {
           textureWidth: 512,
           textureHeight: 512,
