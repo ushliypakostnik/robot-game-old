@@ -11,8 +11,8 @@ function Horses() {
   let raycaster;
 
   this.init = function (scene, objects) {
-    const loader2 = new GLTFLoader();
-    loader2.load('./images/models/Horse.glb', (gltf) => {
+    const loader = new GLTFLoader();
+    loader.load('./images/models/Horse.glb', (gltf) => {
       // eslint-disable-next-line no-plusplus
       for (let i = 0; i < OBJECTS.HORSES.start.length; i++) {
         const horse = gltf.scene.clone(true).children[0];

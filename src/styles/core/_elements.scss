@@ -6,7 +6,7 @@
   cursor: pointer;
   background: transparent;
   color: $colors__white;
-  padding: ($gutter / 2) ($gutter * 2);
+  padding: ($gutter / 4) ($gutter * 1.5);
   border: $border-width solid $colors__border;
   box-shadow: none;
   text-transform: uppercase;
@@ -14,17 +14,17 @@
 }
 
 .switch {
-  max-width: 100px;
+  max-width: auto;
   display: flex;
   flex-direction: row;
   border: $border-width solid $colors__border;
-  white-space: nowrap;
 
   &__item {
     display: block;
-    padding: ($gutter / 8) ($gutter / 2);
+    padding: ($gutter / 10) ($gutter / 4);
     text-align: center;
-    @include text($font-size--normal, $font-weight__sans__regular);
+    text-transform: uppercase;
+    @include text($font-size--normal, $font-weight__sans__bold);
 
     a {
       text-decoration: none;

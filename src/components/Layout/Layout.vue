@@ -8,6 +8,7 @@
       class="layout__blocker"
     >
       <div class="layout__instructions">
+        <h1>{{ $t('layout.text0') }}</h1>
         <h4>{{ $t('layout.text1') }}</h4>
         <h4>{{ $t('layout.text2') }}</h4>
         <h4>{{ $t('layout.text3') }}</h4>
@@ -106,8 +107,8 @@ export default {
 }
 
 .button {
-  margin-top: $gutter * 2;
-  margin-bottom: $gutter * 2;
+  margin-top: $gutter * 1.5;
+  margin-bottom: $gutter * 1.5;
 }
 
 h3,

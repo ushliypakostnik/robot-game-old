@@ -4,11 +4,11 @@ function Ground() {
   this.init = function(scope, scene) {
     const vertex = new Three.Vector3();
 
-    let gg = new Three.PlaneBufferGeometry(10000, 10000, 100, 100);
+    let geometry = new Three.PlaneBufferGeometry(10000, 10000, 100, 100);
 
     // Vertex displacement
 
-    const { position } = gg.attributes;
+    const { position } = geometry.attributes;
 
     // eslint-disable-next-line no-plusplus
     for (let i = 0, l = position.count; i < l; i++) {
@@ -21,14 +21,14 @@ function Ground() {
       position.setXYZ(i, vertex.x, vertex.y, vertex.z);
     }
 
-    gg = gg.toNonIndexed(); // ensure each face has unique vertices
+    geometry = geometry.toNonIndexed(); // ensure each face has unique vertices
 
-    const gt = new Three.TextureLoader().load('./images/textures/grass.jpg', () => {
+    const map = new Three.TextureLoader().load('./images/textures/grass.jpg', () => {
       scope.render();
     });
-    const gm = new Three.MeshLambertMaterial({ color: 0xffaaaa, map: gt });
+    const material = new Three.MeshLambertMaterial({ color: 0xffaaaa, map });
 
-    const ground = new Three.Mesh(gg, gm);
+    const ground = new Three.Mesh(geometry, material);
     ground.rotation.x = -Math.PI / 2;
     ground.material.map.repeat.set(40, 40);
     // eslint-disable-next-line no-multi-assign

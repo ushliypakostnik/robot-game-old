@@ -6,9 +6,9 @@ import { TGALoader } from '@/components/Three/Modules/Utils/TGALoader';
 
 function Boxes() {
   this.init = function(scope, scene, objects) {
-    const loader1 = new TGALoader();
+    const loader = new TGALoader();
     const BoxGeometry = new Three.BoxBufferGeometry(OBJECTS.BOXES.size, OBJECTS.BOXES.size, OBJECTS.BOXES.size).toNonIndexed();
-    const BoxTexture = loader1.load('./images/textures/box.tga', () => {
+    const BoxTexture = loader.load('./images/textures/box.tga', () => {
       scope.render();
     });
     const BoxMaterial = new Three.MeshPhongMaterial({ color: 0xffffff, map: BoxTexture });

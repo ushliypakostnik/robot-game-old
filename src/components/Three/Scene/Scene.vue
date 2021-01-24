@@ -21,7 +21,10 @@ import Atmosphere from './Atmosphere';
 import Ground from './Ground';
 import Puddles from './Puddles';
 import Boxes from './Boxes';
+import Stones from './Stones';
+import Mountains from './Mountains';
 import Horses from './Horses';
+import Parrots from './Parrots';
 
 export default {
   name: 'Scene',
@@ -58,10 +61,14 @@ export default {
       objects: [], // все объекты
       puddles: null,
       boxes: null,
+      stones: null,
+      mountains: null,
       horses: null,
+      parrots: null,
 
       ammos: [],
       ammoIdx: 0,
+      ammodirection: null,
     };
   },
 
@@ -96,7 +103,7 @@ export default {
       const container = document.getElementById('scene');
 
       // eslint-disable-next-line max-len
-      this.camera = new Three.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 1, 4000);
+      this.camera = new Three.PerspectiveCamera(70, container.clientWidth / container.clientHeight, 1, 5000);
       this.camera.position.y = DESIGN.UNDER_FLOOR;
 
       this.scene = new Three.Scene();
@@ -129,9 +136,19 @@ export default {
       this.boxes = new Boxes();
       this.boxes.init(this, this.scene, this.objects);
 
-      // Horse
+      // Stones and mountains
+      this.stones = new Stones();
+      this.stones.init(this, this.scene, this.objects);
+      this.mountains = new Mountains();
+      this.mountains.init(this, this.scene, this.objects);
+
+      // Horses
       this.horses = new Horses();
       this.horses.init(this.scene, this.objects);
+
+      // Parrots
+      this.parrots = new Parrots();
+      this.parrots.init(this.scene, this.objects);
 
       // Ammo
       this.controls = new PointerLockControls(this.camera, this.renderer.domElement);
@@ -277,12 +294,15 @@ export default {
     animate() {
       requestAnimationFrame(this.animate);
 
+      // console.log(this.controls.getObject().position.x, this.controls.getObject().position.z);
+
       const time = performance.now();
       const delta = (time - this.prevTime) / 1000;
 
       this.puddles.animate();
 
       this.horses.animate(delta, this.objects);
+      this.parrots.animate(delta, this.objects);
 
       if (this.controls.isLocked) {
         // Check objects
@@ -377,8 +397,6 @@ export default {
       });
 
       this.prevTime = time;
-
-      console.log(this.controls.getObject().position);
 
       if (this.controls.isLocked) this.render();
     },

@@ -11,22 +11,22 @@ $normal-letter-spacing: normal;
 
 // Guide
 
-$font-size--base: 16px;
-$font-size__coefficient--large: 4;
+$font-size--base: 1vw;
+$font-size__coefficient--large: 3;
 $font-size__coefficient--normal: 1.5;
 $font-size__coefficient--small: 1;
 $font-size__coefficient--xsmall: 0.9;
 
-$font-size--large: round($font-size--base * $font-size__coefficient--large); // 24px
-$font-size--normal: round($font-size--base * $font-size__coefficient--normal); // 18px
-$font-size--small: round($font-size--base * $font-size__coefficient--small); // 14px
-$font-size--xsmall: round($font-size--base * $font-size__coefficient--xsmall); // 13px
+$font-size--large: $font-size--base * $font-size__coefficient--large;
+$font-size--normal: $font-size--base * $font-size__coefficient--normal;
+$font-size--small: $font-size--base * $font-size__coefficient--small;
+$font-size--xsmall: $font-size--base * $font-size__coefficient--xsmall;
 
-$line-height--computed: round($font-size--base * $line-height--base);
-$line-height--large: floor($line-height--computed * $font-size__coefficient--large); // 34px
-$line-height--normal: floor($line-height--computed * $font-size__coefficient--normal); // 26px
-$line-height--small: floor($line-height--computed * $font-size__coefficient--small); // 20px
-$line-height--xsmall: floor($line-height--computed * $font-size__coefficient--xsmall); // 18px
+$line-height--computed: $font-size--base * $line-height--base;
+$line-height--large: $line-height--computed * $font-size__coefficient--large;
+$line-height--normal: $line-height--computed * $font-size__coefficient--normal;
+$line-height--small: $line-height--computed * $font-size__coefficient--small;
+$line-height--xsmall: $line-height--computed * $font-size__coefficient--xsmall;
 
 // stylelint-disable value-keyword-case
 $font-family__sans: "Open Sans", Helvetica, Arial, sans-serif;

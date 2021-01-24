@@ -1,0 +1,102 @@
+import * as Three from 'three';
+
+import { OBJECTS } from '@/utils/constants';
+import { randomInteger } from '@/utils/utilities';
+
+import { GLTFLoader } from '@/components/Three/Modules/Utils/GLTFLoader';
+
+/* eslint-disable no-param-reassign, func-names */
+function Parrots() {
+  const parrots = [];
+  let raycaster;
+
+  this.init = function (scene, objects) {
+    const loader = new GLTFLoader();
+    loader.load('./images/models/Parrot.glb', (gltf) => {
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < OBJECTS.PARROTS.quantity; i++) {
+        const parrot = gltf.scene.clone(true).children[0];
+        parrot.scale.set(1, 1, 1);
+
+        const x = randomInteger(-10000, 10000);
+        const y = randomInteger(5, 500);
+        const z = randomInteger(-10000, 10000);
+
+        console.log(parrot, x, y, z);
+
+        parrot.position.set(x, y, z);
+
+        parrot.castShadow = true;
+        parrot.receiveShadow = true;
+
+        const rotate = randomInteger(-180, 180);
+        const bend = randomInteger(-1, 1);
+        parrot.rotateY(rotate);
+
+        const accelerationVelocity = Math.random();
+        const accelerationBend = Math.random();
+
+        const mixer = new Three.AnimationMixer(parrot);
+        mixer.clipAction(gltf.animations[0]).setDuration(1).play();
+
+        raycaster = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, 0), 0, 10);
+
+        parrots.push({
+          mesh: parrot,
+          mixer,
+          bend,
+          accelerationVelocity,
+          accelerationBend,
+          beforeObject: false,
+          side: null,
+        });
+        scene.add(parrot);
+        objects.push(parrot);
+      }
+    });
+  };
+
+  this.animate = function (delta, objects) {
+    parrots.forEach((parrot) => {
+      // Raycast
+      const directionForward = parrot.mesh.getWorldDirection();
+      raycaster.set(parrot.mesh.position, directionForward);
+      const intersections = raycaster.intersectObjects(objects);
+      const beforeObject = intersections.length > 0;
+
+      if (beforeObject) {
+        parrot.beforeObject = true;
+        while (parrot.side === 0 || parrot.side === null) {
+          parrot.side = randomInteger(-1, 1);
+        }
+        // eslint-disable-next-line max-len
+        parrot.mesh.position.add(parrot.mesh.getWorldDirection().negate().multiplyScalar((OBJECTS.PARROTS.velocity * parrot.accelerationVelocity) * delta));
+        parrot.mesh.rotateY(parrot.side * 45);
+      } else {
+        parrot.beforeObject = false;
+
+        parrot.side = null;
+
+        const decisionBend = randomInteger(1, 50) === 1;
+        if (decisionBend) parrot.bend = randomInteger(-1, 1);
+
+        const decisionAccelerationBend = randomInteger(1, 100) === 1;
+        if (decisionAccelerationBend) parrot.accelerationBend = Math.random();
+
+        parrot.mesh.rotateY((parrot.bend + parrot.accelerationBend) * delta);
+
+        const decisionAccelerationVelocity = randomInteger(1, 150) === 1;
+        if (decisionAccelerationVelocity) parrot.accelerationVelocity = Math.random() + 0.5;
+
+        // eslint-disable-next-line max-len
+        parrot.mesh.position.add(parrot.mesh.getWorldDirection().multiplyScalar((OBJECTS.PARROTS.velocity * parrot.accelerationVelocity) * delta));
+      }
+
+      if (parrot.mixer) {
+        parrot.mixer.update(delta);
+      }
+    });
+  };
+}
+
+export default Parrots;
