@@ -1,19 +1,28 @@
 <template>
-  <div class="gadgets-gate">
-    <h3>{{ $t('layout.gadgetstext') }}</h3>
+  <div class="gate">
+    <h3 v-if="face === 'gadgets'">{{ $t('layout.gadgetsgate') }}</h3>
+    <h3 v-else-if="face === 'chrome'">{{ $t('layout.chromegate') }}</h3>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'GadgetsGate',
+  name: 'Gate',
+
+  props: {
+    face: {
+      type: String,
+      default: null,
+      required: true,
+    },
+  }
 };
 </script>
 
 <style lang="scss" scoped>
 @import "@/styles/_main.scss";
 
-.gadgets-gate {
+.gate {
   display: flex;
   justify-content: center;
   align-items: center;

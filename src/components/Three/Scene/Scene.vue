@@ -19,12 +19,12 @@ import { PointerLockControls } from '@/components/Three/Modules/Controls/Pointer
 
 import Atmosphere from './Atmosphere';
 import Ground from './Ground';
-import Puddles from './Puddles';
-import Boxes from './Boxes';
+import Waters from './Waters';
+import Sands from './Sands';
+// import Boxes from './Boxes';
 import Stones from './Stones';
-import Mountains from './Mountains';
-import Horses from './Horses';
-import Parrots from './Parrots';
+// import Horses from './Horses';
+// import Parrots from './Parrots';
 
 export default {
   name: 'Scene',
@@ -63,6 +63,9 @@ export default {
 
       atmosphere: null,
       ground: null,
+      ocean: null,
+      beach: null,
+      sands: null,
       objects: [], // все объекты
       puddles: null,
       boxes: null,
@@ -79,6 +82,10 @@ export default {
       listener: null,
       steps: null,
       run: null,
+      watersteps: null,
+      waterrun: null,
+      spit: null,
+      drop: null,
     };
   },
 
@@ -170,26 +177,47 @@ export default {
         this.scene.add(this.run);
       });
 
+      // Ocean
+      this.ocean = new Waters();
+      this.ocean.init(this, this.scene, 'ocean');
+
+      // Lakes
+      this.lakes = new Waters();
+      this.lakes.init(this, this.scene, 'lakes');
+
+      // Puddles
+      this.puddles = new Waters();
+      this.puddles.init(this, this.scene, 'puddles');
+
+      // Beach
+      this.beach = new Sands();
+      this.beach.init(this, this.scene, 'beach');
+
+      // Sands
+      this.sands = new Sands();
+      this.sands.init(this, this.scene, 'sands');
+
+      // Objects
+
       // Ground
       this.ground = new Ground();
       this.ground.init(this, this.scene);
 
-      // Puddles
-      this.puddles = new Puddles();
-      this.puddles.init(this, this.scene, this.objects);
-
-      // Objects
-
+      /*
       // Boxes
       this.boxes = new Boxes();
       this.boxes.init(this, this.scene, this.objects);
+      */
 
-      // Stones and mountains
+      // Stones
       this.stones = new Stones();
-      this.stones.init(this, this.scene, this.objects);
-      this.mountains = new Mountains();
-      this.mountains.init(this, this.scene, this.objects);
+      this.stones.init(this, this.scene, this.objects, 'stones');
 
+      // Mountains
+      this.mountains = new Stones();
+      this.mountains.init(this, this.scene, this.objects, 'mountains');
+
+      /*
       // Horses
       this.horses = new Horses();
       this.horses.init(this.scene, this.objects);
@@ -197,6 +225,7 @@ export default {
       // Parrots
       this.parrots = new Parrots();
       this.parrots.init(this.scene, this.objects);
+      */
 
       // Ammo
       this.controls = new PointerLockControls(this.camera, this.renderer.domElement);
@@ -355,9 +384,13 @@ export default {
       const delta = (time - this.prevTime) / 1000;
 
       this.puddles.animate();
+      this.lakes.animate();
+      this.ocean.animate();
 
+      /*
       this.horses.animate(delta, this.objects);
       this.parrots.animate(delta, this.objects);
+      */
 
       if (this.controls.isLocked) {
         // Check objects
@@ -499,17 +532,19 @@ export default {
           this.controls.getObject().position.z,
         );
         if (this.moveForward || this.moveBackward || this.moveLeft || this.moveRight) {
-          if (this.moveRun) this.run.children[0].play();
-          else this.steps.children[0].play();
+          if (this.run.children[0] && this.moveRun) this.run.children[0].play();
+          else if (this.steps.children[0]) this.steps.children[0].play();
         } else {
-          if (this.run.children[0].isPlaying) this.run.children[0].pause();
-          if (this.steps.children[0].isPlaying) this.steps.children[0].pause();
+          if (this.run.children[0] && this.run.children[0].isPlaying) this.run.children[0].pause();
+          if (this.steps.children[0] && this.steps.children[0].isPlaying) this.steps.children[0].pause();
         }
       }
 
       this.prevTime = time;
 
       if (this.controls.isLocked) this.render();
+
+      // console.log(this.renderer.info);
     },
 
     onWindowResize() {

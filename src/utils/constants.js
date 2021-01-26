@@ -25,8 +25,8 @@ export const DESIGN = {
     primary: '#621211',
     primary0x: 0x621211,
   },
-  GROUND_SIZE: 5000,
-  HERO_SPEED: 500,
+  GROUND_SIZE: 2000,
+  HERO_SPEED: 300,
   HERO_JUMP: 150,
   HERO_MASS: 100,
   UNDER_FLOOR: 1.7, // средний рост челевеческой особи
@@ -63,37 +63,53 @@ export const OBJECTS = {
       // x, y, z
     ],
   },
-  PUDDLES: [
-    // x, z, r, y
-    [1300, -1300, 250, 0.01],
-    [-800, 933, 200,0.01],
-    [-1500, -1200, 300, 0.01],
-    [-200, -300, 150, 0.01],
-    [0, 0, 10000, -0.01], // great ocean
+  OCEAN: [0, 0, 1500], // great ocean // x, z, r
+  LAKES: [
+    // x, z, r
+    [700, -700, 130],
+    [-800, 933, 90],
+    [-300, -600, 110],
+    [200, 300, 150],
   ],
+  PUDDLES: {
+    // x, z, r
+    quantity: 49, // лучше квадратное число
+    min: 20,
+    max: 50,
+  },
+  SANDS: {
+    // x, z, r
+    quantity: 49, // лучше квадратное число
+    min: 15,
+    max: 45,
+  },
   STONES: {
     position: [
       // x, y
-      [1600, 25],
-      [942, 81],
-      [-50, 600],
-      [76, -1283],
+      [600, 125],
+      [842, 181],
+      [820, 160],
+      [800, 220],
+      [-150, 600],
+      [176, -283],
       [255, -695],
-      [-1583, -982],
-      [-1387, -334],
+      [-583, -982],
+      [-387, -334],
     ],
   },
   MOUNTAINS: {
     position: [
       // x, z, h
-      [1200, 1400, 100],
-      [1250, 1450, 200],
-      [-1400, -1350, 150],
-      [-3400, -1350, 250],
-      [-3450, -1300, 400],
-      [2450, -2300, 150],
-      [2400, -2250, 230],
-      [2500, -2200, 170],
+      [850, 850, 120],
+      [900, 950, 200],
+      [-850, -900, 150],
+      [-750, -800, 270],
+      [-850, -750, 400],
+      [-920, -700, 130],
+      [-900, -700, 70],
+      [900, -900, 150],
+      [500, -550, 230],
+      [-500, 680, 170],
     ],
   }
 };
@@ -109,7 +125,8 @@ export const LOCALES = {
       text5: 'Look: MOUSE',
       text6: 'Pause: Ecs',
       startbutton: 'Play',
-      gadgetstext: 'You need a PC keyboard to play',
+      gadgetsgate: 'You need a PC keyboard to play',
+      chromegate: 'In order to play, open in the Google Chrome browser',
     },
     page404: {
       text: 'Page not found!!!',
@@ -126,6 +143,7 @@ export const LOCALES = {
       text6: 'Pause: Ecs',
       startbutton: 'Играть',
       gadgetstext: 'Для того чтобы играть нужна клавиатура персонального компьютера',
+      chromegate: 'Для того чтобы играть откройте в браузере Google Chrome',
     },
     page404: {
       text: 'Страница не найдена!!!',

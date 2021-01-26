@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="isDesktop"
+    v-if="isDesktop && isChrome"
     class="layout"
   >
     <div
@@ -27,7 +27,14 @@
     </div>
     <Scene />
   </div>
-  <GadgetsGate v-else />
+  <Gate
+    v-else-if="!isDesktop"
+    face="gadgets"
+  />
+  <Gate
+    v-else
+    face="chrome"
+  />
 </template>
 
 <script>
@@ -35,7 +42,7 @@ import { createNamespacedHelpers } from 'vuex';
 import ScreenHelper from '@/utils/screen-helper';
 
 import Scene from '@/components/Three/Scene/Scene.vue';
-import GadgetsGate from '@/components/Layout/GadgetsGate.vue';
+import Gate from '@/components/Layout/Gate.vue';
 import LangSwitch from '@/components/Layout/LangSwitch.vue';
 
 const { mapGetters } = createNamespacedHelpers('utilities');
@@ -45,13 +52,14 @@ export default {
 
   components: {
     Scene,
-    GadgetsGate,
+    Gate,
     LangSwitch,
   },
 
   data() {
     return {
       isDesktop: null,
+      isChrome: ScreenHelper.isChrome(),
     };
   },
 

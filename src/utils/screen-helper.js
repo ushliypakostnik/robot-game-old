@@ -11,8 +11,13 @@ const ScreenHelper = (() => {
     return window.matchMedia(`(min-width: ${DESKTOP}px)`).matches;
   };
 
+  const isChrome = () => {
+    return !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
+  };
+
   return {
     isDesktop,
+    isChrome,
   };
 })();
 
