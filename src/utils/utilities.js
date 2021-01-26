@@ -10,3 +10,13 @@ export const yesOrNo = () => {
   }
   return result;
 };
+
+export const loaderDispatchHelper = (store, action) => {
+  store.dispatch('preloader/' + action).then(() => {
+    store.dispatch('preloader/isAllLoadedAndBuilt');
+  });
+};
+
+export const distance2D = (x1, y1, x2, y2) => {
+  return Math.sqrt(((x2 - x1) ** 2) + ((y2 - y1) ** 2));
+}

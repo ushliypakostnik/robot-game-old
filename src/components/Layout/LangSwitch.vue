@@ -16,18 +16,16 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 import { LANGUAGES } from '@/utils/constants';
-
-const { mapGetters } = createNamespacedHelpers('utilities');
 
 export default {
   name: 'LangSwitch',
 
   computed: {
     ...mapGetters({
-      language: 'language',
+      language: 'utilities/language',
     }),
 
     languages() {
@@ -39,9 +37,13 @@ export default {
   },
 
   methods: {
+    ...mapActions({
+      changeLanguage: 'utilities/changeLanguage',
+    }),
+
     changeLanguage(language) {
       this.$i18n.i18next.changeLanguage(language);
-      this.$store.dispatch('utilities/changeLanguage', language);
+      this.$store.dispatch('changeLanguage', language);
     },
   },
 };

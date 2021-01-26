@@ -1,7 +1,8 @@
 import * as Three from 'three';
 
 import { OBJECTS } from '@/utils/constants';
-import { randomInteger, yesOrNo } from '@/utils/utilities';
+import { randomInteger, yesOrNo, loaderDispatchHelper } from '@/utils/utilities';
+
 
 import { DDSLoader } from '@/components/Three/Modules/Utils/DDSLoader';
 
@@ -11,6 +12,7 @@ function Stones() {
 
     const map = loader.load('./images/textures/stone.dds', () => {
       scope.render();
+      loaderDispatchHelper(scope.$store, 'stoneLoaded');
     });
     map.anisotropy = 4;
     const material = new Three.MeshPhongMaterial( { map } );
@@ -37,6 +39,7 @@ function Stones() {
           scene.add(stone);
           objects.push(stone);
         }
+        loaderDispatchHelper(scope.$store, 'mountainsBuilt');
         break;
       case 'stones':
         for (let i = 0; i < OBJECTS.STONES.position.length; i++) {
@@ -70,6 +73,7 @@ function Stones() {
             objects.push(stone);
           }
         }
+        loaderDispatchHelper(scope.$store, 'stonesBuilt');
         break;
       default:
         break;

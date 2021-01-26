@@ -3,29 +3,31 @@
     v-if="isDesktop && isChrome"
     class="layout"
   >
-    <div
-      v-if="pause"
-      class="layout__blocker"
-    >
-      <div class="layout__instructions">
-        <h1>{{ $t('layout.text0') }}</h1>
-        <h4>{{ $t('layout.text1') }}</h4>
-        <h4>{{ $t('layout.text2') }}</h4>
-        <h4>{{ $t('layout.text3') }}</h4>
-        <h4>{{ $t('layout.text4') }}</h4>
-        <h4>{{ $t('layout.text5') }}</h4>
-        <h4>{{ $t('layout.text6') }}</h4>
-        <button
-          class="button"
-          type="button"
-          @click.prevent.stop="changePause(false)"
-        >{{ $t('layout.startbutton') }}</button>
-        <div class="switch__wrapper">
-          <LangSwitch />
+    <Preloader>
+      <div
+        v-if="pause"
+        class="layout__blocker"
+      >
+        <div class="layout__instructions">
+          <h1>{{ $t('layout.text0') }}</h1>
+          <h4>{{ $t('layout.text1') }}</h4>
+          <h4>{{ $t('layout.text2') }}</h4>
+          <h4>{{ $t('layout.text3') }}</h4>
+          <h4>{{ $t('layout.text4') }}</h4>
+          <h4>{{ $t('layout.text5') }}</h4>
+          <h4>{{ $t('layout.text6') }}</h4>
+          <button
+            class="button"
+            type="button"
+            @click.prevent.stop="changePause(false)"
+          >{{ $t('layout.startbutton') }}</button>
+          <div class="switch__wrapper">
+            <LangSwitch />
+          </div>
         </div>
       </div>
-    </div>
-    <Scene />
+      <Scene />
+    </Preloader>
   </div>
   <Gate
     v-else-if="!isDesktop"
@@ -41,6 +43,7 @@
 import { createNamespacedHelpers } from 'vuex';
 import ScreenHelper from '@/utils/screen-helper';
 
+import Preloader from '@/components/Layout/Preloader.vue';
 import Scene from '@/components/Three/Scene/Scene.vue';
 import Gate from '@/components/Layout/Gate.vue';
 import LangSwitch from '@/components/Layout/LangSwitch.vue';
@@ -51,6 +54,7 @@ export default {
   name: 'Layout',
 
   components: {
+    Preloader,
     Scene,
     Gate,
     LangSwitch,

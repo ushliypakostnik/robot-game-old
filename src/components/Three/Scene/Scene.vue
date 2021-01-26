@@ -9,20 +9,19 @@
 /* eslint-disable no-use-before-define, import/first, import/order */
 import * as Three from 'three';
 
-const { mapGetters } = createNamespacedHelpers('utilities');
-
-import { DESIGN } from '@/utils/constants';
-
-import { createNamespacedHelpers } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 import { PointerLockControls } from '@/components/Three/Modules/Controls/PointerLockControls';
+
+import { DESIGN } from '@/utils/constants';
+import { loaderDispatchHelper } from '@/utils/utilities';
 
 import Atmosphere from './Atmosphere';
 import Ground from './Ground';
 import Waters from './Waters';
 import Sands from './Sands';
-// import Boxes from './Boxes';
 import Stones from './Stones';
+// import Boxes from './Boxes';
 // import Horses from './Horses';
 // import Parrots from './Parrots';
 
@@ -113,11 +112,29 @@ export default {
 
   computed: {
     ...mapGetters({
-      pause: 'pause',
+      pause: 'utilities/pause',
     }),
   },
 
   methods: {
+    ...mapActions({
+      isAllLoadedAndBuilt: 'preloader/isAllLoadedAndBuilt',
+      groundLoaded: 'preloader/grassLoaded',
+      groundBuilt: 'preloader/groundBuilt',
+      stoneLoaded: 'preloader/stoneLoaded',
+      mountainsBuilt: 'preloader/mountainsBuilt',
+      stonesBuilt: 'preloader/stonesBuilt',
+      sandLoaded: 'preloader/sandLoaded',
+      beachBuilt: 'preloader/beachBuilt',
+      sandsBuilt: 'preloader/sandsBuilt',
+      waterLoaded: 'preloader/waterLoaded',
+      oceanBuilt: 'preloader/oceanBuilt',
+      lakesBuilt: 'preloader/lakesBuilt',
+      puddlesBuilt: 'preloader/puddlesBuilt',
+      stepComplete: 'preloader/stepComplete',
+      runComplete: 'preloader/runComplete',
+    }),
+
     init() {
       // Core
 
@@ -162,6 +179,7 @@ export default {
 
         this.steps.add(audio);
         this.scene.add(this.steps);
+        loaderDispatchHelper(this.$store, 'stepComplete');
       });
 
       this.run = new Three.Mesh(stepsGeometry, stepsMaterial);
@@ -175,6 +193,7 @@ export default {
 
         this.run.add(audio);
         this.scene.add(this.run);
+        loaderDispatchHelper(this.$store, 'runComplete');
       });
 
       // Ocean

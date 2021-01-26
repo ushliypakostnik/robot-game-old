@@ -1,12 +1,13 @@
 import * as Three from 'three';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
-import { randomInteger } from '@/utils/utilities';
+import { randomInteger, loaderDispatchHelper } from '@/utils/utilities';
 
 function Sands() {
   this.init = function(scope, scene, view) {
     const map = new Three.TextureLoader().load('./images/textures/sand.jpg', () => {
       scope.render();
+      loaderDispatchHelper(scope.$store, 'sandLoaded');
     });
     const material = new Three.MeshLambertMaterial({ color: 0xf0db7d, map });
 
@@ -26,6 +27,7 @@ function Sands() {
         beach.matrixAutoUpdate = true;
 
         scene.add(beach);
+        loaderDispatchHelper(scope.$store, 'beachBuilt');
         break;
       case 'sands':
         const square = Math.round(Math.sqrt(OBJECTS.SANDS.quantity));
@@ -48,6 +50,7 @@ function Sands() {
             scene.add(sand);
           }
         }
+        loaderDispatchHelper(scope.$store, 'sandsBuilt');
         break;
       default:
         break;

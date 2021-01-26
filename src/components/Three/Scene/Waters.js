@@ -2,9 +2,8 @@ import * as Three from 'three';
 
 import { Water } from '@/components/Three/Modules/Elements/Water';
 
-import { OBJECTS } from '@/utils/constants';
-import { randomInteger } from '@/utils/utilities';
-import { DESIGN } from '../../../utils/constants';
+import { DESIGN, OBJECTS } from '@/utils/constants';
+import { randomInteger, yesOrNo, loaderDispatchHelper } from '@/utils/utilities';
 
 function Waters() {
   let waters = [];
@@ -18,6 +17,7 @@ function Waters() {
         waterNormals: new Three.TextureLoader().load('./images/textures/water.jpg', (texture) => {
           texture.wrapS = texture.wrapT = Three.RepeatWrapping;
           scope.render();
+          loaderDispatchHelper(scope.$store, 'waterLoaded');
         }),
         alpha: 1.0,
         sunDirection: new Three.Vector3(),
@@ -43,6 +43,7 @@ function Waters() {
 
         scene.add(water);
         waters.push(water);
+        loaderDispatchHelper(scope.$store, 'oceanBuilt');
       break;
       case 'lakes':
         for (let i = 0; i < OBJECTS.LAKES.length; i++) {
@@ -53,6 +54,7 @@ function Waters() {
           scene.add(water);
           waters.push(water);
         }
+        loaderDispatchHelper(scope.$store, 'lakesBuilt');
         break;
       case 'puddles':
         const square = Math.round(Math.sqrt(OBJECTS.PUDDLES.quantity));
@@ -66,9 +68,8 @@ function Waters() {
             let randomX = x * step + randomInteger(step / 4, step / 2) - DESIGN.GROUND_SIZE / 2;
             let randomZ = z * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2;
 
-            // TODO: чтобы не было на 0, 0, 0
-            if (randomX < radius) randomX += radius * 1.5;
-            if (randomZ < radius) randomZ += radius * 1.5;
+            if (randomX < radius && randomX > -1 * radius) randomX += radius * yesOrNo();
+            if (randomZ < radius && randomZ > -1 * radius) randomZ += radius * yesOrNo();
 
             water.position.set(randomX, 0.01, randomZ);
 
@@ -76,6 +77,7 @@ function Waters() {
             waters.push(water);
           }
         }
+        loaderDispatchHelper(scope.$store, 'puddlesBuilt');
       break;
       default:
       break;
