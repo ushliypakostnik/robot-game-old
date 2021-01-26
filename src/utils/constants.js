@@ -126,7 +126,7 @@ export const LOCALES = {
       text6: 'Pause: Ecs',
       startbutton: 'Play',
       gadgetsgate: 'You need a PC keyboard to play',
-      chromegate: 'In order to play, open in the Google Chrome browser',
+      chromegate: 'In order to play, open in the Google Chrome (or Yandex) browser',
     },
     page404: {
       text: 'Page not found!!!',
@@ -143,7 +143,7 @@ export const LOCALES = {
       text6: 'Pause: Ecs',
       startbutton: 'Играть',
       gadgetstext: 'Для того чтобы играть нужна клавиатура персонального компьютера',
-      chromegate: 'Для того чтобы играть откройте в браузере Google Chrome',
+      chromegate: 'Для того чтобы играть откройте в браузере Google Chrome (или Яндекс)',
     },
     page404: {
       text: 'Страница не найдена!!!',
