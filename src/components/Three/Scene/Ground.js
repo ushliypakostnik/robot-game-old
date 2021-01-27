@@ -1,6 +1,6 @@
 import * as Three from 'three';
 
-import { DESIGN } from '@/utils/constants';
+import { DESIGN, OBJECTS } from '@/utils/constants';
 import {
   yesOrNo,
   loaderDispatchHelper,
@@ -8,12 +8,17 @@ import {
 } from '@/utils/utilities';
 
 function Ground() {
+  const isInLakes = (x, z) => {
+    const result = OBJECTS.LAKES.position.filter(lake => distance2D(lake[0], lake[1], x, z) < lake[2] * 1.25);
+    return result.length > 0 ? result[0] : false;
+  };
+
   this.init = function(scope, scene, store) {
     // Vertex displacement
     const vertex = new Three.Vector3();
 
     // let geometry = new Three.CircleBufferGeometry(DESIGN.GROUND_SIZE / 2, 128);
-    let geometry = new Three.PlaneBufferGeometry(DESIGN.GROUND_SIZE - 25, DESIGN.GROUND_SIZE - 125, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE / 10);
+    let geometry = new Three.PlaneBufferGeometry(DESIGN.GROUND_SIZE - 25, DESIGN.GROUND_SIZE - 25, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE / 10);
 
     const { position } = geometry.attributes;
     // eslint-disable-next-line no-plusplus
@@ -25,9 +30,12 @@ function Ground() {
       vertex.y += Math.random() * yesOrNo() * 2;
 
       vertex.z += Math.random() * yesOrNo();
-      if (distance2D(0, 0, vertex.x, vertex.y) > (DESIGN.GROUND_SIZE - 25) / 2) vertex.z = -1;
+      if (distance2D(0, 0, vertex.x, vertex.y) > (DESIGN.GROUND_SIZE - 50) / 2) vertex.z = -2;
 
-      // console.log(i, vertex.x, vertex.y, vertex.z);
+      // Меньше внутри озера
+      const inLake = isInLakes(vertex.y, vertex.x);
+      if (inLake) vertex.z -= (Math.random() * 1.5) * inLake[2] / distance2D(inLake[0], inLake[1], vertex.y, vertex.x);
+
       position.setXYZ(i, vertex.x, vertex.y, vertex.z);
     }
 
@@ -41,6 +49,7 @@ function Ground() {
 
     const ground = new Three.Mesh(geometry, material);
     ground.rotation.x = -Math.PI / 2;
+    ground.rotation.z = -Math.PI / 2;
     ground.position.set(0, 0, 0);
     ground.material.map.repeat.set(512, 512);
     // eslint-disable-next-line no-multi-assign

@@ -21,7 +21,7 @@ import Ground from './Ground';
 import Waters from './Waters';
 import Sands from './Sands';
 import Stones from './Stones';
-// import Boxes from './Boxes';
+import Boxes from './Boxes';
 // import Horses from './Horses';
 // import Parrots from './Parrots';
 
@@ -131,6 +131,8 @@ export default {
       oceanBuilt: 'preloader/oceanBuilt',
       lakesBuilt: 'preloader/lakesBuilt',
       puddlesBuilt: 'preloader/puddlesBuilt',
+      boxLoaded: 'preloader/boxLoaded',
+      boxesBuilt: 'preloader/boxesBuilt',
       stepComplete: 'preloader/stepComplete',
       runComplete: 'preloader/runComplete',
     }),
@@ -257,14 +259,11 @@ export default {
         this.$store.dispatch('utilities/changePause', false);
       });
 
-      this.scene.add(this.controls.getObject());
+      // Переместиться в точку
+      // this.controls.getObject().position.x = -1200;
+      // this.controls.getObject().position.z = -300;
 
-      // Start on sun edge
-      /*
-      this.camera.position.x = -71.39220993244662;
-      this.camera.position.y = 20;
-      this.camera.position.z = -4954.530933873361;
-      */
+      this.scene.add(this.controls.getObject());
 
       // Ammo
       // eslint-disable-next-line max-len
@@ -277,8 +276,8 @@ export default {
         const ammo = new Three.Mesh(ammoGeometry, ammoMaterial);
         ammo.scale.set(1, 1, 1);
         ammo.position.y = DESIGN.UNDER_FLOOR - 0.2;
-        ammo.castShadow = true;
-        ammo.receiveShadow = true;
+        // ammo.castShadow = true;
+        // ammo.receiveShadow = true;
 
         this.ammos.push({
           mesh: ammo,
@@ -397,6 +396,10 @@ export default {
     animate() {
       requestAnimationFrame(this.animate);
 
+      // Зависнуть над сценой
+      // this.controls.getObject().position.y = 1000;
+
+      // console.log(this.renderer.info);
       // console.log(this.controls.getObject().position.x, this.controls.getObject().position.z);
 
       const time = performance.now();
@@ -562,8 +565,6 @@ export default {
       this.prevTime = time;
 
       if (this.controls.isLocked) this.render();
-
-      // console.log(this.renderer.info);
     },
 
     onWindowResize() {

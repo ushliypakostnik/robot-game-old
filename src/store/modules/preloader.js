@@ -13,6 +13,8 @@ const initialState = {
   isOceanBuilt: false,
   isLakesBuilt: false,
   isPuddlesBuilt: false,
+  // isBoxLoaded: false,
+  // isBoxesBuilt: false,
   isStepComplete: false,
   isRunComplete: false,
 };
@@ -70,6 +72,16 @@ const actions = {
   puddlesBuilt: ({ commit }) => {
     commit('puddlesBuilt');
   },
+
+  /*
+  boxLoaded: ({ commit }) => {
+    commit('boxLoaded');
+  },
+
+  boxesBuilt: ({ commit }) => {
+    commit('boxesBuilt');
+  },
+  */
 
   stepComplete: ({ commit }) => {
     commit('stepComplete');
@@ -132,6 +144,15 @@ const mutations = {
   puddlesBuilt: (state) => {
     state.isPuddlesBuilt = true;
   },
+
+  /*
+  boxLoaded: (state) => {
+    state.isBoxLoaded = true;
+  },
+
+  boxesBuilt: (state) => {
+    state.isBoxesBuilt = true;
+  },*/
 
   stepComplete: (state) => {
     state.isStepComplete = true;

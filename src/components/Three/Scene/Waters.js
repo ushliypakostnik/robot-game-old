@@ -3,7 +3,12 @@ import * as Three from 'three';
 import { Water } from '@/components/Three/Modules/Elements/Water';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
-import { randomInteger, yesOrNo, loaderDispatchHelper } from '@/utils/utilities';
+import {
+  randomInteger,
+  yesOrNo,
+  loaderDispatchHelper,
+  distance2D,
+} from '@/utils/utilities';
 
 function Waters() {
   let waters = [];
@@ -32,6 +37,13 @@ function Waters() {
     return water;
   };
 
+  const fakeMaterial = new Three.MeshLambertMaterial( { color: 0xff0000 } );
+
+  const isInLake = (x, z, r) => {
+    const result = OBJECTS.LAKES.position.filter(lake => (distance2D(lake[0], lake[1], x, z) + r) < (lake[2] + r) * 0.9);
+    return result.length > 0 ? true : false;
+  };
+
   this.init = function(scope, scene, view) {
     let water;
     let geometry;
@@ -39,17 +51,24 @@ function Waters() {
       case 'ocean':
         geometry = new Three.CircleBufferGeometry(OBJECTS.OCEAN[2], 32);
         water = initWater(scope, scene, geometry);
-        water.position.set(OBJECTS.OCEAN[0], -0.02, OBJECTS.OCEAN[1]);
+        water.position.set(OBJECTS.OCEAN[0], OBJECTS.OCEAN[3], OBJECTS.OCEAN[1]);
+
+        const pseudoGeometry = new Three.CircleBufferGeometry(OBJECTS.OCEAN[2], 32);
+        const pseudoOcean = new Three.Mesh(pseudoGeometry, fakeMaterial);
+        pseudoOcean.position.set(OBJECTS.OCEAN[0], OBJECTS.OCEAN[3] + 0.05, OBJECTS.OCEAN[1]);
+        pseudoOcean.rotation.x = -Math.PI / 2;
+        pseudoOcean.visible = false;
 
         scene.add(water);
+        scene.add(pseudoOcean);
         waters.push(water);
         loaderDispatchHelper(scope.$store, 'oceanBuilt');
       break;
       case 'lakes':
-        for (let i = 0; i < OBJECTS.LAKES.length; i++) {
-          geometry = new Three.CircleBufferGeometry(OBJECTS.LAKES[i][2], 32);
+        for (let i = 0; i < OBJECTS.LAKES.position.length; i++) {
+          geometry = new Three.CircleBufferGeometry(OBJECTS.LAKES.position[i][2], 32);
           water = initWater(scope, scene, geometry);
-          water.position.set(OBJECTS.LAKES[i][0], 0.02, OBJECTS.LAKES[i][1]);
+          water.position.set(OBJECTS.LAKES.position[i][0], OBJECTS.LAKES.positionY, OBJECTS.LAKES.position[i][1]);
 
           scene.add(water);
           waters.push(water);
@@ -65,13 +84,34 @@ function Waters() {
             const radius = randomInteger(OBJECTS.PUDDLES.min, OBJECTS.PUDDLES.max);
             geometry = new Three.CircleBufferGeometry(radius, 32);
             water = initWater(scope, scene, geometry);
-            let randomX = x * step + randomInteger(step / 4, step / 2) - DESIGN.GROUND_SIZE / 2;
-            let randomZ = z * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2;
+            let randomX = (x * step + randomInteger(step / 2, step / 2) - DESIGN.GROUND_SIZE / 2) * 1.05;
+            let randomZ = (z * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2) * 1.05;
 
+            // Не внутри другого озера
+            if (isInLake(randomX, randomZ, radius)) {
+              let counter = 0;
+              while (isInLake(randomX, randomZ, radius)) {
+                counter++;
+                randomX *= 1.25 * yesOrNo();
+                randomZ *= 1.25 * yesOrNo();
+                if (counter > 50) break;
+              }
+            }
+
+            // Не рядом с 0, 0, 0
             if (randomX < radius && randomX > -1 * radius) randomX += radius * yesOrNo();
             if (randomZ < radius && randomZ > -1 * radius) randomZ += radius * yesOrNo();
+            if (distance2D(0, 0, randomX, randomZ) - OBJECTS.BEACH > radius / 2) {
+              let counter = 0;
+              while (distance2D(0, 0, randomX, randomZ) - OBJECTS.BEACH > radius / 2) {
+                counter++;
+                randomX *= 0.9;
+                randomZ *= 0.9;
+                if (counter > 50) break;
+              }
+            }
 
-            water.position.set(randomX, 0.01, randomZ);
+            water.position.set(randomX, OBJECTS.PUDDLES.positionY, randomZ);
 
             scene.add(water);
             waters.push(water);

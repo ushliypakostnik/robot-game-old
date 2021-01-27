@@ -20,8 +20,8 @@ function Stones() {
     switch (view) {
       case 'mountains':
         for (let i = 0; i < OBJECTS.MOUNTAINS.position.length; i++) {
-          const top = randomInteger(0, 20);
-          const bottom = randomInteger(20, 200);
+          const top = randomInteger(0, OBJECTS.MOUNTAINS.topMax);
+          const bottom = randomInteger(OBJECTS.MOUNTAINS.bottomMin, OBJECTS.MOUNTAINS.bottomMax);
 
           const geometry = new Three.CylinderBufferGeometry( top, bottom, OBJECTS.MOUNTAINS.position[i][2], 4, 1 );
           const stone = new Three.Mesh(geometry, material);
@@ -43,14 +43,14 @@ function Stones() {
         break;
       case 'stones':
         for (let i = 0; i < OBJECTS.STONES.position.length; i++) {
-          const elements = randomInteger(5, 20);
+          const elements = randomInteger(OBJECTS.STONES.quantityMin, OBJECTS.STONES.quantityMax);
 
           for (let n = 0; n < elements; n++) {
             let radius;
             if (n === 0) {
-              radius = randomInteger(10, 40);
+              radius = randomInteger(OBJECTS.STONES.largeMin, OBJECTS.STONES.largeMax);
             } else {
-              radius = randomInteger(5, 20);
+              radius = randomInteger(OBJECTS.STONES.smallMin, OBJECTS.STONES.smallMax);
             }
 
             const geometry = new Three.OctahedronBufferGeometry(radius, randomInteger(1, 5));
