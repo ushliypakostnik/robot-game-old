@@ -13,16 +13,19 @@ import { mapGetters, mapActions } from 'vuex';
 
 import { PointerLockControls } from '@/components/Three/Modules/Controls/PointerLockControls';
 
-import { DESIGN } from '@/utils/constants';
-import { loaderDispatchHelper } from '@/utils/utilities';
+import { DESIGN, OBJECTS } from '@/utils/constants';
+import {
+  loaderDispatchHelper,
+  distance2D,
+  degToRad,
+} from '@/utils/utilities';
 
 import Atmosphere from './Atmosphere';
 import Grass from './Grass';
 import Waters from './Waters';
 import Sands from './Sands';
 import Stones from './Stones';
-import Boxes from './Boxes';
-import { OBJECTS } from '../../../utils/constants';
+// import Boxes from './Boxes';
 // import Horses from './Horses';
 // import Parrots from './Parrots';
 
@@ -50,8 +53,7 @@ export default {
       moveRun: false,
       canJump: false,
 
-      raycasterDownHeight: null,
-      raycasterDownThrough: null,
+      raycasterDown: null,
       raycasterForward: null,
       raycasterBackward: null,
       raycasterRight: null,
@@ -68,7 +70,8 @@ export default {
       directionRight: null,
       directionLeft: null,
 
-      onStone: null,
+      object: null,
+      onObjectHeight: null,
       onForward: null,
       onBackward: null,
       onRight: null,
@@ -76,9 +79,9 @@ export default {
       inWater: null,
 
       intersections: null,
-      stopDistance: null,
+      stopDistance: 5,
       collision: null,
-      collisionSpeed: null,
+      runSpeed: null,
       time: null,
       delta: null,
 
@@ -86,7 +89,7 @@ export default {
       layers: [],
       layersNew: [],
 
-      objectsStoned: [], // все объекты
+      objectsVerical: [], // все объекты
       objectsGround: [], // все объекты
       atmosphere: null,
       grass: null,
@@ -154,8 +157,9 @@ export default {
       this.camera = new Three.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 1, DESIGN.GROUND_SIZE);
 
       this.scene = new Three.Scene();
-      this.scene.background = new Three.Color(0x7844c1);
-      this.scene.fog = new Three.Fog(0x4542a0, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE / 2);
+      this.scene.background = new Three.Color(0x4542a0);
+      // #4542a0
+      this.scene.fog = new Three.Fog(0x615ebc, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE / 2);
 
       this.renderer = new Three.WebGLRenderer({ antialias: true });
       this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -278,8 +282,7 @@ export default {
 
       // Raycasters
       /* eslint-disable max-len */
-      this.raycasterDownHeight = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, -1, 0), 0, this.height);
-      this.raycasterDownThrough = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, -1, 0), 0, 10);
+      this.raycasterDown = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, -1, 0), 0, 100);
       this.raycasterForward = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, -1), 0, 10);
       this.raycasterBackward = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, 1), 0, 10);
       this.raycasterLeft = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(-1, 0, 0), 0, 10);
@@ -342,13 +345,13 @@ export default {
 
         case 32: // space
           if (this.canJump) {
-            this.velocity.y += DESIGN.HERO_JUMP;
+            this.velocity.y += DESIGN.HERO_JUMP_SPEED;
             this.canJump = false;
           }
           break;
 
         case 16: // shift
-          this.moveRun = true;
+          if (this.moveForward) this.moveRun = true;
           break;
       }
     },
@@ -403,39 +406,41 @@ export default {
 
       if (this.controls.isLocked) {
         // Check objects
-        this.stopDistance = this.moveRun ? 6.25 : 2.5;
 
         // Forward
         this.directionForward = this.camera.getWorldDirection(this.direction);
         this.raycasterForward.set(this.camera.getWorldPosition(this.position), this.directionForward);
-        this.intersections = this.raycasterForward.intersectObjects(this.objectsStoned);
+        this.intersections = this.raycasterForward.intersectObjects(this.objectsVerical);
         this.onForward = this.intersections.length > 0 ? this.intersections[0].distance < this.stopDistance : false;
+        if (this.onForward) this.object = this.intersections[0].object;
 
         // Backward
         this.directionBackward = this.directionForward.negate();
         this.raycasterBackward.set(this.camera.getWorldPosition(this.position), this.directionBackward);
-        this.intersections = this.raycasterBackward.intersectObjects(this.objectsStoned);
+        this.intersections = this.raycasterBackward.intersectObjects(this.objectsVerical);
         this.onBackward = this.intersections.length > 0 ? this.intersections[0].distance < this.stopDistance : false;
+        if (this.onBackward) this.object = this.intersections[0].object;
 
         // Right
         this.directionRight = new Three.Vector3(0, 0, 0).crossVectors(this.directionForward, this.y);
         this.raycasterRight.set(this.camera.getWorldPosition(this.position), this.directionRight);
-        this.intersections = this.raycasterRight.intersectObjects(this.objectsStoned);
+        this.intersections = this.raycasterRight.intersectObjects(this.objectsVerical);
         this.onRight = this.intersections.length > 0 ? this.intersections[0].distance < this.stopDistance : false;
+        if (this.onRight) this.object = this.intersections[0].object;
 
         // Left
         this.directionLeft = this.directionRight.negate();
         this.raycasterLeft.set(this.camera.getWorldPosition(this.position), this.directionLeft);
-        this.intersections = this.raycasterLeft.intersectObjects(this.objectsStoned);
+        this.intersections = this.raycasterLeft.intersectObjects(this.objectsVerical);
         this.onLeft = this.intersections.length > 0 ? this.intersections[0].distance < this.stopDistance : false;
+        if (this.onLeft) this.object = this.intersections[0].object;
 
         this.collision = this.onForward || this.onBackward || this.onLeft || this.onRight;
 
-        this.directionDown = new Three.Vector3(0, 0, 0).crossVectors(this.x, this.z);
-
         // Down Through
-        this.raycasterDownThrough.set(this.camera.getWorldPosition(this.position), this.directionDown);
-        this.intersections = this.raycasterDownThrough.intersectObjects(this.objectsGround);
+        this.directionDown = new Three.Vector3(0, 0, 0).crossVectors(this.x, this.z);
+        this.raycasterDown.set(this.camera.getWorldPosition(this.position), this.directionDown);
+        this.intersections = this.raycasterDown.intersectObjects(this.objectsGround);
 
         if (this.intersections.length > 0) {
           this.layersNew = [];
@@ -445,16 +450,11 @@ export default {
           if (this.layersNew.length !== this.layers.length) {
             // console.log(this.layers, this.layersNew);
             //  На любой воде
-            if (
-              (this.layersNew.includes(OBJECTS.OCEAN.name) &&
+            this.inWater = (this.layersNew.includes(OBJECTS.OCEAN.name) &&
               !this.layersNew.includes(OBJECTS.BEACH.name)) ||
               this.layersNew.includes(OBJECTS.LAKES.name) ||
-              this.layersNew.includes(OBJECTS.PUDDLES.name)
-            ) {
-              this.inWater = true;
-            } else {
-              this.inWater = false;
-            }
+              this.layersNew.includes(OBJECTS.PUDDLES.name);
+
             // На большой воде
             if (
               (this.layersNew.includes(OBJECTS.OCEAN.name) &&
@@ -466,32 +466,17 @@ export default {
             } else {
               this.height = DESIGN.UNDER_FLOOR;
             }
+
+            // На камне
+            if (this.layersNew.includes(OBJECTS.STONES.name)) {
+              this.object = this.intersections.filter(object => object.object.name === OBJECTS.STONES.name)[0].object;
+              this.onObjectHeight = this.object.position.y + this.object.geometry.parameters.radius + this.height;
+            } else {
+              this.onObjectHeight = 0;
+            }
+
             this.layers = this.layersNew;
-            this.controls.getObject().position.y = this.height;
           }
-        }
-
-        this.velocity.y -= 9.8 * DESIGN.HERO_MASS * this.delta;
-
-        this.controls.getObject().position.y += (this.velocity.y * this.delta);
-
-        if (this.controls.getObject().position.y < this.height) {
-          this.velocity.y = 0;
-          this.controls.getObject().position.y = this.height;
-
-          this.canJump = true;
-        }
-
-        // Down Height
-        this.raycasterDownHeight.set(this.camera.getWorldPosition(this.position), this.directionDown);
-        this.raycasterDownHeight.ray.origin.y -= this.height;
-        this.intersections = this.raycasterDownHeight.intersectObjects(this.objectsStoned);
-        this.onStone = this.intersections.length > 0 ? this.intersections[0].distance < this.height: false;
-
-        if (this.onStone) {
-          this.controls.getObject().position.y = this.height + this.intersections[0].object.position.y + this.intersections[0].object.geometry.parameters.radius;
-          this.velocity.y = Math.max(0, this.velocity.y);
-          this.canJump = true;
         }
 
         this.velocity.x -= this.velocity.x * 10 * this.delta;
@@ -506,10 +491,10 @@ export default {
         // eslint-disable-next-line max-len
         if (this.moveLeft || this.moveRight) this.velocity.x -= this.direction.x * DESIGN.HERO_SPEED * this.delta;
 
-        this.collisionSpeed = this.moveRun ? 2.5 : 1;
+        this.runSpeed = this.moveRun ? 2.5 : 1;
         if (!this.collision) {
-          this.controls.moveRight(-this.velocity.x * this.delta * this.collisionSpeed);
-          this.controls.moveForward(-this.velocity.z * this.delta * this.collisionSpeed);
+          this.controls.moveRight(-this.velocity.x * this.delta * this.runSpeed);
+          this.controls.moveForward(-this.velocity.z * this.delta * this.runSpeed);
         } else {
           if ((this.onForward && this.moveForward) ||
               (this.onBackward && this.moveBackward) ||
@@ -519,10 +504,20 @@ export default {
             this.velocity.z = 0;
             this.velocity.x = 0;
           } else {
-            this.controls.moveRight(-this.velocity.x * this.delta * this.collisionSpeed);
-            this.controls.moveForward(-this.velocity.z * this.delta * this.collisionSpeed);
+            this.controls.moveRight(-this.velocity.x * this.delta * this.runSpeed);
+            this.controls.moveForward(-this.velocity.z * this.delta * this.runSpeed);
           }
         }
+      }
+
+      this.velocity.y -= 9.8 * DESIGN.HERO_MASS * this.delta;
+
+      this.controls.getObject().position.y += (this.velocity.y * this.delta);
+
+      if (this.controls.getObject().position.y < this.height + this.onObjectHeight) {
+        this.velocity.y = 0;
+        this.controls.getObject().position.y = this.height + this.onObjectHeight;
+        this.canJump = true;
       }
 
       // Ammo
