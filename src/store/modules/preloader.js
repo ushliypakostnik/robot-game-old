@@ -2,19 +2,13 @@
 const initialState = {
   isGameLoaded: false,
   isGrassLoaded: false,
+  isGrassBuilt: false,
   isStoneLoaded: false,
-  isGroundBuilt: false,
-  isMountainsBuilt: false,
   isStonesBuilt: false,
   isSandLoaded: false,
-  isBeachBuilt: false,
   isSandsBuilt: false,
   isWaterLoaded: false,
-  isOceanBuilt: false,
-  isLakesBuilt: false,
-  isPuddlesBuilt: false,
-  // isBoxLoaded: false,
-  // isBoxesBuilt: false,
+  isWatersBuilt: false,
   isStepComplete: false,
   isRunComplete: false,
 };
@@ -25,70 +19,8 @@ const getters = {
 };
 
 const actions = {
-  grassLoaded: ({ commit }) => {
-    commit('grassLoaded');
-  },
-
-  groundBuilt: ({ commit }) => {
-    commit('groundBuilt');
-  },
-
-  stoneLoaded: ({ commit }) => {
-    commit('stoneLoaded');
-  },
-
-  mountainsBuilt: ({ commit }) => {
-    commit('mountainsBuilt');
-  },
-
-  stonesBuilt: ({ commit }) => {
-    commit('stonesBuilt');
-  },
-
-  sandLoaded: ({ commit }) => {
-    commit('sandLoaded');
-  },
-
-  beachBuilt: ({ commit }) => {
-    commit('beachBuilt');
-  },
-
-  sandsBuilt: ({ commit }) => {
-    commit('sandsBuilt');
-  },
-
-  waterLoaded: ({ commit }) => {
-    commit('waterLoaded');
-  },
-
-  oceanBuilt: ({ commit }) => {
-    commit('oceanBuilt');
-  },
-
-  lakesBuilt: ({ commit }) => {
-    commit('lakesBuilt');
-  },
-
-  puddlesBuilt: ({ commit }) => {
-    commit('puddlesBuilt');
-  },
-
-  /*
-  boxLoaded: ({ commit }) => {
-    commit('boxLoaded');
-  },
-
-  boxesBuilt: ({ commit }) => {
-    commit('boxesBuilt');
-  },
-  */
-
-  stepComplete: ({ commit }) => {
-    commit('stepComplete');
-  },
-
-  runComplete: ({ commit }) => {
-    commit('runComplete');
+  preloadOrBuilt: ({ commit }, name) => {
+    commit('preloadOrBuilt', name);
   },
 
   isAllLoadedAndBuilt: ({ commit }) => {
@@ -97,69 +29,9 @@ const actions = {
 };
 
 const mutations = {
-  grassLoaded: (state) => {
-    state.isGrassLoaded = true;
-  },
-
-  groundBuilt: (state) => {
-    state.isGroundBuilt = true;
-  },
-
-  stoneLoaded: (state) => {
-    state.isStoneLoaded = true;
-  },
-
-  mountainsBuilt: (state) => {
-    state.isMountainsBuilt = true;
-  },
-
-  stonesBuilt: (state) => {
-    state.isStonesBuilt = true;
-  },
-
-  sandLoaded: (state) => {
-    state.isSandLoaded = true;
-  },
-
-  beachBuilt: (state) => {
-    state.isBeachBuilt = true;
-  },
-
-  sandsBuilt: (state) => {
-    state.isSandsBuilt = true;
-  },
-
-  waterLoaded: (state) => {
-    state.isWaterLoaded = true;
-  },
-
-  oceanBuilt: (state) => {
-    state.isOceanBuilt = true;
-  },
-
-  lakesBuilt: (state) => {
-    state.isLakesBuilt = true;
-  },
-
-  puddlesBuilt: (state) => {
-    state.isPuddlesBuilt = true;
-  },
-
-  /*
-  boxLoaded: (state) => {
-    state.isBoxLoaded = true;
-  },
-
-  boxesBuilt: (state) => {
-    state.isBoxesBuilt = true;
-  },*/
-
-  stepComplete: (state) => {
-    state.isStepComplete = true;
-  },
-
-  runComplete: (state) => {
-    state.isRunComplete = true;
+  preloadOrBuilt: (state, name) => {
+    // console.log('preloadOrBuilt', name);
+    state[name] = true;
   },
 
   isAllLoadedAndBuilt: (state) => {

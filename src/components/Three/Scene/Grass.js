@@ -7,18 +7,18 @@ import {
   distance2D,
 } from '@/utils/utilities';
 
-function Ground() {
+function Grass() {
   const isInLakes = (x, z) => {
     const result = OBJECTS.LAKES.position.filter(lake => distance2D(lake[0], lake[1], x, z) < lake[2] * 1.25);
     return result.length > 0 ? result[0] : false;
   };
 
-  this.init = function(scope, scene, store) {
+  this.init = function(scope) {
     // Vertex displacement
     const vertex = new Three.Vector3();
 
     // let geometry = new Three.CircleBufferGeometry(DESIGN.GROUND_SIZE / 2, 128);
-    let geometry = new Three.PlaneBufferGeometry(DESIGN.GROUND_SIZE - 25, DESIGN.GROUND_SIZE - 25, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE / 10);
+    let geometry = new Three.PlaneBufferGeometry(DESIGN.GROUND_SIZE * 0.9875, DESIGN.GROUND_SIZE * 0.9875, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE / 10);
 
     const { position } = geometry.attributes;
     // eslint-disable-next-line no-plusplus
@@ -30,7 +30,8 @@ function Ground() {
       vertex.y += Math.random() * yesOrNo() * 2;
 
       vertex.z += Math.random() * yesOrNo();
-      if (distance2D(0, 0, vertex.x, vertex.y) > (DESIGN.GROUND_SIZE - 50) / 2) vertex.z = -2;
+      if (distance2D(0, 0, vertex.x, vertex.y) > (DESIGN.GROUND_SIZE * 0.975) / 2) vertex.z = -2;
+      if ((distance2D(0, 0, vertex.x, vertex.y) < (DESIGN.GROUND_SIZE * 0.975) / (4 + Math.random() * yesOrNo())) && vertex.z < -0.1) vertex.z = -0.01;
 
       // Меньше внутри озера
       const inLake = isInLakes(vertex.y, vertex.x);
@@ -43,7 +44,7 @@ function Ground() {
 
     const map = new Three.TextureLoader().load('./images/textures/grass.jpg', () => {
       scope.render();
-      loaderDispatchHelper(scope.$store, 'grassLoaded');
+      loaderDispatchHelper(scope.$store, 'isGrassLoaded');
     });
     const material = new Three.MeshLambertMaterial({ color: 0xfaaaaa, map });
 
@@ -55,13 +56,15 @@ function Ground() {
     // eslint-disable-next-line no-multi-assign
     ground.material.map.wrapS = ground.material.map.wrapT = Three.RepeatWrapping;
     ground.material.map.encoding = Three.sRGBEncoding;
+
     // ground.receiveShadow = true;
+
     ground.updateMatrix();
     ground.matrixAutoUpdate = true;
 
-    scene.add(ground);
-    loaderDispatchHelper(scope.$store, 'groundBuilt');
+    scope.scene.add(ground);
+    loaderDispatchHelper(scope.$store, 'isGrassBuilt');
   };
 }
 
-export default Ground;
+export default Grass;

@@ -6,12 +6,12 @@ import { OBJECTS } from '@/utils/constants';
 import { loaderDispatchHelper } from '@/utils/utilities';
 
 function Boxes() {
-  this.init = function(scope, scene, objects) {
+  this.init = function(scope) {
     const loader = new TGALoader();
     const geometry = new Three.BoxBufferGeometry(OBJECTS.BOXES.size, OBJECTS.BOXES.size, OBJECTS.BOXES.size).toNonIndexed();
     const texture = loader.load('./images/textures/box.tga', () => {
       scope.render();
-      loaderDispatchHelper(scope.$store, 'boxLoaded');
+      loaderDispatchHelper(scope.$store, 'isBoxLoaded');
     });
     const material = new Three.MeshPhongMaterial({ color: 0xffffff, map: texture });
     const box = new Three.Mesh(geometry, material);
@@ -26,10 +26,10 @@ function Boxes() {
       b.updateMatrix();
       b.matrixAutoUpdate = false;
 
-      scene.add(b);
-      objects.push(b);
+      scope.scene.add(b);
+      scope.objects.push(b);
     }
-    loaderDispatchHelper(scope.$store, 'boxesBuilt');
+    loaderDispatchHelper(scope.$store, 'isBoxesBuilt');
   };
 }
 

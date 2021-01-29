@@ -27,9 +27,9 @@ export const DESIGN = {
   },
   GROUND_SIZE: 2000,
   HERO_SPEED: 300,
-  HERO_JUMP: 150,
+  HERO_JUMP: 250,
   HERO_MASS: 100,
-  UNDER_FLOOR: 1.7, // средний рост челевеческой особи
+  UNDER_FLOOR: 3, // средний рост челевеческой особи, мужики 1.7, бабы 1.6 - наш робот чуть выше
   AMMO_GRAVITY: 5,
   NUM_AMMO: 20,
   AMMO_RADIUS: 0.5,
@@ -94,14 +94,20 @@ export const OBJECTS = {
     ],
   },
   */
-  OCEAN: [0, 0, size(1), -0.3], // x, z, r, y
+  OCEAN: {
+    name: 'ocean',
+    // x, z, radius, y
+    position: [0, 0, size(1), -0.3],
+  },
   BEACH: {
+    name: 'beach',
     positionY: -0.2,
     size: size(0.5) + size(0.05),
   },
   LAKES: {
+    name: 'lake',
     positionY: 0,
-    // x, z, r
+    // x, z, radius
     position: [
       [size(0.35), size(-0.35), size(0.08)],
       [size(-0.3085), size(-0.3665), size(0.15)],
@@ -111,14 +117,16 @@ export const OBJECTS = {
     ],
   },
   PUDDLES: {
-    // x, z, r
+    name: 'puddle',
+    // x, z, radius
     quantity: 49, // лучше квадратное число
     min: size(0.015),
     max: size(0.03),
     positionY: 0.3,
   },
   SANDS: {
-    // x, z, r
+    name: 'sand',
+    // x, z, radius
     positionY: 0.15,
     position: [
       [size(-0.27), size(-0.36), size(0.06)],
@@ -157,14 +165,19 @@ export const OBJECTS = {
       [size(-0.1935), size(-0.167)],
 
       [size(-0.185), size(0.3)],
+
+      [size(-0.220), size(0)],
+      [size(-0.290), size(0.15)],
+      [size(-0.340), size(0.035)],
     ],
   },
   MOUNTAINS: {
     topMax: size(0.01),
     bottomMin: size(0.01),
     bottomMax: size(0.1),
+    positionY: -0.1,
     position: [
-      // x, z, h
+      // x, z, height
       [size(0.405), size(0.405), size(0.06)],
       [size(0.37), size(0.385), size(0.1)],
 
@@ -179,6 +192,8 @@ export const OBJECTS = {
 
       [size(-0.25), size(0.34), size(0.085)],
       [size(-0.215), size(0.31), size(0.26)],
+
+      [size(-0.340), size(0.035), size(0.2)],
     ],
   }
 };

@@ -11,7 +11,7 @@ function Parrots() {
   let raycaster;
   const direction = new Three.Vector3();
 
-  this.init = function (scene, objects) {
+  this.init = function (scope) {
     const loader = new GLTFLoader();
     loader.load('./images/models/Parrot.glb', (gltf) => {
       // eslint-disable-next-line no-plusplus
@@ -49,8 +49,8 @@ function Parrots() {
           beforeObject: false,
           side: null,
         });
-        scene.add(parrot);
-        objects.push(parrot);
+        scope.scene.add(parrot);
+        scope.objects.push(parrot);
       }
     });
   };

@@ -11,7 +11,7 @@ function Horses() {
   let raycaster;
   const direction = new Three.Vector3();
 
-  this.init = function (scene, objects) {
+  this.init = function (scope) {
     const loader = new GLTFLoader();
     loader.load('./images/models/Horse.glb', (gltf) => {
       // eslint-disable-next-line no-plusplus
@@ -44,8 +44,8 @@ function Horses() {
           beforeObject: false,
           side: null,
         });
-        scene.add(horse);
-        objects.push(horse);
+        scope.scene.add(horse);
+        scope.objects.push(horse);
       }
     });
   };

@@ -11,8 +11,8 @@ export const yesOrNo = () => {
   return result;
 };
 
-export const loaderDispatchHelper = (store, action) => {
-  store.dispatch('preloader/' + action).then(() => {
+export const loaderDispatchHelper = (store, name) => {
+  store.dispatch('preloader/preloadOrBuilt', name).then(() => {
     store.dispatch('preloader/isAllLoadedAndBuilt');
   });
 };
