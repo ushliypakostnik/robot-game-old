@@ -171,6 +171,7 @@ export const OBJECTS = {
       [size(-0.340), size(0.035)],
     ],
   },
+  /*
   MOUNTAINS: {
     topMax: size(0.01),
     bottomMin: size(0.01),
@@ -195,7 +196,7 @@ export const OBJECTS = {
 
       [size(-0.340), size(0.035), size(0.2)],
     ],
-  }
+  } */
 };
 
 export const LOCALES = {

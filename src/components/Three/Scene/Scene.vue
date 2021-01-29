@@ -78,7 +78,7 @@ export default {
       intersections: null,
       stopDistance: null,
       collision: null,
-      collisionDistance: null,
+      collisionSpeed: null,
       time: null,
       delta: null,
 
@@ -155,7 +155,7 @@ export default {
 
       this.scene = new Three.Scene();
       this.scene.background = new Three.Color(0x7844c1);
-      this.scene.fog = new Three.Fog(0x4542a0, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE);
+      this.scene.fog = new Three.Fog(0x4542a0, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE / 2);
 
       this.renderer = new Three.WebGLRenderer({ antialias: true });
       this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -280,10 +280,10 @@ export default {
       /* eslint-disable max-len */
       this.raycasterDownHeight = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, -1, 0), 0, this.height);
       this.raycasterDownThrough = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, -1, 0), 0, 10);
-      this.raycasterForward = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, -1), 0, 20);
-      this.raycasterBackward = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, 1), 0, 20);
-      this.raycasterLeft = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(-1, 0, 0), 0, 20);
-      this.raycasterRight = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(-1, 0, 0), 0, 20);
+      this.raycasterForward = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, -1), 0, 10);
+      this.raycasterBackward = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, 1), 0, 10);
+      this.raycasterLeft = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(-1, 0, 0), 0, 10);
+      this.raycasterRight = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(-1, 0, 0), 0, 10);
       /* eslint-enable max-len */
 
       // Listeners
@@ -403,7 +403,7 @@ export default {
 
       if (this.controls.isLocked) {
         // Check objects
-        this.stopDistance = this.moveRun ? 20 : 5;
+        this.stopDistance = this.moveRun ? 6.25 : 2.5;
 
         // Forward
         this.directionForward = this.camera.getWorldDirection(this.direction);
@@ -446,7 +446,8 @@ export default {
             // console.log(this.layers, this.layersNew);
             //  На любой воде
             if (
-              !this.layersNew.includes(OBJECTS.BEACH.name) ||
+              (this.layersNew.includes(OBJECTS.OCEAN.name) &&
+              !this.layersNew.includes(OBJECTS.BEACH.name)) ||
               this.layersNew.includes(OBJECTS.LAKES.name) ||
               this.layersNew.includes(OBJECTS.PUDDLES.name)
             ) {
@@ -456,8 +457,10 @@ export default {
             }
             // На большой воде
             if (
-              !this.layersNew.includes(OBJECTS.BEACH.name) ||
-              (this.layersNew.includes(OBJECTS.LAKES.name) && !this.layersNew.includes(OBJECTS.SANDS.name))
+              (this.layersNew.includes(OBJECTS.OCEAN.name) &&
+              !this.layersNew.includes(OBJECTS.BEACH.name)) ||
+              (this.layersNew.includes(OBJECTS.LAKES.name) &&
+              !this.layersNew.includes(OBJECTS.SANDS.name))
             ) {
               this.height = DESIGN.UNDER_FLOOR / 2;
             } else {
@@ -503,10 +506,10 @@ export default {
         // eslint-disable-next-line max-len
         if (this.moveLeft || this.moveRight) this.velocity.x -= this.direction.x * DESIGN.HERO_SPEED * this.delta;
 
-        this.collisionDistance = this.moveRun ? 2.5 : 1;
+        this.collisionSpeed = this.moveRun ? 2.5 : 1;
         if (!this.collision) {
-          this.controls.moveRight(-this.velocity.x * this.delta * this.collisionDistance);
-          this.controls.moveForward(-this.velocity.z * this.delta * this.collisionDistance);
+          this.controls.moveRight(-this.velocity.x * this.delta * this.collisionSpeed);
+          this.controls.moveForward(-this.velocity.z * this.delta * this.collisionSpeed);
         } else {
           if ((this.onForward && this.moveForward) ||
               (this.onBackward && this.moveBackward) ||
@@ -516,8 +519,8 @@ export default {
             this.velocity.z = 0;
             this.velocity.x = 0;
           } else {
-            this.controls.moveRight(-this.velocity.x * this.delta * this.collisionDistance);
-            this.controls.moveForward(-this.velocity.z * this.delta * this.collisionDistance);
+            this.controls.moveRight(-this.velocity.x * this.delta * this.collisionSpeed);
+            this.controls.moveForward(-this.velocity.z * this.delta * this.collisionSpeed);
           }
         }
       }
@@ -579,7 +582,7 @@ export default {
         }
         if (this.moveForward || this.moveBackward || this.moveLeft || this.moveRight) {
           if (this.run.children[0] && this.moveRun) this.run.children[0].play();
-          else if (this.steps.children[0]) this.steps.children[0].play();
+          else if (this.steps.children[0] && !this.moveRun) this.steps.children[0].play();
         } else {
           if (this.run.children[0] && this.run.children[0].isPlaying) this.run.children[0].pause();
           if (this.steps.children[0] && this.steps.children[0].isPlaying) this.steps.children[0].pause();

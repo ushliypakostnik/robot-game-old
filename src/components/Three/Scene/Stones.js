@@ -19,14 +19,15 @@ function Stones() {
       loaderDispatchHelper(scope.$store, 'isStoneLoaded');
     });
     map.anisotropy = 4;
-    const material = new Three.MeshPhongMaterial( { map } );
+    const material = new Three.MeshLambertMaterial( { map } );
 
+    /*
     // Mountains
     for (let i = 0; i < OBJECTS.MOUNTAINS.position.length; i++) {
       const top = randomInteger(0, OBJECTS.MOUNTAINS.topMax);
       const bottom = randomInteger(OBJECTS.MOUNTAINS.bottomMin, OBJECTS.MOUNTAINS.bottomMax);
 
-      const geometry = new Three.CylinderBufferGeometry(top, bottom, OBJECTS.MOUNTAINS.position[i][2], 4, 1 );
+      const geometry = new Three.CylinderBufferGeometry(top, bottom, OBJECTS.MOUNTAINS.position[i][2], 16, 16 );
       const stone = new Three.Mesh(geometry, material);
 
       stone.position.x = OBJECTS.MOUNTAINS.position[i][0];
@@ -41,7 +42,7 @@ function Stones() {
 
       scope.scene.add(stone);
       scope.objectsStoned.push(stone);
-    }
+    }*/
 
     // Stones
     for (let i = 0; i < OBJECTS.STONES.position.length; i++) {
@@ -64,6 +65,9 @@ function Stones() {
 
         if (stone.position.y - radius > 0) stone.position.y -= radius / 2;
         if (stone.position.y + radius < 0) stone.position.y += radius / 2;
+
+        stone.material.side = Three.DoubleSide;
+        stone.depthMode = Three.AlwaysDepth;
 
         // stone.castShadow = true;
         // stone.receiveShadow = true;

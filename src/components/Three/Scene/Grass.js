@@ -46,13 +46,13 @@ function Grass() {
       scope.render();
       loaderDispatchHelper(scope.$store, 'isGrassLoaded');
     });
-    const material = new Three.MeshLambertMaterial({ color: 0xfaaaaa, map });
+    const material = new Three.MeshLambertMaterial({ color: 0xfa9a9a, map });
 
     const ground = new Three.Mesh(geometry, material);
     ground.rotation.x = -Math.PI / 2;
     ground.rotation.z = -Math.PI / 2;
     ground.position.set(0, 0, 0);
-    ground.material.map.repeat.set(512, 512);
+    ground.material.map.repeat.set(256, 256);
     // eslint-disable-next-line no-multi-assign
     ground.material.map.wrapS = ground.material.map.wrapT = Three.RepeatWrapping;
     ground.material.map.encoding = Three.sRGBEncoding;

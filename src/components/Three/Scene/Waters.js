@@ -28,10 +28,10 @@ function Waters(scope) {
         textureWidth: 512,
         textureHeight: 512,
         waterNormals: waterNormals,
-        alpha: 1.0,
+        alpha: 0,
         sunDirection: new Three.Vector3(),
-        sunColor: 0xffffff,
-        waterColor: 0x001e0f,
+        sunColor: 0xf9d71c,
+        waterColor: 0x00ffff,
         distortionScale: 3.7,
         fog: scene.fog !== undefined
       }
@@ -57,7 +57,6 @@ function Waters(scope) {
     water = initWater(scope.scene, geometry);
     water.position.set(OBJECTS.OCEAN.position[0], OBJECTS.OCEAN.position[3], OBJECTS.OCEAN.position[1]);
 
-    /*
     pseudoGeometry = new Three.CircleBufferGeometry(OBJECTS.OCEAN.position[2], 32);
     const pseudoOcean = new Three.Mesh(pseudoGeometry, fakeMaterial);
     pseudoOcean.position.set(OBJECTS.OCEAN.position[0], OBJECTS.OCEAN.position[3], OBJECTS.OCEAN.position[1]);
@@ -67,11 +66,10 @@ function Waters(scope) {
 
     pseudoOcean.updateMatrix();
     pseudoOcean.matrixAutoUpdate = false;
-    */
 
     scope.scene.add(water);
-    // scope.scene.add(pseudoOcean);
-    // scope.objectsGround.push(pseudoOcean);
+    scope.scene.add(pseudoOcean);
+    scope.objectsGround.push(pseudoOcean);
     waters.push(water);
 
     // Lakes
