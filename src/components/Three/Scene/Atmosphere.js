@@ -12,13 +12,14 @@ function Atmosphere() {
   let ocean;
   let wind;
 
-  let onFloor = 0;
-
   let x;
   let z;
   let newX;
   let newZ;
-  let volume = 0;
+  let oceanVolume = 0;
+
+  let onFloor = 0;
+  let windVolume = 0;
 
   const geometry = new Three.SphereBufferGeometry(1, 1, 1);
   const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
@@ -105,7 +106,7 @@ function Atmosphere() {
     audioLoader.load( './audio/ocean.mp3', (buffer) => {
       const audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
-      audio.setVolume(volume);
+      audio.setVolume(oceanVolume);
       audio.setLoop(true);
 
       ocean.add(audio);
@@ -145,11 +146,11 @@ function Atmosphere() {
       newZ = scope.controls.getObject().position.z;
 
       if (Math.abs(x - newX) > DESIGN.GROUND_SIZE * 0.025 || Math.abs(z - newZ) > DESIGN.GROUND_SIZE * 0.025) {
-        volume = distance2D(0, 0, newX, newZ) / OBJECTS.BEACH.size;
-        if (volume > 1) volume = 1;
-        if (volume < 0) volume = 0;
+        oceanVolume = distance2D(0, 0, newX, newZ) / OBJECTS.BEACH.size;
+        if (oceanVolume > 1) oceanVolume = 1;
+        else if (oceanVolume < 0) oceanVolume = 0;
 
-        ocean.children[0].setVolume(volume);
+        ocean.children[0].setVolume(oceanVolume);
 
         x = newX;
         z = newZ;
@@ -159,7 +160,13 @@ function Atmosphere() {
 
       if (scope.onObjectHeight !== onFloor) {
         if (onFloor !== 0) wind.children[0].setVolume(DESIGN.VOLUME.wind);
-        else wind.children[0].setVolume(DESIGN.VOLUME.wind * 3);
+        else {
+          windVolume = (scope.onObjectHeight / OBJECTS.STONES.largeMax * DESIGN.VOLUME.wind * 2) + DESIGN.VOLUME.wind;
+          if (windVolume > 1) windVolume = 1;
+          else if (windVolume < DESIGN.VOLUME.wind) windVolume = DESIGN.VOLUME.wind;
+
+          wind.children[0].setVolume(DESIGN.VOLUME.wind * 3);
+        }
 
         onFloor = scope.onObjectHeight;
       }
