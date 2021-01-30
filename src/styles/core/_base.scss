@@ -26,7 +26,7 @@ body {
   backface-visibility: hidden;
 
   // Normal text
-  @include text($font-size--small, $font-weight__sans__regular);
+  @include text($font-size--small);
 }
 
 // stylelint-disable declaration-no-important, no-descending-specificity, block-opening-brace-newline-after, block-closing-brace-newline-before, rule-empty-line-before, block-opening-brace-space-before

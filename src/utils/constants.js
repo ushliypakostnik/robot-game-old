@@ -1,3 +1,5 @@
+import Atmosphere from '../components/Three/Scene/Atmosphere';
+
 const isProd = process.env.NODE_ENV === 'production';
 const apiUrl = process.env.VUE_APP_API_URL;
 export const API_URL = isProd ? apiUrl || 'https://???' : apiUrl || 'http://localhost:8082';
@@ -34,7 +36,10 @@ export const DESIGN = {
   AMMO_GRAVITY: 5,
   NUM_AMMO: 40,
   AMMO_RADIUS: 0.5,
-  VOLUME: 0.5,
+  VOLUME: {
+    normal: 0.5,
+    wind: 0.25,
+  },
 };
 
 const size = (size) => {
@@ -79,7 +84,7 @@ export const OBJECTS = {
   BEACH: {
     name: 'beach',
     positionY: -0.2,
-    size: size(0.5) + size(0.05),
+    size: size(0.55),
   },
   LAKES: {
     name: 'lake',
@@ -195,7 +200,7 @@ export const LOCALES = {
       text2: 'Move: WASD / Arrows',
       text3: 'Jump SPACE + WASD',
       text4: 'Run: Shift + W',
-      text5: 'Hidden movement: Cntr or Alt',
+      text5: 'Hidden movement: C or Alt',
       text6: 'Look: MOUSE',
       text7: 'Pause: Ecs',
       startbutton: 'Play',
@@ -213,7 +218,7 @@ export const LOCALES = {
       text2: 'Движение: WASD / Стрелки',
       text3: 'Прыжок SPACE + WASD',
       text4: 'Бежать: Shift + W',
-      text5: 'Cкрытное передвижение: Cntr или Alt',
+      text5: 'Cкрытное передвижение: C или Alt',
       text6: 'Осмотреться: Мышь',
       text7: 'Pause: Ecs',
       startbutton: 'Играть',

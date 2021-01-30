@@ -2,9 +2,27 @@ import * as Three from 'three';
 
 import { Sky } from '@/components/Three/Modules/Elements/Sky';
 
-import { DESIGN } from '@/utils/constants';
+import { DESIGN, OBJECTS } from '@/utils/constants';
+import { loaderDispatchHelper, distance2D } from '@/utils/utilities';
 
 function Atmosphere() {
+  const audioLoader = new Three.AudioLoader();
+  const listener = new Three.AudioListener();
+
+  let ocean;
+  let wind;
+
+  let onFloor = 0;
+
+  let x;
+  let z;
+  let newX;
+  let newZ;
+  let volume = 0;
+
+  const geometry = new Three.SphereBufferGeometry(1, 1, 1);
+  const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
+
   this.init = function(scope) {
     const sun = new Three.Vector3();
     const sky = new Sky();
@@ -81,6 +99,75 @@ function Atmosphere() {
 
     // const dirLightHelper = new Three.DirectionalLightHelper( dirLight, 10 );
     // scope.scene.add( dirLightHelper );
+
+    ocean = new Three.Mesh(geometry, material);
+
+    audioLoader.load( './audio/ocean.mp3', (buffer) => {
+      const audio = new Three.Audio(listener);
+      audio.setBuffer(buffer);
+      audio.setVolume(volume);
+      audio.setLoop(true);
+
+      ocean.add(audio);
+      ocean.visible = false;
+
+      scope.scene.add(ocean);
+      loaderDispatchHelper(scope.$store, 'isOceanComplete');
+    });
+
+    x = scope.controls.getObject().position.x;
+    z = scope.controls.getObject().position.z;
+
+    wind = new Three.Mesh(geometry, material);
+
+    audioLoader.load( './audio/wind.mp3', (buffer) => {
+      const audio = new Three.Audio(listener);
+      audio.setBuffer(buffer);
+      audio.setVolume(DESIGN.VOLUME.wind);
+      audio.setLoop(true);
+
+      wind.add(audio);
+      wind.visible = false;
+
+      scope.scene.add(wind);
+      loaderDispatchHelper(scope.$store, 'isWindComplete');
+    });
+  };
+
+  const stop = (play) => {
+    if (ocean && ocean.children[0] && ocean.children[0].isPlaying) ocean.children[0].stop();
+    if (wind && wind.children[0] && wind.children[0].isPlaying) wind.children[0].stop();
+  };
+
+  this.animate = function(scope) {
+    if (!scope.pause) {
+      newX = scope.controls.getObject().position.x;
+      newZ = scope.controls.getObject().position.z;
+
+      if (Math.abs(x - newX) > DESIGN.GROUND_SIZE * 0.025 || Math.abs(z - newZ) > DESIGN.GROUND_SIZE * 0.025) {
+        volume = distance2D(0, 0, newX, newZ) / OBJECTS.BEACH.size;
+        if (volume > 1) volume = 1;
+        if (volume < 0) volume = 0;
+
+        ocean.children[0].setVolume(volume);
+
+        x = newX;
+        z = newZ;
+      }
+
+      if (ocean && ocean.children[0] && !ocean.children[0].isPlaying) ocean.children[0].play();
+
+      if (scope.onObjectHeight !== onFloor) {
+        if (onFloor !== 0) wind.children[0].setVolume(DESIGN.VOLUME.wind);
+        else wind.children[0].setVolume(DESIGN.VOLUME.wind * 3);
+
+        onFloor = scope.onObjectHeight;
+      }
+
+      if (wind && wind.children[0] && !wind.children[0].isPlaying) wind.children[0].play();
+    } else {
+      stop();
+    }
   };
 }
 

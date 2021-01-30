@@ -67,7 +67,7 @@ function Stones() {
 
         stone.name = OBJECTS.STONES.name;
 
-        // stone.material.side = Three.DoubleSide;
+        stone.material.side = Three.DoubleSide;
 
         // stone.castShadow = true;
         // stone.receiveShadow = true;

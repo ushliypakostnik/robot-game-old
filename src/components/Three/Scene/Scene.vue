@@ -22,6 +22,7 @@ import Waters from './Waters';
 import Sands from './Sands';
 import Stones from './Stones';
 import Hero from './Hero';
+import Ammo from './Ammo';
 // import Boxes from './Boxes';
 // import Horses from './Horses';
 // import Parrots from './Parrots';
@@ -104,7 +105,6 @@ export default {
 
       ammos: [],
       ammoIdx: 0,
-      ammodirection: null,
     };
   },
 
@@ -119,9 +119,6 @@ export default {
     this.y = new Three.Vector3(0, -1, 0);
     this.z = new Three.Vector3(0, 0, 1);
 
-    this.audioLoader = new Three.AudioLoader();
-    this.listener = new Three.AudioListener();
-
     this.init();
     this.animate();
   },
@@ -131,7 +128,6 @@ export default {
     document.removeEventListener('keydown', this.onKeyDown, false);
     document.removeEventListener('keyup', this.onKeyUp, false);
     document.removeEventListener('mousemove', this.onMouseMove, false);
-    document.removeEventListener('click', this.shot, false);
   },
 
   computed: {
@@ -167,6 +163,24 @@ export default {
 
       this.scene.add(this.camera);
       // console.log(this.camera.position.x, this.camera.position.y, this.camera.position.z)
+
+      // Controls
+      this.controls = new PointerLockControls(this.camera, this.renderer.domElement);
+
+      this.controls.addEventListener('unlock', () => {
+        this.$store.dispatch('utilities/changePause', true);
+      });
+
+      this.controls.addEventListener('lock', () => {
+        this.$store.dispatch('utilities/changePause', false);
+      });
+
+      // Переместиться в точку
+      // this.controls.getObject().position.x = -1200;
+      // this.controls.getObject().position.z = -300;
+      this.controls.getObject().position.y = this.height;
+
+      this.scene.add(this.controls.getObject());
 
       // Characters
       this.hero = new Hero();
@@ -208,67 +222,9 @@ export default {
       this.parrots.init(this);
       */
 
-      // Controls
-      this.controls = new PointerLockControls(this.camera, this.renderer.domElement);
-
-      this.controls.addEventListener('unlock', () => {
-        this.$store.dispatch('utilities/changePause', true);
-      });
-
-      this.controls.addEventListener('lock', () => {
-        this.$store.dispatch('utilities/changePause', false);
-      });
-
-      // Переместиться в точку
-      // this.controls.getObject().position.x = -1200;
-      // this.controls.getObject().position.z = -300;
-      this.controls.getObject().position.y = this.height;
-
-      this.scene.add(this.controls.getObject());
-
       // Ammo
-      // eslint-disable-next-line max-len
-      const ammoGeometry = new Three.SphereBufferGeometry(DESIGN.AMMO_RADIUS, 32, 32);
-      // eslint-disable-next-line max-len
-      const ammoMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.primary0x, roughness: 0.8, metalness: 0.5 });
-      const fakeAmmoMaterial = new Three.MeshStandardMaterial( { color: 0xff0000 } );
-
-      this.audioLoader.load( './audio/drop.mp3', (buffer) => {
-        let ammo;
-        let fakeAmmo;
-        // eslint-disable-next-line no-plusplus
-        for (let i = 0; i < DESIGN.NUM_AMMO; i++) {
-          ammo = new Three.Mesh(ammoGeometry, ammoMaterial);
-          fakeAmmo = new Three.Mesh(ammoGeometry, fakeAmmoMaterial);
-          ammo.scale.set(1, 1, 1);
-          ammo.position.y = this.height - 0.2;
-
-          const audio = new Three.PositionalAudio(this.listener);
-          audio.setBuffer(buffer);
-          audio.setVolume(DESIGN.VOLUME);
-          audio.setLoop(false);
-
-          fakeAmmo.add(audio);
-          fakeAmmo.visible = false;
-          fakeAmmo.matrixAutoUpdate = false;
-
-          // ammo.castShadow = true;
-          // ammo.receiveShadow = true;
-
-          this.ammos.push({
-            mesh: ammo,
-            fakeMesh: fakeAmmo,
-            collider: new Three.Sphere(new Three.Vector3(0, 0, 0), DESIGN.AMMO_RADIUS),
-            velocity: new Three.Vector3(),
-            onFly: false,
-            onGround: false,
-            scale: 1,
-            off: false,
-            isPlay: false,
-          });
-        }
-        loaderDispatchHelper(this.$store, 'isDropComplete');
-      });
+      this.ammo = new Ammo();
+      this.ammo.init(this);
 
       // Raycasters
       /* eslint-disable max-len */
@@ -284,24 +240,9 @@ export default {
       document.addEventListener('keydown', this.onKeyDown, false);
       document.addEventListener('keyup', this.onKeyUp, false);
       document.addEventListener('mousemove', this.onMouseMove, false);
-      document.addEventListener('click', this.shot, false);
 
       // First render
       this.render();
-    },
-
-    shot() {
-      if (this.controls.isLocked) {
-        const ammo = this.ammos[this.ammoIdx];
-        ammo.onFly = true;
-        this.scene.add(ammo.mesh);
-        this.scene.add(ammo.fakeMesh);
-        this.camera.getWorldDirection(this.direction);
-        ammo.collider.center.copy(this.controls.getObject().position);
-        ammo.collider.center.y -= 0.5;
-        ammo.velocity.copy(this.direction).multiplyScalar(25);
-        this.ammoIdx = (this.ammoIdx + 1) % this.ammos.length;
-      }
     },
 
     onMouseMove(event) {
@@ -344,6 +285,11 @@ export default {
         case 16: // Shift
           if (!this.moveHidden && this.moveForward) this.moveRun = true;
           break;
+
+        case 67: // C
+        case 18: // Alt
+          this.moveHidden = !this.moveHidden;
+          break;
       }
     },
 
@@ -373,11 +319,6 @@ export default {
         case 16: // Shift
           if (this.moveRun) this.moveRun = false;
           break;
-
-        case 17: // Cntr
-        case 18: // Alt
-          this.moveHidden = !this.moveHidden;
-          break;
       }
     },
 
@@ -393,9 +334,14 @@ export default {
       this.time = performance.now();
       this.delta = (this.time - this.prevTime) / 1000;
 
+      // Waters
       this.waters.animate();
 
+      // Hero
       this.hero.animate(this);
+
+      // Atmosphere
+      this.atmosphere.animate(this);
 
       /*
       this.horses.animate(delta, this.objects);
@@ -537,51 +483,7 @@ export default {
       }
 
       // Ammo
-      this.ammos.forEach((ammo) => {
-        if (ammo.onFly || ammo.onGround) {
-          ammo.collider.center.addScaledVector(ammo.velocity, this.delta * 5);
-          // eslint-disable-next-line no-param-reassign
-          ammo.velocity.y -= DESIGN.AMMO_GRAVITY * this.delta;
-          const damping = Math.exp(-1.5 * this.delta) - 1;
-          ammo.velocity.addScaledVector(ammo.velocity, damping);
-          ammo.mesh.position.copy(ammo.collider.center);
-
-          if (ammo.mesh.position.y < 0) {
-            ammo.mesh.position.y = 0;
-            ammo.onFly = false;
-            ammo.onGround = true;
-          }
-        }
-
-        if (ammo.onGround) {
-          if (!ammo.isPlay) {
-            ammo.fakeMesh.position.set(ammo.mesh.position);
-            ammo.fakeMesh.children[0].play();
-            ammo.isPlay = true;
-          }
-
-          if (ammo.scale > 4) ammo.off = true;
-
-          if (ammo.off) {
-            ammo.scale -= this.delta * 2;
-            ammo.mesh.scale.x = ammo.scale;
-            ammo.mesh.scale.z = ammo.scale;
-
-            if (ammo.scale < 0.5) {
-              ammo.mesh.position.y = -1;
-              ammo.onGround = false;
-              ammo.false = true;
-              ammo.off = false;
-              ammo.scale = 1;
-              ammo.mesh.scale.set(1, 1, 1);
-              ammo.isPlay = false;
-            }
-          } else {
-            ammo.scale += this.delta;
-            ammo.mesh.scale.set(ammo.scale, 1 / ammo.scale, ammo.scale);
-          }
-        }
-      });
+      this.ammo.animate(this);
 
       this.prevTime = this.time;
 

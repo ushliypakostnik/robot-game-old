@@ -3,10 +3,26 @@
 //////////////////////////////////////////////////////
 
 // Text overflow ellipsis protection
+
 %string-ellipsis-protection {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+%block-ellipsis-protection {
+  display: block;
+  //noinspection Stylelint
+  display: -webkit-box;
+  max-width: 100%;
+  height: 43px;
+  margin: 0 auto;
+  font-size: 14px;
+  line-height: 1;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 // Very long letters protection

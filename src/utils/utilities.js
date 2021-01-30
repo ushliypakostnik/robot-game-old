@@ -14,7 +14,7 @@ export const yesOrNo = () => {
 export const loaderDispatchHelper = (store, name) => {
   store.dispatch('preloader/preloadOrBuilt', name).then(() => {
     store.dispatch('preloader/isAllLoadedAndBuilt');
-  });
+  }).catch((error) => { console.log(error)});
 };
 
 export const distance2D = (x1, y1, x2, y2) => {

@@ -20,7 +20,7 @@ function Hero() {
   let onFloor = 0;
   let shot = 0;
 
-  const geometry = new Three.SphereBufferGeometry(2, 32, 32);
+  const geometry = new Three.SphereBufferGeometry(1, 1, 1);
   const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
 
   this.init = function(scope) {
@@ -50,7 +50,7 @@ function Hero() {
     audioLoader.load( './audio/steps.mp3', (buffer) => {
       const audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
-      audio.setVolume(DESIGN.VOLUME);
+      audio.setVolume(DESIGN.VOLUME.normal);
       audio.setLoop(true);
 
       steps.add(audio);
@@ -65,7 +65,7 @@ function Hero() {
     audioLoader.load( './audio/run.mp3', (buffer) => {
       const audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
-      audio.setVolume(DESIGN.VOLUME);
+      audio.setVolume(DESIGN.VOLUME.normal);
       audio.setLoop(true);
 
       run.add(audio);
@@ -80,7 +80,7 @@ function Hero() {
     audioLoader.load( './audio/waterstep.mp3', (buffer) => {
       const audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
-      audio.setVolume(DESIGN.VOLUME);
+      audio.setVolume(DESIGN.VOLUME.normal);
       audio.setLoop(true);
 
       watersteps.add(audio);
@@ -95,7 +95,7 @@ function Hero() {
     audioLoader.load( './audio/waterrun.mp3', (buffer) => {
       const audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
-      audio.setVolume(DESIGN.VOLUME);
+      audio.setVolume(DESIGN.VOLUME.normal);
       audio.setLoop(true);
 
       waterrun.add(audio);
@@ -110,7 +110,7 @@ function Hero() {
     audioLoader.load( './audio/jump.mp3', (buffer) => {
       const audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
-      audio.setVolume(DESIGN.VOLUME);
+      audio.setVolume(DESIGN.VOLUME.normal);
 
       jump.add(audio);
       jump.visible = false;
@@ -124,7 +124,7 @@ function Hero() {
     audioLoader.load( './audio/waterjump.mp3', (buffer) => {
       const audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
-      audio.setVolume(DESIGN.VOLUME);
+      audio.setVolume(DESIGN.VOLUME.normal);
 
       waterjump.add(audio);
       waterjump.visible = false;
@@ -138,7 +138,7 @@ function Hero() {
     audioLoader.load( './audio/spit.mp3', (buffer) => {
       const audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
-      audio.setVolume(DESIGN.VOLUME);
+      audio.setVolume(DESIGN.VOLUME.normal);
 
       spit.add(audio);
       spit.visible = false;
@@ -211,14 +211,14 @@ function Hero() {
               if (watersteps && watersteps.children[0]){
                 stop('watersteps');
                 if (scope.moveHidden) {
-                  watersteps.children[0].setPlaybackRate(0.5);
+                  watersteps.children[0].setPlaybackRate(0.75);
                 } else watersteps.children[0].setPlaybackRate(1);
                 watersteps.children[0].play();
               }
             } else {
               if (steps && steps.children[0]){
                 if (scope.moveHidden) {
-                  steps.children[0].setPlaybackRate(0.5);
+                  steps.children[0].setPlaybackRate(0.75);
                 } else steps.children[0].setPlaybackRate(1);
                 stop('steps');
                 steps.children[0].play();

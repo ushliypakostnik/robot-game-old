@@ -18,6 +18,8 @@ const initialState = {
   isWaterJumpComplete: false,
   isSpitComplete: false,
   isDropComplete: false,
+  isOceanComplete: false,
+  isWindComplete: false,
 };
 const state = initialState;
 

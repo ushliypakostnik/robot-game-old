@@ -29,20 +29,20 @@ $line-height--small: $line-height--computed * $font-size__coefficient--small;
 $line-height--xsmall: $line-height--computed * $font-size__coefficient--xsmall;
 
 // stylelint-disable value-keyword-case
-$font-family__sans: "Open Sans", Helvetica, Arial, sans-serif;
+$font-family: 'Press Start 2P', cursive;
 // stylelint-enable value-keyword-case
-$font-weight__sans__regular: 400;
-$font-weight__sans__bold: 700;
+$font-weight__regular: 400;
+$font-weight__regular: 700;
 
 // Universal Typographic Mixin
 //////////////////////////////////////////////////////
 
 // We use one, only one, Karl, a universal admixture for all cases !!!!!!!!!!
 
-@mixin text($font-size, $font-weight) {
-  font-family: $font-family__sans;
+@mixin text($font-size) {
+  font-family: $font-family;
   font-size: $font-size;
-  font-weight: $font-weight;
+  font-weight: $font-weight__regular;
   letter-spacing: $normal-letter-spacing;
 
   @if $font-size == $font-size--large {
@@ -63,33 +63,29 @@ $font-weight__sans__bold: 700;
 
 p {
   margin-bottom: $gutter / 2;
-  @include text($font-size--small, $font-weight__sans__regular);
+  @include text($font-size--small);
 }
 
 h1 {
-  @include text($font-size--large, $font-weight__sans__bold);
+  @include text($font-size--large);
 }
 
 h2 {
-  @include text($font-size--large, $font-weight__sans__regular);
+  @include text($font-size--large);
 }
 
 h3 {
-  @include text($font-size--normal, $font-weight__sans__bold);
+  @include text($font-size--normal);
 }
 
 h4 {
-  @include text($font-size--small, $font-weight__sans__regular);
+  @include text($font-size--small);
 }
 
 h5 {
-  @include text($font-size--xsmall, $font-weight__sans__bold);
+  @include text($font-size--xsmall);
 }
 
 h6 {
-  @include text($font-size--xsmall, $font-weight__sans__regular);
-}
-
-strong {
-  font-weight: $font-weight__sans__bold;
+  @include text($font-size--xsmall);
 }

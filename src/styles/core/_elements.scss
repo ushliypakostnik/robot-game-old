@@ -10,7 +10,7 @@
   border: $border-width solid $colors__border;
   box-shadow: none;
   text-transform: uppercase;
-  @include text($font-size--normal, $font-weight__sans__bold);
+  @include text($font-size--normal);
 }
 
 .switch {
@@ -22,7 +22,7 @@
   &__item {
     text-align: center;
     text-transform: uppercase;
-    @include text($font-size--normal, $font-weight__sans__bold);
+    @include text($font-size--normal);
 
     span,
     a {
