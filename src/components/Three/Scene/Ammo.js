@@ -105,7 +105,7 @@ function Ammo() {
         if (!ammo.onWall) {
           direction.copy(ammo.velocity).normalize();
           raycaster.set(ammo.mesh.position, direction);
-          intersections = raycaster.intersectObjects(scope.objectsVerical);
+          intersections = raycaster.intersectObjects(scope.objectsVertical);
           beforeObject = intersections.length > 0 ? intersections[0].distance < stopDistance : false;
 
           if (beforeObject) {
@@ -117,7 +117,7 @@ function Ammo() {
             console.log('Hit!', intersections[0].distance);
           } else {
             raycasterNegate.set(ammo.mesh.position, direction.negate());
-            intersections = raycasterNegate.intersectObjects(scope.objectsVerical);
+            intersections = raycasterNegate.intersectObjects(scope.objectsVertical);
             beforeObject = intersections.length > 0;
 
             if (beforeObject) {

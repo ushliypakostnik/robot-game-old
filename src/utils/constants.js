@@ -100,7 +100,7 @@ export const OBJECTS = {
   },
   PUDDLES: {
     name: 'puddle',
-    // x, z, radius
+    // x, z
     quantity: 49, // лучше квадратное число
     min: size(0.015),
     max: size(0.03),
@@ -189,6 +189,11 @@ export const OBJECTS = {
       [size(-0.25), size(0.34), size(0.085)],
       [size(-0.215), size(0.31), size(0.26)],
     ],
+  },
+  TREES: {
+    trees1: {
+      scale: 0.1,
+    }
   }
 };
 
@@ -202,7 +207,7 @@ export const LOCALES = {
       text4: 'Run: Shift + W',
       text5: 'Hidden movement: C or Alt',
       text6: 'Look: MOUSE',
-      text7: 'Pause: Ecs',
+      text7: 'Pause: Ecs or TAB',
       startbutton: 'Play',
       gadgetsgate: 'You need a PC keyboard to play',
       chromegate: 'In order to play, open in the Google Chrome (or Yandex) browser',
@@ -220,7 +225,7 @@ export const LOCALES = {
       text4: 'Бежать: Shift + W',
       text5: 'Cкрытное передвижение: C или Alt',
       text6: 'Осмотреться: Мышь',
-      text7: 'Pause: Ecs',
+      text7: 'Pause: Ecs или TAB',
       startbutton: 'Играть',
       gadgetstext: 'Для того чтобы играть нужна клавиатура персонального компьютера',
       chromegate: 'Для того чтобы играть откройте в браузере Google Chrome (или Яндекс)',

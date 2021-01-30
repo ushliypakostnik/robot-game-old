@@ -150,7 +150,7 @@ function Atmosphere() {
         if (oceanVolume > 1) oceanVolume = 1;
         else if (oceanVolume < 0) oceanVolume = 0;
 
-        ocean.children[0].setVolume(oceanVolume);
+        if (ocean && ocean.children[0] && ocean.children[0]) ocean.children[0].setVolume(oceanVolume);
 
         x = newX;
         z = newZ;
@@ -165,7 +165,7 @@ function Atmosphere() {
           if (windVolume > 1) windVolume = 1;
           else if (windVolume < DESIGN.VOLUME.wind) windVolume = DESIGN.VOLUME.wind;
 
-          wind.children[0].setVolume(DESIGN.VOLUME.wind * 3);
+          if (wind && wind.children[0] && wind.children[0]) wind.children[0].setVolume(DESIGN.VOLUME.wind * 3);
         }
 
         onFloor = scope.onObjectHeight;

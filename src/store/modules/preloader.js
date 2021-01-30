@@ -20,6 +20,8 @@ const initialState = {
   isDropComplete: false,
   isOceanComplete: false,
   isWindComplete: false,
+  isTree1Completed: false,
+  isTree2Completed: false,
 };
 const state = initialState;
 

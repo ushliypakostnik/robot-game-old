@@ -51,6 +51,7 @@ function Waters(scope) {
     let water;
     let geometry;
     let pseudoGeometry;
+    let counter;
 
     // Ocean
     geometry = new Three.CircleBufferGeometry(OBJECTS.OCEAN.position[2], 32);
@@ -108,7 +109,7 @@ function Waters(scope) {
 
         // Не внутри другого озера
         if (isInLake(randomX, randomZ, radius)) {
-          let counter = 0;
+          counter = 0;
           while (isInLake(randomX, randomZ, radius)) {
             counter++;
             randomX *= 1.25 * yesOrNo();
@@ -118,12 +119,22 @@ function Waters(scope) {
         }
 
         // Не рядом с 0, 0, 0
-        if (randomX < radius && randomX > -1 * radius) randomX += radius * yesOrNo() * 1.25;
-        if (randomZ < radius && randomZ > -1 * radius) randomZ += radius * yesOrNo() * 1.25;
+        counter = 0;
+        while ((randomX < radius * 1.25) && (randomX > -1.25 * radius)) {
+          counter++;
+          randomX += radius * yesOrNo() * 1.25;
+          if (counter > 50) break;
+        }
+        counter = 0;
+        while ((randomZ < radius * 1.25) && (randomZ > -1.25 * radius)) {
+          counter++;
+          randomZ += radius * yesOrNo() * 1.25;
+          if (counter > 50) break;
+        }
 
         // Не слишком далеко
         if (distance2D(0, 0, randomX, randomZ) - OBJECTS.BEACH.size > radius / 2) {
-          let counter = 0;
+          counter = 0;
           while (distance2D(0, 0, randomX, randomZ) - OBJECTS.BEACH.size > radius / 2) {
             counter++;
             randomX *= 0.9;
@@ -134,7 +145,7 @@ function Waters(scope) {
 
         // Не внутри другого озера 2
         if (isInLake(randomX, randomZ, radius)) {
-          let counter = 0;
+          counter = 0;
           while (isInLake(randomX, randomZ, radius)) {
             counter++;
             randomX *= 0.9;
@@ -158,6 +169,7 @@ function Waters(scope) {
         scope.scene.add(water);
         scope.scene.add(pseudoPuddle);
         scope.objectsGround.push(pseudoPuddle);
+        scope.objectsPuddles.push(pseudoPuddle);
         waters.push(water);
       }
     }

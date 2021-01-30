@@ -12,6 +12,7 @@ import * as Three from 'three';
 import { mapGetters, mapActions } from 'vuex';
 
 import { PointerLockControls } from '@/components/Three/Modules/Controls/PointerLockControls';
+import { OrbitControls } from '@/components/Three/Modules/Controls/OrbitControls';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
 import { loaderDispatchHelper } from '@/utils/utilities';
@@ -21,6 +22,7 @@ import Grass from './Grass';
 import Waters from './Waters';
 import Sands from './Sands';
 import Stones from './Stones';
+import Plants from './Plants';
 import Hero from './Hero';
 import Ammo from './Ammo';
 // import Boxes from './Boxes';
@@ -37,6 +39,7 @@ export default {
       renderer: null,
 
       controls: null,
+      orbitControl: null,
 
       prevTime: null,
       velocity: null,
@@ -69,9 +72,6 @@ export default {
       directionRight: null,
       directionLeft: null,
 
-      audioLoader: null,
-      listener: null,
-
       object: null,
       onObjectHeight: 0,
       onForward: null,
@@ -93,9 +93,11 @@ export default {
       layersNew: [],
 
       objectsGround: [], // все объекты для горизонтального рейкастинга
-      objectsVerical: [], // все объекты
+      objectsVertical: [], // все объекты
+      objectsPuddles: [], // все объекты
       atmosphere: null,
       grass: null,
+      plants: null,
       waters: null,
       sands: null,
       stones: null,
@@ -190,6 +192,8 @@ export default {
       this.atmosphere = new Atmosphere();
       this.atmosphere.init(this);
 
+      // Objects
+
       // Waters
       this.waters = new Waters(this);
       this.waters.init(this);
@@ -198,11 +202,13 @@ export default {
       this.sands = new Sands();
       this.sands.init(this);
 
-      // Objects
-
       // Ground
       this.grass = new Grass();
       this.grass.init(this);
+
+      // Plants
+      this.plants = new Plants();
+      this.plants.init(this);
 
       // Stones
       this.stones = new Stones();
@@ -354,28 +360,28 @@ export default {
         // Forward
         this.directionForward = this.camera.getWorldDirection(this.direction);
         this.raycasterForward.set(this.camera.getWorldPosition(this.position), this.directionForward);
-        this.intersections = this.raycasterForward.intersectObjects(this.objectsVerical);
+        this.intersections = this.raycasterForward.intersectObjects(this.objectsVertical);
         this.onForward = this.intersections.length > 0 ? this.intersections[0].distance < this.stopDistance : false;
         if (this.onForward) this.object = this.intersections[0].object;
 
         // Backward
         this.directionBackward = this.directionForward.negate();
         this.raycasterBackward.set(this.camera.getWorldPosition(this.position), this.directionBackward);
-        this.intersections = this.raycasterBackward.intersectObjects(this.objectsVerical);
+        this.intersections = this.raycasterBackward.intersectObjects(this.objectsVertical);
         this.onBackward = this.intersections.length > 0 ? this.intersections[0].distance < this.stopDistance : false;
         if (this.onBackward) this.object = this.intersections[0].object;
 
         // Right
         this.directionRight = new Three.Vector3(0, 0, 0).crossVectors(this.directionForward, this.y);
         this.raycasterRight.set(this.camera.getWorldPosition(this.position), this.directionRight);
-        this.intersections = this.raycasterRight.intersectObjects(this.objectsVerical);
+        this.intersections = this.raycasterRight.intersectObjects(this.objectsVertical);
         this.onRight = this.intersections.length > 0 ? this.intersections[0].distance < this.stopDistance : false;
         if (this.onRight) this.object = this.intersections[0].object;
 
         // Left
         this.directionLeft = this.directionRight.negate();
         this.raycasterLeft.set(this.camera.getWorldPosition(this.position), this.directionLeft);
-        this.intersections = this.raycasterLeft.intersectObjects(this.objectsVerical);
+        this.intersections = this.raycasterLeft.intersectObjects(this.objectsVertical);
         this.onLeft = this.intersections.length > 0 ? this.intersections[0].distance < this.stopDistance : false;
         if (this.onLeft) this.object = this.intersections[0].object;
 

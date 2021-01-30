@@ -13,6 +13,17 @@ function Grass() {
     return result.length > 0 ? result[0] : false;
   };
 
+  const isOnEdgePuddles = (puddles, x, z) => {
+    const result = puddles.filter((puddle) => {
+      const px = puddle.position.x;
+      const pz = puddle.position.z;
+      const pr = puddle.geometry.parameters.radius;
+
+      return ((distance2D(px, pz, x, z) < pr + 1.5) && (distance2D(px, pz, x, z) > pr - 0.5));
+    });
+    return result.length > 0;
+  };
+
   this.init = function(scope) {
     // Vertex displacement
     const vertex = new Three.Vector3();
@@ -33,9 +44,13 @@ function Grass() {
       if (distance2D(0, 0, vertex.x, vertex.y) > (DESIGN.GROUND_SIZE * 0.975) / 2) vertex.z = -2;
       if ((distance2D(0, 0, vertex.x, vertex.y) < (DESIGN.GROUND_SIZE * 0.975) / (4 + Math.random() * yesOrNo())) && vertex.z < -0.1) vertex.z = -0.01;
 
-      // Меньше внутри озера
+      // Меньше травы внутри озер
       const inLake = isInLakes(vertex.y, vertex.x);
       if (inLake) vertex.z -= (Math.random() * 1.5) * inLake[2] / distance2D(inLake[0], inLake[1], vertex.y, vertex.x);
+
+      // Подъем на краю луж
+      const onPuddleEdge = isOnEdgePuddles(scope.objectsPuddles, vertex.y, vertex.x);
+      if (onPuddleEdge) vertex.z = (Math.random() + 0.1) / 1.75 + OBJECTS.PUDDLES.positionY;
 
       position.setXYZ(i, vertex.x, vertex.y, vertex.z);
     }
