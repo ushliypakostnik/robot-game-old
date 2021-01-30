@@ -20,14 +20,17 @@
   border: $border-width solid $colors__border;
 
   &__item {
-    display: block;
-    padding: ($gutter / 10) ($gutter / 4);
     text-align: center;
     text-transform: uppercase;
     @include text($font-size--normal, $font-weight__sans__bold);
 
+    span,
     a {
+      box-sizing: border-box;
+      display: block;
+      padding: ($gutter / 10) ($gutter / 4);
       text-decoration: none;
+      @include size(100%, 100%);
       @include link__color($colors__white, $colors__white);
     }
 

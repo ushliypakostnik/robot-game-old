@@ -48,6 +48,7 @@ export default {
       moveLeft: false,
       moveRight: false,
       moveRun: false,
+      moveHidden: false,
       canJump: false,
 
       raycasterDown: null,
@@ -77,11 +78,12 @@ export default {
       onRight: null,
       onLeft: null,
       inWater: null,
+      inLargeWater: null,
 
       intersections: null,
       stopDistance: 5,
       collision: null,
-      runSpeed: null,
+      moveSpeed: null,
       time: null,
       delta: null,
 
@@ -312,35 +314,35 @@ export default {
     onKeyDown(event) {
       // eslint-disable-next-line default-case
       switch (event.keyCode) {
-        case 38: // up
-        case 87: // w
-          this.moveForward = true;
+        case 38: // Up
+        case 87: // W
+          if (!this.moveForward) this.moveForward = true;
           break;
 
-        case 37: // left
-        case 65: // a
-          this.moveLeft = true;
+        case 37: // Left
+        case 65: // A
+          if (!this.moveLeft) this.moveLeft = true;
           break;
 
-        case 40: // down
-        case 83: // s
-          this.moveBackward = true;
+        case 40: // Down
+        case 83: // S
+          if (!this.moveBackward) this.moveBackward = true;
           break;
 
-        case 39: // right
-        case 68: // d
-          this.moveRight = true;
+        case 39: // Right
+        case 68: // D
+          if (!this.moveRight) this.moveRight = true;
           break;
 
-        case 32: // space
-          if (this.canJump) {
+        case 32: // Space
+          if (!this.moveHidden && this.canJump) {
             this.velocity.y += DESIGN.HERO_JUMP_SPEED;
             this.canJump = false;
           }
           break;
 
-        case 16: // shift
-          if (this.moveForward) this.moveRun = true;
+        case 16: // Shift
+          if (!this.moveHidden && this.moveForward) this.moveRun = true;
           break;
       }
     },
@@ -348,28 +350,33 @@ export default {
     onKeyUp(event) {
       // eslint-disable-next-line default-case
       switch (event.keyCode) {
-        case 38: // up
-        case 87: // w
-          this.moveForward = false;
+        case 38: // Up
+        case 87: // W
+          if (this.moveForward) this.moveForward = false;
           break;
 
-        case 37: // left
-        case 65: // a
-          this.moveLeft = false;
+        case 37: // Left
+        case 65: // A
+          if (this.moveLeft) this.moveLeft = false;
           break;
 
-        case 40: // down
-        case 83: // s
-          this.moveBackward = false;
+        case 40: // Down
+        case 83: // S
+          if (this.moveBackward) this.moveBackward = false;
           break;
 
-        case 39: // right
-        case 68: // d
-          this.moveRight = false;
+        case 39: // Right
+        case 68: // D
+          if (this.moveRight) this.moveRight = false;
           break;
 
-        case 16: // shift
-          this.moveRun = false;
+        case 16: // Shift
+          if (this.moveRun) this.moveRun = false;
+          break;
+
+        case 17: // Cntr
+        case 18: // Alt
+          this.moveHidden = !this.moveHidden;
           break;
       }
     },
@@ -452,23 +459,19 @@ export default {
             // На большой воде
             if (
               ((this.layersNew.includes(OBJECTS.OCEAN.name) &&
-              !this.layersNew.includes(OBJECTS.BEACH.name) &&
-              !this.layersNew.includes(OBJECTS.SANDS.name)) ||
-              (this.layersNew.includes(OBJECTS.LAKES.name) &&
-              !this.layersNew.includes(OBJECTS.SANDS.name)))
+                !this.layersNew.includes(OBJECTS.BEACH.name) &&
+                !this.layersNew.includes(OBJECTS.SANDS.name)) ||
+                (this.layersNew.includes(OBJECTS.LAKES.name) &&
+                  !this.layersNew.includes(OBJECTS.SANDS.name)))
             ) {
-              this.height = DESIGN.UNDER_FLOOR / 2;
-            } else {
-              this.height = DESIGN.UNDER_FLOOR;
-            }
+              this.inLargeWater = true;
+            } else this.inLargeWater = false;
 
             // На камне
             if (this.layersNew.includes(OBJECTS.STONES.name)) {
               this.object = this.intersections.filter(object => object.object.name === OBJECTS.STONES.name)[0].object;
               this.onObjectHeight = this.object.position.y + this.object.geometry.parameters.radius + this.height;
-            } else {
-              this.onObjectHeight = 0;
-            }
+            } else this.onObjectHeight = 0;
 
             this.layers = this.layersNew;
           }
@@ -486,10 +489,24 @@ export default {
         // eslint-disable-next-line max-len
         if (this.moveLeft || this.moveRight) this.velocity.x -= this.direction.x * DESIGN.HERO_SPEED * this.delta;
 
-        this.runSpeed = this.moveRun ? 2.5 : 1;
+        // Скорость движения в зависимости от режима
+        if (this.moveHidden) {
+          this.moveSpeed = 0.25;
+        } else {
+          if (this.moveRun) {
+            if (this.inWater) {
+              this.moveSpeed = 1.75;
+            } else this.moveSpeed = 2.5;
+          } else {
+            if (this.inWater) {
+              this.moveSpeed = 0.7;
+            } else this.moveSpeed = 1;
+          }
+        }
+
         if (!this.collision) {
-          this.controls.moveRight(-this.velocity.x * this.delta * this.runSpeed);
-          this.controls.moveForward(-this.velocity.z * this.delta * this.runSpeed);
+          this.controls.moveRight(-this.velocity.x * this.delta * this.moveSpeed);
+          this.controls.moveForward(-this.velocity.z * this.delta * this.moveSpeed);
         } else {
           if ((this.onForward && this.moveForward) ||
               (this.onBackward && this.moveBackward) ||
@@ -499,8 +516,8 @@ export default {
             this.velocity.z = 0;
             this.velocity.x = 0;
           } else {
-            this.controls.moveRight(-this.velocity.x * this.delta * this.runSpeed);
-            this.controls.moveForward(-this.velocity.z * this.delta * this.runSpeed);
+            this.controls.moveRight(-this.velocity.x * this.delta * this.moveSpeed);
+            this.controls.moveForward(-this.velocity.z * this.delta * this.moveSpeed);
           }
         }
       }
@@ -508,6 +525,10 @@ export default {
       this.velocity.y -= 9.8 * DESIGN.HERO_MASS * this.delta;
 
       this.controls.getObject().position.y += (this.velocity.y * this.delta);
+
+      if (this.moveHidden || this.inLargeWater) {
+        this.height = DESIGN.UNDER_FLOOR / 2;
+      } else this.height = DESIGN.UNDER_FLOOR;
 
       if (this.controls.getObject().position.y < this.height + this.onObjectHeight) {
         this.velocity.y = 0;

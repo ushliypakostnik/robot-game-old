@@ -41,20 +41,6 @@ const size = (size) => {
  return size * DESIGN.GROUND_SIZE;
 };
 
-/*
-const boxPack = (x, z, y, quantityX, quantityZ, quantityY) => {
-  const pack = [];
-  for (let i = 0; i < quantityX; i++) {
-    for (let k = 0; k < quantityZ; k++) {
-      for (let n = 0; n < quantityY; n++) {
-        pack.push([x + size(0.001) * i, z + + size(0.001) * k, y + size(0.001) * n]);
-      }
-    }
-  }
-  return pack;
-};
-*/
-
 export const OBJECTS = {
   HORSES: {
     size: 0.0125,
@@ -82,17 +68,6 @@ export const OBJECTS = {
     size: 2,
     position: [
       // x, y, z, r
-      ...boxPack(size(-0.598), size(-0.202), 0, 5, 3, 3),
-      ...boxPack(size(-0.605), size(-0.205), 0, 3, 2, 3),
-      ...boxPack(size(-0.595), size(-0.210), 0, 4, 3, 3),
-      ...boxPack(size(-0.590), size(-0.216), 0, 2, 2, 3),
-      ...boxPack(size(-0.611), size(-0.215), 0, 2, 3, 2),
-      ...boxPack(size(-0.606), size(-0.211), 0, 2, 3, 2),
-      ...boxPack(size(-0.619), size(-0.219), 0, 2, 3, 2),
-      ...boxPack(size(-0.615), size(-0.220), 0, 4, 4, 3),
-      ...boxPack(size(-0.593), size(-0.225), 0, 3, 5, 2),
-      ...boxPack(size(-0.585), size(-0.230), 0, 7, 2, 2),
-      ...boxPack(size(-0.575), size(-0.240), 0, 3, 6, 2),
     ],
   },
   */
@@ -217,11 +192,12 @@ export const LOCALES = {
     layout: {
       text0: 'Drinking robot',
       text1: 'Shot: LEFT MOUSE',
-      text2: 'Move: WASD',
+      text2: 'Move: WASD / Arrows',
       text3: 'Jump SPACE + WASD',
       text4: 'Run: Shift + W',
-      text5: 'Look: MOUSE',
-      text6: 'Pause: Ecs',
+      text5: 'Hidden movement: Cntr or Alt',
+      text6: 'Look: MOUSE',
+      text7: 'Pause: Ecs',
       startbutton: 'Play',
       gadgetsgate: 'You need a PC keyboard to play',
       chromegate: 'In order to play, open in the Google Chrome (or Yandex) browser',
@@ -234,11 +210,12 @@ export const LOCALES = {
     layout: {
       text0: 'Робот-собутыльник',
       text1: 'Выстрел: Кнопки мыши',
-      text2: 'Движение: WASD',
+      text2: 'Движение: WASD / Стрелки',
       text3: 'Прыжок SPACE + WASD',
       text4: 'Бежать: Shift + W',
-      text5: 'Осмотреться: Мышь',
-      text6: 'Pause: Ecs',
+      text5: 'Cкрытное передвижение: Cntr или Alt',
+      text6: 'Осмотреться: Мышь',
+      text7: 'Pause: Ecs',
       startbutton: 'Играть',
       gadgetstext: 'Для того чтобы играть нужна клавиатура персонального компьютера',
       chromegate: 'Для того чтобы играть откройте в браузере Google Chrome (или Яндекс)',

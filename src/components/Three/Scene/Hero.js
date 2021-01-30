@@ -210,10 +210,16 @@ function Hero() {
             if (scope.inWater) {
               if (watersteps && watersteps.children[0]){
                 stop('watersteps');
+                if (scope.moveHidden) {
+                  watersteps.children[0].setPlaybackRate(0.5);
+                } else watersteps.children[0].setPlaybackRate(1);
                 watersteps.children[0].play();
               }
             } else {
               if (steps && steps.children[0]){
+                if (scope.moveHidden) {
+                  steps.children[0].setPlaybackRate(0.5);
+                } else steps.children[0].setPlaybackRate(1);
                 stop('steps');
                 steps.children[0].play();
               }
@@ -226,7 +232,7 @@ function Hero() {
     } else {
       stop();
     }
-  }
+  };
 }
 
 export default Hero;

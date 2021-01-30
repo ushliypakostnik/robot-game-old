@@ -43,7 +43,7 @@ export default {
 
     changeLanguage(language) {
       this.$i18n.i18next.changeLanguage(language);
-      this.$store.dispatch('changeLanguage', language);
+      this.$store.dispatch('utilities/changeLanguage', language);
     },
   },
 };
