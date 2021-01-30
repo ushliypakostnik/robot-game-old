@@ -12,6 +12,12 @@ const initialState = {
   isWatersBuilt: false,
   isStepComplete: false,
   isRunComplete: false,
+  isWaterStepsComplete: false,
+  isWaterRunComplete: false,
+  isJumpComplete: false,
+  isWaterJumpComplete: false,
+  isSpitComplete: false,
+  isDropComplete: false,
 };
 const state = initialState;
 

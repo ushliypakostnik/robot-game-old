@@ -52,7 +52,6 @@ function Sands() {
 
       sand.position.set(OBJECTS.SANDS.position[i][0], OBJECTS.SANDS.positionY, OBJECTS.SANDS.position[i][1]);
 
-
       sand.name = OBJECTS.SANDS.name;
 
       sand.updateMatrix();

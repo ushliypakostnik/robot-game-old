@@ -14,17 +14,14 @@ import { mapGetters, mapActions } from 'vuex';
 import { PointerLockControls } from '@/components/Three/Modules/Controls/PointerLockControls';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
-import {
-  loaderDispatchHelper,
-  distance2D,
-  degToRad,
-} from '@/utils/utilities';
+import { loaderDispatchHelper } from '@/utils/utilities';
 
 import Atmosphere from './Atmosphere';
 import Grass from './Grass';
 import Waters from './Waters';
 import Sands from './Sands';
 import Stones from './Stones';
+import Hero from './Hero';
 // import Boxes from './Boxes';
 // import Horses from './Horses';
 // import Parrots from './Parrots';
@@ -70,8 +67,11 @@ export default {
       directionRight: null,
       directionLeft: null,
 
+      audioLoader: null,
+      listener: null,
+
       object: null,
-      onObjectHeight: null,
+      onObjectHeight: 0,
       onForward: null,
       onBackward: null,
       onRight: null,
@@ -89,28 +89,20 @@ export default {
       layers: [],
       layersNew: [],
 
+      objectsGround: [], // все объекты для горизонтального рейкастинга
       objectsVerical: [], // все объекты
-      objectsGround: [], // все объекты
       atmosphere: null,
       grass: null,
       waters: null,
       sands: null,
       stones: null,
+      hero: null,
       // horses: null,
       // parrots: null,
 
       ammos: [],
       ammoIdx: 0,
       ammodirection: null,
-
-      audioLoader: null,
-      listener: null,
-      steps: null,
-      run: null,
-      watersteps: null,
-      waterrun: null,
-      spit: null,
-      drop: null,
     };
   },
 
@@ -125,6 +117,9 @@ export default {
     this.y = new Three.Vector3(0, -1, 0);
     this.z = new Three.Vector3(0, 0, 1);
 
+    this.audioLoader = new Three.AudioLoader();
+    this.listener = new Three.AudioListener();
+
     this.init();
     this.animate();
   },
@@ -134,6 +129,7 @@ export default {
     document.removeEventListener('keydown', this.onKeyDown, false);
     document.removeEventListener('keyup', this.onKeyUp, false);
     document.removeEventListener('mousemove', this.onMouseMove, false);
+    document.removeEventListener('click', this.shot, false);
   },
 
   computed: {
@@ -170,44 +166,13 @@ export default {
       this.scene.add(this.camera);
       // console.log(this.camera.position.x, this.camera.position.y, this.camera.position.z)
 
+      // Characters
+      this.hero = new Hero();
+      this.hero.init(this);
+
       // Atmosphere
       this.atmosphere = new Atmosphere();
-      this.atmosphere.init(this.scene, this.renderer);
-
-      this.audioLoader = new Three.AudioLoader();
-      this.listener = new Three.AudioListener();
-      this.camera.add(this.listener);
-
-      const stepsGeometry = new Three.SphereBufferGeometry( 2, 32, 32 );
-      const stepsMaterial = new Three.MeshStandardMaterial( { color: 0xff0000 } );
-
-      this.steps = new Three.Mesh(stepsGeometry, stepsMaterial);
-      this.steps.position.set(this.camera.position);
-      this.steps.visible = false;
-
-      this.audioLoader.load( './audio/steps.mp3', (buffer) => {
-        const audio = new Three.PositionalAudio(this.listener);
-        audio.setBuffer(buffer);
-        audio.setLoop(true);
-
-        this.steps.add(audio);
-        this.scene.add(this.steps);
-        loaderDispatchHelper(this.$store, 'isStepComplete');
-      });
-
-      this.run = new Three.Mesh(stepsGeometry, stepsMaterial);
-      this.run.position.set(this.camera.position);
-      this.run.visible = false;
-
-      this.audioLoader.load( './audio/run.mp3', (buffer) => {
-        const audio = new Three.PositionalAudio(this.listener);
-        audio.setBuffer(buffer);
-        audio.setLoop(true);
-
-        this.run.add(audio);
-        this.scene.add(this.run);
-        loaderDispatchHelper(this.$store, 'isRunComplete');
-      });
+      this.atmosphere.init(this);
 
       // Waters
       this.waters = new Waters(this);
@@ -227,6 +192,10 @@ export default {
       this.stones = new Stones();
       this.stones.init(this);
 
+      // Сharacters
+      this.hero = new Hero();
+      this.hero.init(this);
+
       /*
       // Horses
       this.horses = new Horses();
@@ -237,7 +206,7 @@ export default {
       this.parrots.init(this);
       */
 
-      // Ammo
+      // Controls
       this.controls = new PointerLockControls(this.camera, this.renderer.domElement);
 
       this.controls.addEventListener('unlock', () => {
@@ -260,25 +229,44 @@ export default {
       const ammoGeometry = new Three.SphereBufferGeometry(DESIGN.AMMO_RADIUS, 32, 32);
       // eslint-disable-next-line max-len
       const ammoMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.primary0x, roughness: 0.8, metalness: 0.5 });
+      const fakeAmmoMaterial = new Three.MeshStandardMaterial( { color: 0xff0000 } );
 
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < DESIGN.NUM_AMMO; i++) {
-        const ammo = new Three.Mesh(ammoGeometry, ammoMaterial);
-        ammo.scale.set(1, 1, 1);
-        ammo.position.y = this.height - 0.2;
-        // ammo.castShadow = true;
-        // ammo.receiveShadow = true;
+      this.audioLoader.load( './audio/drop.mp3', (buffer) => {
+        let ammo;
+        let fakeAmmo;
+        // eslint-disable-next-line no-plusplus
+        for (let i = 0; i < DESIGN.NUM_AMMO; i++) {
+          ammo = new Three.Mesh(ammoGeometry, ammoMaterial);
+          fakeAmmo = new Three.Mesh(ammoGeometry, fakeAmmoMaterial);
+          ammo.scale.set(1, 1, 1);
+          ammo.position.y = this.height - 0.2;
 
-        this.ammos.push({
-          mesh: ammo,
-          collider: new Three.Sphere(new Three.Vector3(0, 0, 0), DESIGN.AMMO_RADIUS),
-          velocity: new Three.Vector3(),
-          onFly: false,
-          onGround: false,
-          scale: 1,
-          off: false,
-        });
-      }
+          const audio = new Three.PositionalAudio(this.listener);
+          audio.setBuffer(buffer);
+          audio.setVolume(DESIGN.VOLUME);
+          audio.setLoop(false);
+
+          fakeAmmo.add(audio);
+          fakeAmmo.visible = false;
+          fakeAmmo.matrixAutoUpdate = false;
+
+          // ammo.castShadow = true;
+          // ammo.receiveShadow = true;
+
+          this.ammos.push({
+            mesh: ammo,
+            fakeMesh: fakeAmmo,
+            collider: new Three.Sphere(new Three.Vector3(0, 0, 0), DESIGN.AMMO_RADIUS),
+            velocity: new Three.Vector3(),
+            onFly: false,
+            onGround: false,
+            scale: 1,
+            off: false,
+            isPlay: false,
+          });
+        }
+        loaderDispatchHelper(this.$store, 'isDropComplete');
+      });
 
       // Raycasters
       /* eslint-disable max-len */
@@ -305,6 +293,7 @@ export default {
         const ammo = this.ammos[this.ammoIdx];
         ammo.onFly = true;
         this.scene.add(ammo.mesh);
+        this.scene.add(ammo.fakeMesh);
         this.camera.getWorldDirection(this.direction);
         ammo.collider.center.copy(this.controls.getObject().position);
         ammo.collider.center.y -= 0.5;
@@ -399,6 +388,8 @@ export default {
 
       this.waters.animate();
 
+      this.hero.animate(this);
+
       /*
       this.horses.animate(delta, this.objects);
       this.parrots.animate(delta, this.objects);
@@ -450,17 +441,21 @@ export default {
           if (this.layersNew.length !== this.layers.length) {
             // console.log(this.layers, this.layersNew);
             //  На любой воде
-            this.inWater = (this.layersNew.includes(OBJECTS.OCEAN.name) &&
+            if (((this.layersNew.includes(OBJECTS.OCEAN.name) &&
               !this.layersNew.includes(OBJECTS.BEACH.name)) ||
               this.layersNew.includes(OBJECTS.LAKES.name) ||
-              this.layersNew.includes(OBJECTS.PUDDLES.name);
+              this.layersNew.includes(OBJECTS.PUDDLES.name)) &&
+              !this.layersNew.includes(OBJECTS.SANDS.name)) {
+              this.inWater = true;
+            } else this.inWater = false;
 
             // На большой воде
             if (
-              (this.layersNew.includes(OBJECTS.OCEAN.name) &&
-              !this.layersNew.includes(OBJECTS.BEACH.name)) ||
+              ((this.layersNew.includes(OBJECTS.OCEAN.name) &&
+              !this.layersNew.includes(OBJECTS.BEACH.name) &&
+              !this.layersNew.includes(OBJECTS.SANDS.name)) ||
               (this.layersNew.includes(OBJECTS.LAKES.name) &&
-              !this.layersNew.includes(OBJECTS.SANDS.name))
+              !this.layersNew.includes(OBJECTS.SANDS.name)))
             ) {
               this.height = DESIGN.UNDER_FLOOR / 2;
             } else {
@@ -538,6 +533,12 @@ export default {
         }
 
         if (ammo.onGround) {
+          if (!ammo.isPlay) {
+            ammo.fakeMesh.position.set(ammo.mesh.position);
+            ammo.fakeMesh.children[0].play();
+            ammo.isPlay = true;
+          }
+
           if (ammo.scale > 4) ammo.off = true;
 
           if (ammo.off) {
@@ -552,6 +553,7 @@ export default {
               ammo.off = false;
               ammo.scale = 1;
               ammo.mesh.scale.set(1, 1, 1);
+              ammo.isPlay = false;
             }
           } else {
             ammo.scale += this.delta;
@@ -559,30 +561,6 @@ export default {
           }
         }
       });
-
-      if (!this.pause) {
-        if (this.steps) {
-          this.steps.position.set(
-            this.controls.getObject().position.x,
-            this.controls.getObject().position.y,
-            this.controls.getObject().position.z,
-          );
-        }
-        if (this.run) {
-          this.run.position.set(
-            this.controls.getObject().position.x,
-            this.controls.getObject().position.y,
-            this.controls.getObject().position.z,
-          );
-        }
-        if (this.moveForward || this.moveBackward || this.moveLeft || this.moveRight) {
-          if (this.run.children[0] && this.moveRun) this.run.children[0].play();
-          else if (this.steps.children[0] && !this.moveRun) this.steps.children[0].play();
-        } else {
-          if (this.run.children[0] && this.run.children[0].isPlaying) this.run.children[0].pause();
-          if (this.steps.children[0] && this.steps.children[0].isPlaying) this.steps.children[0].pause();
-        }
-      }
 
       this.prevTime = this.time;
 

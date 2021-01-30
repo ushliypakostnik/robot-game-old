@@ -26,14 +26,15 @@ export const DESIGN = {
     primary0x: 0x621211,
   },
   GROUND_SIZE: 2000,
-  HERO_SPEED: 300,
+  HERO_SPEED: 400,
   HERO_JUMP_SPEED: 250,
   HERO_JUMP_HEIGHT: 33,
   HERO_MASS: 100,
   UNDER_FLOOR: 3, // средний рост челевеческой особи, мужики 1.7, бабы 1.6 - наш робот чуть выше
   AMMO_GRAVITY: 5,
-  NUM_AMMO: 20,
+  NUM_AMMO: 40,
   AMMO_RADIUS: 0.5,
+  VOLUME: 0.5,
 };
 
 const size = (size) => {
@@ -190,8 +191,23 @@ export const OBJECTS = {
       [size(-0.4), size(-0.422), size(0.075)],
       [size(-0.625), size(-0.625), size(0.115)],
       [size(-0.35), size(-0.633), size(0.085)],
-      [size(-0.315), size(-0.66), size(0.26)],
+      [size(-0.315), size(-0.66), size(0.16)],
       [size(-0.275), size(-0.725), size(0.2)],
+
+      [size(0.405), size(0.405), size(0.06)],
+      [size(0.37), size(0.385), size(0.1)],
+
+      [size(-0.425), size(-0.445), size(0.075)],
+      [size(-0.375), size(-0.4), size(0.135)],
+      [size(-0.425), size(-0.375), size(0.2)],
+      [size(-0.46), size(-0.35), size(0.065)],
+      [size(0.45), size(-0.36), size(0.045)],
+
+      [size(0.415), size(-0.42), size(0.075)],
+      [size(0.25), size(-0.275), size(0.115)],
+
+      [size(-0.25), size(0.34), size(0.085)],
+      [size(-0.215), size(0.31), size(0.26)],
     ],
   }
 };

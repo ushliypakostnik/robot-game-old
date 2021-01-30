@@ -39,6 +39,7 @@ function Stones() {
       stone.updateMatrix();
       stone.matrixAutoUpdate = false;
 
+      scope.objectsVerical.push(stone);
       scope.scene.add(stone);
     }
 
