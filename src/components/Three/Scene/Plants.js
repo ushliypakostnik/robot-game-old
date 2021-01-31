@@ -28,7 +28,7 @@ function Plants() {
 
     loader.load( './images/models/Tree2.fbx', function (object) {
       object.scale.set(OBJECTS.TREES.trees1.scale, OBJECTS.TREES.trees1.scale, OBJECTS.TREES.trees1.scale);
-      object.position.set(-30, -2, -30);
+      object.position.set(30, -2, -40);
 
       scope.scene.add(object);
       loaderDispatchHelper(scope.$store, 'isTree2Completed');

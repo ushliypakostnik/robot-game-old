@@ -17,6 +17,7 @@ function Waters(scope) {
     texture.wrapS = texture.wrapT = Three.RepeatWrapping;
     scope.render();
     loaderDispatchHelper(scope.$store, 'isWaterLoaded');
+    scope.$store.dispatch('drone/storeWaterTexture', { texture });
 
     return texture;
   });

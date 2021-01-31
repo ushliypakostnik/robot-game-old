@@ -25,7 +25,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      language: 'utilities/language',
+      language: 'layout/language',
     }),
 
     languages() {
@@ -38,12 +38,12 @@ export default {
 
   methods: {
     ...mapActions({
-      changeLanguage: 'utilities/changeLanguage',
+      changeLanguage: 'layout/changeLanguage',
     }),
 
     changeLanguage(language) {
       this.$i18n.i18next.changeLanguage(language);
-      this.$store.dispatch('utilities/changeLanguage', language);
+      this.$store.dispatch('layout/changeLanguage', language);
     },
   },
 };

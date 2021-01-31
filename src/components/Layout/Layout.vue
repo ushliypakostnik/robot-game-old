@@ -5,7 +5,7 @@
   >
     <Preloader>
       <div
-        v-if="pause"
+        v-if="isPause"
         class="layout__blocker"
       >
         <div class="layout__instructions">
@@ -17,6 +17,7 @@
           <h4>{{ $t('layout.text5') }}</h4>
           <h4>{{ $t('layout.text6') }}</h4>
           <h4>{{ $t('layout.text7') }}</h4>
+          <h4>{{ $t('layout.text8') }}</h4>
           <button
             class="button"
             type="button"
@@ -41,7 +42,7 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex';
+  import { createNamespacedHelpers, mapActions } from 'vuex';
 import ScreenHelper from '@/utils/screen-helper';
 
 import Preloader from '@/components/Layout/Preloader.vue';
@@ -49,7 +50,7 @@ import Scene from '@/components/Three/Scene/Scene.vue';
 import Gate from '@/components/Layout/Gate.vue';
 import LangSwitch from '@/components/Layout/LangSwitch.vue';
 
-const { mapGetters } = createNamespacedHelpers('utilities');
+const { mapGetters } = createNamespacedHelpers('layout');
 
 export default {
   name: 'Layout',
@@ -79,14 +80,14 @@ export default {
 
   computed: {
     ...mapGetters({
-      pause: 'pause',
+      isPause: 'isPause',
     }),
   },
 
   methods: {
-    changePause(pause) {
-      this.$store.dispatch('utilities/changePause', pause);
-    },
+    ...mapActions({
+      changePause: 'layout/changePause',
+    }),
 
     onWindowResize() {
       if (ScreenHelper.isDesktop()) {

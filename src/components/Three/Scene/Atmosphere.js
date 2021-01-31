@@ -135,13 +135,13 @@ function Atmosphere() {
     });
   };
 
-  const stop = (play) => {
+  const stop = () => {
     if (ocean && ocean.children[0] && ocean.children[0].isPlaying) ocean.children[0].stop();
     if (wind && wind.children[0] && wind.children[0].isPlaying) wind.children[0].stop();
   };
 
   this.animate = function(scope) {
-    if (!scope.pause) {
+    if (!scope.isPause && !scope.isDrone) {
       newX = scope.controls.getObject().position.x;
       newZ = scope.controls.getObject().position.z;
 

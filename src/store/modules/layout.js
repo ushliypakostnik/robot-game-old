@@ -3,14 +3,14 @@ import storage from '@/utils/storage';
 
 const initialState = {
   language: null,
-  pause: true,
+  isPause: true,
 };
 
 const state = initialState;
 
 const getters = {
   language: state => state.language,
-  pause: state => state.pause,
+  isPause: state => state.isPause,
 };
 
 const actions = {
@@ -30,7 +30,7 @@ const mutations = {
   },
 
   changePause: (state, isPause) => {
-    state.pause = isPause;
+    state.isPause = isPause;
   },
 };
 

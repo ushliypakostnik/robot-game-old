@@ -18,19 +18,22 @@ function Ammo() {
 
   this.init = function(scope) {
     const shot = () => {
-      if (scope.controls.isLocked) {
-        const ammo = scope.ammos[scope.ammoIdx];
-        ammo.onFly = true;
+      if (!scope.isDrone) {
+        if (scope.controls.isLocked) {
+          const ammo = scope.ammos[scope.ammoIdx];
+          ammo.onFly = true;
 
-        scope.scene.add(ammo.mesh);
-        scope.scene.add(ammo.fakeMesh);
-        scope.camera.getWorldDirection(direction);
+          scope.scene.add(ammo.mesh);
+          scope.scene.add(ammo.fakeMesh);
+          scope.camera.getWorldDirection(direction);
 
-        ammo.collider.center.copy(scope.controls.getObject().position);
-        ammo.collider.center.y -= 0.5;
-        ammo.velocity.copy(direction).multiplyScalar(25);
+          ammo.collider.center.copy(scope.controls.getObject().position);
+          ammo.collider.center.y -= 0.5;
+          ammo.velocity.copy(direction)
+            .multiplyScalar(25);
 
-        scope.ammoIdx = (scope.ammoIdx + 1) % scope.ammos.length;
+          scope.ammoIdx = (scope.ammoIdx + 1) % scope.ammos.length;
+        }
       }
     };
 

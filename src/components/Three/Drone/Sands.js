@@ -5,17 +5,13 @@ import { loaderDispatchHelper } from '@/utils/utilities';
 
 function Sands() {
   this.init = function(scope) {
-    const mapBeach = new Three.TextureLoader().load('./images/textures/sand.jpg', (texture) => {
-      scope.render();
-      loaderDispatchHelper(scope.$store, 'isSandLoaded1');
-      scope.$store.dispatch('drone/storeSandsTexture', { texture });
-    });
-    const mapSand = new Three.TextureLoader().load('./images/textures/sand.jpg', (texture) => {
-      scope.render();
-      loaderDispatchHelper(scope.$store, 'isSandLoaded2');
-    });
+    const mapBeach = scope.sandsTexture.texture;
+    // const mapSand = new Three.TextureLoader().load('./images/textures/sand.jpg', (texture) => {
+    //  scope.render();
+    //  loaderDispatchHelper(scope.$store, 'isSandLoaded2');
+    // });
     const materialBeach = new Three.MeshLambertMaterial({ color: 0xf0db7d, map: mapBeach });
-    const materialSand = new Three.MeshLambertMaterial({ color: 0xf0db7d, map: mapSand });
+    // const materialSand = new Three.MeshLambertMaterial({ color: 0xf0db7d, map: mapSand });
     let geometry;
 
     // Beach
@@ -29,16 +25,12 @@ function Sands() {
     beach.material.map.wrapS = beach.material.map.wrapT = Three.RepeatWrapping;
     beach.material.map.encoding = Three.sRGBEncoding;
 
-    beach.name = OBJECTS.BEACH.name;
-
-    // ground.receiveShadow = true;
-
     beach.updateMatrix();
     beach.matrixAutoUpdate = true;
 
     scope.scene.add(beach);
-    scope.objectsGround.push(beach);
 
+    /*
     // Sands
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < OBJECTS.SANDS.position.length; i++) {
@@ -62,6 +54,7 @@ function Sands() {
       scope.objectsGround.push(sand);
     }
     loaderDispatchHelper(scope.$store, 'isSandsBuilt');
+    */
   };
 }
 

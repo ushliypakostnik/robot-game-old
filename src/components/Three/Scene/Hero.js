@@ -156,7 +156,7 @@ function Hero() {
   };
 
   this.animate = function(scope) {
-    if (!scope.pause) {
+    if (!scope.isPause && !scope.isDrone) {
       if (scope.ammoIdx !== shot) {
         if (spit && spit.children[0]) {
           spit.children[0].play();
