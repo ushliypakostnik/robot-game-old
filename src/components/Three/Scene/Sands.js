@@ -8,7 +8,6 @@ function Sands() {
     const mapBeach = new Three.TextureLoader().load('./images/textures/sand.jpg', (texture) => {
       scope.render();
       loaderDispatchHelper(scope.$store, 'isSandLoaded1');
-      scope.$store.dispatch('drone/storeSandsTexture', { texture });
     });
     const mapSand = new Three.TextureLoader().load('./images/textures/sand.jpg', (texture) => {
       scope.render();

@@ -4,6 +4,7 @@ import storage from '@/utils/storage';
 const initialState = {
   language: null,
   isPause: true,
+  isDrone: false,
 };
 
 const state = initialState;
@@ -11,6 +12,7 @@ const state = initialState;
 const getters = {
   language: state => state.language,
   isPause: state => state.isPause,
+  isDrone: state => state.isDrone,
 };
 
 const actions = {
@@ -19,8 +21,12 @@ const actions = {
     storage.rememberLanguage(language);
   },
 
-  changePause: ({ commit }, isPause) => {
-    commit('changePause', isPause);
+  togglePause: ({ commit }, isPause) => {
+    commit('togglePause', isPause);
+  },
+
+  toggleDrone: ({ commit }, isDrone) => {
+    commit('toggleDrone', isDrone);
   },
 };
 
@@ -29,8 +35,13 @@ const mutations = {
     state.language = language;
   },
 
-  changePause: (state, isPause) => {
+  togglePause: (state, isPause) => {
     state.isPause = isPause;
+  },
+
+  toggleDrone: (state, isDrone) => {
+    state.isDrone = isDrone;
+    if (isDrone) state.isPause = false;
   },
 };
 

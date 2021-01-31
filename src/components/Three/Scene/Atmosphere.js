@@ -8,6 +8,7 @@ import { loaderDispatchHelper, distance2D } from '@/utils/utilities';
 function Atmosphere() {
   const audioLoader = new Three.AudioLoader();
   const listener = new Three.AudioListener();
+  let audio;
 
   let ocean;
   let wind;
@@ -104,7 +105,7 @@ function Atmosphere() {
     ocean = new Three.Mesh(geometry, material);
 
     audioLoader.load( './audio/ocean.mp3', (buffer) => {
-      const audio = new Three.Audio(listener);
+      audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(oceanVolume);
       audio.setLoop(true);
@@ -122,7 +123,7 @@ function Atmosphere() {
     wind = new Three.Mesh(geometry, material);
 
     audioLoader.load( './audio/wind.mp3', (buffer) => {
-      const audio = new Three.Audio(listener);
+      audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.wind);
       audio.setLoop(true);
@@ -135,7 +136,7 @@ function Atmosphere() {
     });
   };
 
-  const stop = () => {
+  this.stop = () => {
     if (ocean && ocean.children[0] && ocean.children[0].isPlaying) ocean.children[0].stop();
     if (wind && wind.children[0] && wind.children[0].isPlaying) wind.children[0].stop();
   };
@@ -173,7 +174,7 @@ function Atmosphere() {
 
       if (wind && wind.children[0] && !wind.children[0].isPlaying) wind.children[0].play();
     } else {
-      stop();
+      this.stop();
     }
   };
 }

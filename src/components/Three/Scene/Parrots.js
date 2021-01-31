@@ -90,9 +90,7 @@ function Parrots() {
         parrot.mesh.position.add(parrot.mesh.getWorldDirection(direction).multiplyScalar((OBJECTS.PARROTS.velocity * parrot.accelerationVelocity) * delta));
       }
 
-      if (parrot.mixer) {
-        parrot.mixer.update(delta);
-      }
+      if (parrot.mixer) parrot.mixer.update(delta);
     });
   };
 }

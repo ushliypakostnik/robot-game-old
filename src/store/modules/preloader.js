@@ -1,6 +1,8 @@
 /* eslint-disable import/no-cycle, no-shadow */
 const initialState = {
   isGameLoaded: false,
+  isHeroLoaded: false,
+  isMashaComplete: false,
   isGrassLoaded: false,
   isGrassBuilt: false,
   isStoneLoaded: false,

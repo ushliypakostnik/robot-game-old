@@ -4,6 +4,8 @@
     class="layout"
   >
     <Preloader>
+      <Scene />
+
       <div
         v-if="isPause"
         class="layout__blocker"
@@ -21,16 +23,16 @@
           <button
             class="button"
             type="button"
-            @click.prevent.stop="changePause(false)"
+            @click.prevent.stop="togglePause(false)"
           >{{ $t('layout.startbutton') }}</button>
           <div class="switch__wrapper">
             <LangSwitch />
           </div>
         </div>
       </div>
-      <Scene />
     </Preloader>
   </div>
+
   <Gate
     v-else-if="!isDesktop"
     face="gadgets"
@@ -42,23 +44,22 @@
 </template>
 
 <script>
-  import { createNamespacedHelpers, mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
+
 import ScreenHelper from '@/utils/screen-helper';
 
+import Gate from '@/components/Layout/Gate.vue';
 import Preloader from '@/components/Layout/Preloader.vue';
 import Scene from '@/components/Three/Scene/Scene.vue';
-import Gate from '@/components/Layout/Gate.vue';
 import LangSwitch from '@/components/Layout/LangSwitch.vue';
-
-const { mapGetters } = createNamespacedHelpers('layout');
 
 export default {
   name: 'Layout',
 
   components: {
+    Gate,
     Preloader,
     Scene,
-    Gate,
     LangSwitch,
   },
 
@@ -80,19 +81,17 @@ export default {
 
   computed: {
     ...mapGetters({
-      isPause: 'isPause',
+      isPause: 'layout/isPause',
     }),
   },
 
   methods: {
     ...mapActions({
-      changePause: 'layout/changePause',
+      togglePause: 'layout/togglePause',
     }),
 
     onWindowResize() {
-      if (ScreenHelper.isDesktop()) {
-        this.isDesktop = true;
-      } else this.isDesktop = false;
+      this.isDesktop = !!ScreenHelper.isDesktop();
     },
   },
 };
@@ -102,16 +101,20 @@ export default {
 @import "@/styles/_main.scss";
 
 .layout {
-  height: 100vh;
+  position: fixed;
+  @include size(100vw, 100vh);
 
   &__blocker {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-color: $colors__gate;
     display: flex;
     justify-content: center;
     align-items: center;
+    @include size(100%, 100%);
   }
 
   &__instructions {

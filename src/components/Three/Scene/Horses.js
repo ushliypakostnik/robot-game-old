@@ -85,9 +85,7 @@ function Horses() {
         horse.mesh.position.add(horse.mesh.getWorldDirection(direction).multiplyScalar((OBJECTS.HORSES.velocity * horse.accelerationVelocity) * delta));
       }
 
-      if (horse.mixer) {
-        horse.mixer.update(delta);
-      }
+      if (horse.mixer) horse.mixer.update(delta);
     });
   };
 }

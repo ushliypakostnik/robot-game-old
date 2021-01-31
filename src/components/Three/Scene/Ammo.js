@@ -6,6 +6,7 @@ import { loaderDispatchHelper } from '@/utils/utilities';
 import { OBJECTS } from '../../../utils/constants';
 
 function Ammo() {
+  let audio;
   const audioLoader = new Three.AudioLoader();
   const listener = new Three.AudioListener();
 
@@ -29,8 +30,7 @@ function Ammo() {
 
           ammo.collider.center.copy(scope.controls.getObject().position);
           ammo.collider.center.y -= 0.5;
-          ammo.velocity.copy(direction)
-            .multiplyScalar(25);
+          ammo.velocity.copy(direction).multiplyScalar(25);
 
           scope.ammoIdx = (scope.ammoIdx + 1) % scope.ammos.length;
         }
@@ -55,7 +55,7 @@ function Ammo() {
         ammo.scale.set(1, 1, 1);
         ammo.position.y = scope.height - 0.2;
 
-        const audio = new Three.PositionalAudio(listener);
+        audio = new Three.PositionalAudio(listener);
         audio.setBuffer(buffer);
         audio.setVolume(DESIGN.VOLUME.normal);
         audio.setLoop(false);
@@ -93,12 +93,25 @@ function Ammo() {
     return Math.exp(-1.5 * delta) - 1;
   };
 
-  const play = (ammo) => {
-    if (!ammo.isPlay) {
+  const play = (scope, ammo) => {
+    if (!scope.isPause && !scope.isDrone && !ammo.isPlay) {
       ammo.fakeMesh.position.set(ammo.mesh.position.x, ammo.mesh.position.y, ammo.mesh.position.z);
       ammo.fakeMesh.children[0].play();
       ammo.isPlay = true;
     }
+  };
+
+  const updateAmmo = (ammo) => {
+    ammo.mesh.position.y = -1;
+    ammo.onWall = false;
+    ammo.onGround = false;
+    ammo.false = true;
+    ammo.off = false;
+    ammo.scale = 1;
+    ammo.mesh.scale.set(1, 1, 1);
+    ammo.isPlay = false;
+
+    return ammo;
   };
 
   this.animate = function(scope) {
@@ -112,19 +125,18 @@ function Ammo() {
           beforeObject = intersections.length > 0 ? intersections[0].distance < stopDistance : false;
 
           if (beforeObject) {
-            play(ammo);
+            play(scope, ammo);
             ammo.onWall = true;
             ammo.velocity.x = 0;
             ammo.velocity.y = 0;
             ammo.velocity.z = 0;
-            console.log('Hit!', intersections[0].distance);
           } else {
             raycasterNegate.set(ammo.mesh.position, direction.negate());
             intersections = raycasterNegate.intersectObjects(scope.objectsVertical);
             beforeObject = intersections.length > 0;
 
             if (beforeObject) {
-              play(ammo);
+              play(scope, ammo);
               ammo.onWall = true;
               ammo.velocity.x = 0;
               ammo.velocity.y = 0;
@@ -133,8 +145,6 @@ function Ammo() {
               ammo.mesh.x = intersections[0].point.x + ammo.collider.center.addScaledVector(ammo.velocity.negate(), scope.delta * 200).x;
               ammo.mesh.y = intersections[0].point.y + ammo.collider.center.addScaledVector(ammo.velocity.negate(), scope.delta * 200).y;
               ammo.mesh.z = intersections[0].point.z + + ammo.collider.center.addScaledVector(ammo.velocity.negate(), scope.delta * 200).z;
-
-              console.log('Negate!!!', intersections[0].distance);
             }
           }
         }
@@ -147,14 +157,7 @@ function Ammo() {
             ammo.mesh.scale.set(ammo.scale, ammo.scale, ammo.scale);
 
             if (ammo.scale < 0.5) {
-              ammo.mesh.position.y = -1;
-              ammo.onWall = false;
-              ammo.onGround = false;
-              ammo.false = true;
-              ammo.off = false;
-              ammo.scale = 1;
-              ammo.mesh.scale.set(1, 1, 1);
-              ammo.isPlay = false;
+              updateAmmo(ammo);
 
               ammo.onFly = false;
             }
@@ -183,7 +186,7 @@ function Ammo() {
 
       // Упало
       if (ammo.onGround) {
-        play(ammo);
+        play(scope, ammo);
 
         if (ammo.scale > 5) ammo.off = true;
 
@@ -198,14 +201,7 @@ function Ammo() {
           }
 
           if (ammo.scale < 0.5) {
-            ammo.mesh.position.y = -1;
-            ammo.onWall = false;
-            ammo.onGround = false;
-            ammo.false = true;
-            ammo.off = false;
-            ammo.scale = 1;
-            ammo.mesh.scale.set(1, 1, 1);
-            ammo.isPlay = false;
+            updateAmmo(ammo);
           }
         } else {
           ammo.scale += scope.delta;

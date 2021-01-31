@@ -38,6 +38,8 @@ export const DESIGN = {
   AMMO_RADIUS: 0.5,
   VOLUME: {
     normal: 0.5,
+    max: 1,
+    masha: 0.75,
     wind: 0.25,
   },
 };
@@ -47,6 +49,12 @@ const size = (size) => {
 };
 
 export const OBJECTS = {
+  HERO: {
+    scale: 0.02,
+  },
+  DRONE: {
+    startY: 75,
+  },
   HORSES: {
     size: 0.0125,
     start: [
@@ -174,6 +182,7 @@ export const OBJECTS = {
       [size(-0.315), size(-0.66), size(0.16)],
       [size(-0.275), size(-0.725), size(0.2)],
 
+      /* Не в море
       [size(0.405), size(0.405), size(0.06)],
       [size(0.37), size(0.385), size(0.1)],
 
@@ -188,6 +197,7 @@ export const OBJECTS = {
 
       [size(-0.25), size(0.34), size(0.085)],
       [size(-0.215), size(0.31), size(0.26)],
+      */
     ],
   },
   TREES: {
@@ -227,7 +237,7 @@ export const LOCALES = {
       text5: 'Cкрытное передвижение: C или Alt',
       text6: 'Осмотреться: Мышь',
       text7: 'Запустить дрон: TAB',
-      text8: 'Pause: Ecs или TAB',
+      text8: 'Pause: Ecs',
       startbutton: 'Играть',
       gadgetstext: 'Для того чтобы играть нужна клавиатура персонального компьютера',
       chromegate: 'Для того чтобы играть откройте в браузере Google Chrome (или Яндекс)',

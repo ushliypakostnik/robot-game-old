@@ -1,12 +1,17 @@
 import * as Three from 'three';
 
-import { DESIGN } from '@/utils/constants';
+import { FBXLoader } from '@/components/Three/Modules/Utils/FBXLoader.js';
 
+import { DESIGN, OBJECTS } from '@/utils/constants';
 import { loaderDispatchHelper } from '@/utils/utilities';
 
 function Hero() {
+  let mixer;
+
+  const loader = new FBXLoader();
   const audioLoader = new Three.AudioLoader();
   const listener = new Three.AudioListener();
+  let audio;
 
   let steps;
   let run;
@@ -16,7 +21,7 @@ function Hero() {
   let jump;
   let spit;
 
-  let onFly = false;
+  let onFly = true;
   let onFloor = 0;
   let shot = 0;
 
@@ -24,31 +29,39 @@ function Hero() {
   const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
 
   this.init = function(scope) {
+    loader.load( './images/models/Hero.fbx', (hero) => {
+      hero.scale.set(OBJECTS.HERO.scale, OBJECTS.HERO.scale, OBJECTS.HERO.scale);
+      hero.visible = false;
 
-    /*
-    const geometry = new Three.SphereBufferGeometry( 2, 32, 32 );
-    const material = new Three.MeshStandardMaterial( { color: 0xff0000 } );
+      mixer = new Three.AnimationMixer(hero);
+      mixer.clipAction(hero.animations[0]).setDuration(1).play();
 
-    steps = new Three.Mesh(geometry, material);
-    steps.position.set(camera.position);
-    steps.visible = false;
+      audioLoader.load( './audio/masha.mp3', (buffer) => {
+        audio = new Three.Audio(listener);
+        audio.setBuffer(buffer);
+        audio.setVolume(DESIGN.VOLUME.masha);
 
-    audioLoader.load( './audio/steps.mp3', (buffer) => {
-      const audio = new Three.PositionalAudio(listener);
-      audio.setBuffer(buffer);
-      audio.setVolume(DESIGN.VOLUME);
-      audio.setLoop(true);
+        // attention: see Modules/Controls/OrbitControls.js !!!
+        // audio.setRefDistance(15);
+        // audio.setMaxDistance(500);
+        // audio.setRolloffFactor(1) ;
+        // audio.setDistanceModel('exponential');
 
-      steps.add(audio);
-      scene.add(steps);
-      loaderDispatchHelper($store, 'isStepComplete');
+        audio.setLoop(true);
+
+        hero.add(audio);
+
+        scope.robot = hero;
+        scope.scene.add(hero);
+        loaderDispatchHelper(scope.$store, 'isMashaComplete');
+      });
+      loaderDispatchHelper(scope.$store, 'isHeroLoaded');
     });
-    */
 
     steps = new Three.Mesh(geometry, material);
 
     audioLoader.load( './audio/steps.mp3', (buffer) => {
-      const audio = new Three.Audio(listener);
+      audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
       audio.setLoop(true);
@@ -63,7 +76,7 @@ function Hero() {
     run = new Three.Mesh(geometry, material);
 
     audioLoader.load( './audio/run.mp3', (buffer) => {
-      const audio = new Three.Audio(listener);
+      audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
       audio.setLoop(true);
@@ -78,7 +91,7 @@ function Hero() {
     watersteps = new Three.Mesh(geometry, material);
 
     audioLoader.load( './audio/waterstep.mp3', (buffer) => {
-      const audio = new Three.Audio(listener);
+      audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
       audio.setLoop(true);
@@ -93,7 +106,7 @@ function Hero() {
     waterrun = new Three.Mesh(geometry, material);
 
     audioLoader.load( './audio/waterrun.mp3', (buffer) => {
-      const audio = new Three.Audio(listener);
+      audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
       audio.setLoop(true);
@@ -108,7 +121,7 @@ function Hero() {
     jump = new Three.Mesh(geometry, material);
 
     audioLoader.load( './audio/jump.mp3', (buffer) => {
-      const audio = new Three.Audio(listener);
+      audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
 
@@ -122,7 +135,7 @@ function Hero() {
     waterjump = new Three.Mesh(geometry, material);
 
     audioLoader.load( './audio/waterjump.mp3', (buffer) => {
-      const audio = new Three.Audio(listener);
+      audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
 
@@ -136,7 +149,7 @@ function Hero() {
     spit = new Three.Mesh(geometry, material);
 
     audioLoader.load( './audio/spit.mp3', (buffer) => {
-      const audio = new Three.Audio(listener);
+      audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
 
@@ -148,11 +161,25 @@ function Hero() {
     });
   };
 
-  const stop = (play) => {
+  this.stop = (play) => {
     if (play !== 'steps' && steps && steps.children[0] && steps.children[0].isPlaying) steps.children[0].stop();
     if (play !== 'run' && run && run.children[0] && run.children[0].isPlaying) run.children[0].stop();
     if (play !== 'watersteps' && watersteps && watersteps.children[0] && watersteps.children[0].isPlaying) watersteps.children[0].stop();
     if (play !== 'waterrun' && waterrun && waterrun.children[0] && waterrun.children[0].isPlaying) waterrun.children[0].stop();
+  };
+
+  const jumps = (scope) => {
+    if (scope.inWater) {
+      if (waterjump && waterjump.children[0]) {
+        this.stop();
+        waterjump.children[0].play();
+      }
+    } else {
+      if (jump && jump.children[0]) {
+        this.stop();
+        jump.children[0].play();
+      }
+    }
   };
 
   this.animate = function(scope) {
@@ -162,45 +189,23 @@ function Hero() {
           spit.children[0].play();
         }
         shot = scope.ammoIdx;
-      } else if (scope.canJump !== !onFly) {
-        if (onFly) {
-          if (scope.inWater) {
-            if (waterjump && waterjump.children[0]) {
-              stop();
-              waterjump.children[0].play();
-            }
-          } else {
-            if (jump && jump.children[0]) {
-              stop();
-              jump.children[0].play();
-            }
-          }
-        }
-        onFly = !scope.canJump;
+      } else if (scope.canJump !== onFly) {
+        if (!onFly) jumps(scope);
+        onFly = scope.canJump;
       } else if (scope.onObjectHeight !== onFloor) {
-        if (scope.inWater) {
-          if (waterjump && waterjump.children[0]) {
-            stop();
-            waterjump.children[0].play();
-          }
-        } else {
-          if (jump && jump.children[0]) {
-            stop();
-            jump.children[0].play();
-          }
-        }
+        jumps(scope);
         onFloor = scope.onObjectHeight;
       } else {
         if (scope.moveForward || scope.moveBackward || scope.moveLeft || scope.moveRight) {
           if (scope.moveRun) {
             if (scope.inWater) {
               if (waterrun && waterrun.children[0]) {
-                stop('waterrun');
+                this.stop('waterrun');
                 waterrun.children[0].play();
               }
             } else {
               if (run && run.children[0]) {
-                stop('run');
+                this.stop('run');
                 run.children[0].play();
               }
             }
@@ -209,7 +214,7 @@ function Hero() {
           if (!scope.moveRun) {
             if (scope.inWater) {
               if (watersteps && watersteps.children[0]){
-                stop('watersteps');
+                this.stop('watersteps');
                 if (scope.moveHidden) {
                   watersteps.children[0].setPlaybackRate(0.75);
                 } else watersteps.children[0].setPlaybackRate(1);
@@ -220,17 +225,33 @@ function Hero() {
                 if (scope.moveHidden) {
                   steps.children[0].setPlaybackRate(0.75);
                 } else steps.children[0].setPlaybackRate(1);
-                stop('steps');
+                this.stop('steps');
                 steps.children[0].play();
               }
             }
           }
         } else {
-          stop();
+          this.stop();
         }
       }
     } else {
-      stop();
+      this.stop();
+    }
+  };
+
+  this.stopDrone = function(scope) {
+    if (scope.robot && scope.robot.children[3] && scope.robot.children[3].isPlaying) scope.robot.children[3].pause();
+  };
+
+  this.animateDrone = function(scope) {
+    console.log(scope.camera.position);
+
+    if (!scope.isPause) {
+      if (mixer) mixer.update(scope.delta / 20);
+
+      if (scope.robot && scope.robot.children[3] && !scope.robot.children[3].isPlaying) scope.robot.children[3].play();
+    } else {
+      this.stopDrone(scope);
     }
   };
 }
