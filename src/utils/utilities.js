@@ -21,6 +21,16 @@ export const distance2D = (x1, y1, x2, y2) => {
   return Math.sqrt(((x2 - x1) ** 2) + ((y2 - y1) ** 2));
 };
 
-export const degToRad = (degrees) => {
+export const degreesToRadians = (degrees) => {
   return degrees * (Math.PI / 180);
+};
+
+export const randomPointInCircle = (radius, x, y) => {
+  const r = radius * Math.sqrt(Math.random());
+  const theta = Math.random() * 2 * Math.PI;
+  return [x + r * Math.cos(theta), y - r + Math.sin(theta)];
+};
+
+export const getNumberSign = (number) => {
+  return number === 0 ? 0 : number > 0 ? 1 : -1;
 };

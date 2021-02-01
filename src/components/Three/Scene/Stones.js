@@ -33,6 +33,8 @@ function Stones() {
       stone.position.y = OBJECTS.MOUNTAINS.positionY;
       stone.position.z = OBJECTS.MOUNTAINS.position[i][1];
 
+      stone.name = OBJECTS.MOUNTAINS.name;
+
       // stone.castShadow = true;
       // stone.receiveShadow = true;
 

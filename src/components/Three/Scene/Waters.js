@@ -104,7 +104,7 @@ function Waters(scope) {
         const radius = randomInteger(OBJECTS.PUDDLES.min, OBJECTS.PUDDLES.max);
         geometry = new Three.CircleBufferGeometry(radius, 32);
         water = initWater(scope.scene, geometry);
-        let randomX = (x * step + randomInteger(step / 2, step / 2) - DESIGN.GROUND_SIZE / 2);
+        let randomX = (x * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2);
         let randomZ = (z * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2);
 
         // Не внутри другого озера

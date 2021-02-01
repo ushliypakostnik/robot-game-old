@@ -163,26 +163,29 @@ export const OBJECTS = {
     ],
   },
   MOUNTAINS: {
+    name: 'mountain',
     topMax: size(0.01),
     bottomMin: size(0.01),
-    bottomMax: size(0.1),
+    bottomMax: size(0.06),
     positionY: -0.1,
     position: [
       // x, z, height
-      [size(-0.45), size(-0.475), size(0.06)],
+      [size(-0.48), size(-0.47), size(0.06)],
       [size(-0.475), size(-0.5), size(0.1)],
       [size(-0.525), size(-0.545), size(0.075)],
       [size(-0.575), size(-0.525), size(0.135)],
       [size(-0.575), size(-0.55), size(0.2)],
       [size(-0.6), size(-0.5), size(0.065)],
       [size(0.5), size(-0.6), size(0.045)],
-      [size(-0.4), size(-0.422), size(0.075)],
-      [size(-0.625), size(-0.625), size(0.115)],
+      [size(-0.45), size(-0.69), size(0.075)],
+      [size(-0.3), size(-0.69), size(0.115)],
       [size(-0.35), size(-0.633), size(0.085)],
-      [size(-0.315), size(-0.66), size(0.16)],
-      [size(-0.275), size(-0.725), size(0.2)],
+      [size(-0.335), size(-0.66), size(0.16)],
+      [size(-0.375), size(-0.65), size(0.2)],
 
-      /* Не в море
+      [size(-0.14), size(-0.23), size(0.135)],
+
+      // Не в море
       [size(0.405), size(0.405), size(0.06)],
       [size(0.37), size(0.385), size(0.1)],
 
@@ -197,12 +200,20 @@ export const OBJECTS = {
 
       [size(-0.25), size(0.34), size(0.085)],
       [size(-0.215), size(0.31), size(0.26)],
-      */
     ],
   },
   TREES: {
-    trees1: {
-      scale: 0.1,
+    tree1: {
+      quantity: 36,
+      positionY: -2,
+      heightMin: size(0.029),
+      heightMax: size(0.0325),
+    },
+    tree2: {
+      quantity: 36,
+      positionY: -1,
+      heightMin: size(0.031),
+      heightMax: size(0.033),
     }
   }
 };
@@ -218,7 +229,7 @@ export const LOCALES = {
       text5: 'Hidden movement: C or Alt',
       text6: 'Look: MOUSE',
       text7: 'Launch drone: TAB',
-      text8: 'Pause: Ecs',
+      text8: 'Pause: P',
       startbutton: 'Play',
       gadgetsgate: 'You need a PC keyboard to play',
       chromegate: 'In order to play, open in the Google Chrome (or Yandex) browser',
@@ -237,7 +248,7 @@ export const LOCALES = {
       text5: 'Cкрытное передвижение: C или Alt',
       text6: 'Осмотреться: Мышь',
       text7: 'Запустить дрон: TAB',
-      text8: 'Pause: Ecs',
+      text8: 'Pause: P',
       startbutton: 'Играть',
       gadgetstext: 'Для того чтобы играть нужна клавиатура персонального компьютера',
       chromegate: 'Для того чтобы играть откройте в браузере Google Chrome (или Яндекс)',

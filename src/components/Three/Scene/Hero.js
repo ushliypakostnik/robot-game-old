@@ -161,13 +161,6 @@ function Hero() {
     });
   };
 
-  this.stop = (play) => {
-    if (play !== 'steps' && steps && steps.children[0] && steps.children[0].isPlaying) steps.children[0].stop();
-    if (play !== 'run' && run && run.children[0] && run.children[0].isPlaying) run.children[0].stop();
-    if (play !== 'watersteps' && watersteps && watersteps.children[0] && watersteps.children[0].isPlaying) watersteps.children[0].stop();
-    if (play !== 'waterrun' && waterrun && waterrun.children[0] && waterrun.children[0].isPlaying) waterrun.children[0].stop();
-  };
-
   const jumps = (scope) => {
     if (scope.inWater) {
       if (waterjump && waterjump.children[0]) {
@@ -239,13 +232,14 @@ function Hero() {
     }
   };
 
-  this.stopDrone = function(scope) {
-    if (scope.robot && scope.robot.children[3] && scope.robot.children[3].isPlaying) scope.robot.children[3].pause();
+  this.stop = (play) => {
+    if (play !== 'steps' && steps && steps.children[0] && steps.children[0].isPlaying) steps.children[0].stop();
+    if (play !== 'run' && run && run.children[0] && run.children[0].isPlaying) run.children[0].stop();
+    if (play !== 'watersteps' && watersteps && watersteps.children[0] && watersteps.children[0].isPlaying) watersteps.children[0].stop();
+    if (play !== 'waterrun' && waterrun && waterrun.children[0] && waterrun.children[0].isPlaying) waterrun.children[0].stop();
   };
 
   this.animateDrone = function(scope) {
-    console.log(scope.camera.position);
-
     if (!scope.isPause) {
       if (mixer) mixer.update(scope.delta / 20);
 
@@ -253,6 +247,10 @@ function Hero() {
     } else {
       this.stopDrone(scope);
     }
+  };
+
+  this.stopDrone = function(scope) {
+    if (scope.robot && scope.robot.children[3] && scope.robot.children[3].isPlaying) scope.robot.children[3].pause();
   };
 }
 

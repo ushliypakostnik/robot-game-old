@@ -42,11 +42,13 @@ export default {
 
   data() {
     return {
-      camera: null,
-      scene: null,
       renderer: null,
-
       composer: null,
+
+      scene: null,
+
+      camera: null,
+      cameraDrone: null,
 
       controls: null,
       mainControls: null,
@@ -59,8 +61,8 @@ export default {
       prevTime: null,
       velocity: null,
       direction: null,
+      directionStore: null,
       position: null,
-      color: null,
 
       moveForward: false,
       moveBackward: false,
@@ -81,6 +83,7 @@ export default {
       y: null,
       z: null,
 
+      directionUp: null,
       directionDown: null,
       directionForward: null,
       directionBackward: null,
@@ -89,6 +92,7 @@ export default {
 
       object: null,
       onObjectHeight: 0,
+      onUp: null,
       onForward: null,
       onBackward: null,
       onRight: null,
@@ -129,8 +133,8 @@ export default {
     this.prevTime = performance.now();
     this.velocity = new Three.Vector3();
     this.direction = new Three.Vector3();
+    this.directionStore = new Three.Vector3(-0.7071067758832469, 0, -0.7071067864898483);
     this.position = new Three.Vector3();
-    this.color = new Three.Color();
     this.mouse = new Three.Vector2();
     this.x = new Three.Vector3(1, 0, 0);
     this.y = new Three.Vector3(0, -1, 0);
@@ -140,11 +144,17 @@ export default {
     this.animate();
   },
 
+  created() {
+    this.$eventHub.$on('lock', this.lock);
+  },
+
   beforeDestroy() {
     window.removeEventListener('resize', this.onWindowResize, false);
     document.removeEventListener('keydown', this.onKeyDown, false);
     document.removeEventListener('keyup', this.onKeyUp, false);
     document.removeEventListener('mousemove', this.onMouseMove, false);
+
+    if (this.$eventHub._events['lock']) this.$eventHub.$off('lock');
   },
 
   computed: {
@@ -161,15 +171,10 @@ export default {
     }),
 
     init() {
-      // Core
+      // Container
       const container = document.getElementById('scene');
 
-      // eslint-disable-next-line max-len
-      this.camera = new Three.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 1, DESIGN.GROUND_SIZE);
-
-      this.scene = new Three.Scene();
-      this.scene.background = new Three.Color(0x4542a0);
-      this.scene.fog = new Three.Fog(0x615ebc, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE / 2);
+      // Renderer
 
       this.renderer = new Three.WebGLRenderer({ antialias: true });
       this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -177,21 +182,44 @@ export default {
 
       container.appendChild(this.renderer.domElement);
 
-      this.scene.add(this.camera);
-      // console.log(this.camera.position.x, this.camera.position.y, this.camera.position.z);
+      // Scene
+
+      this.scene = new Three.Scene();
+      this.scene.background = new Three.Color(0x4542a0);
+      this.scene.fog = new Three.Fog(0x615ebc, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE / 2);
+
+      // Cameras
+
+      // eslint-disable-next-line max-len
+      this.camera = new Three.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 1, DESIGN.GROUND_SIZE);
+      this.cameraDrone = this.camera.clone();
 
       // Controls
+
+      // With Drone
+
+      this.droneControls = new OrbitControls(this.cameraDrone, this.renderer.domElement);
+      this.droneControls.addEventListener('change', this.render);
 
       // In First Person
 
       this.mainControls = new PointerLockControls(this.camera, this.renderer.domElement);
 
+      this.mainControls.addEventListener('unlock', () => {
+        if (!this.isDrone) {
+          this.directionStore = this.camera.getWorldDirection(this.direction);
+          this.togglePause(true);
+        }
+      });
+
+      this.mainControls.addEventListener('lock', () => {
+        if (!this.isDrone) this.togglePause(false);
+      });
+
       this.setInFirstPersonControls();
 
-      // With Drone
-
-      this.droneControls = new OrbitControls(this.camera, this.renderer.domElement);
-      this.droneControls.addEventListener('change', this.render);
+      this.scene.add(this.camera);
+      // console.log(this.camera.position.x, this.camera.position.y, this.camera.position.z);
 
       // Atmosphere
       this.atmosphere = new Atmosphere();
@@ -239,6 +267,7 @@ export default {
 
       // Raycasters
       /* eslint-disable max-len */
+      this.raycasterUp = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 1, 0), 0, 40);
       this.raycasterDown = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, -1, 0), 0, 100);
       this.raycasterForward = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, -1), 0, 10);
       this.raycasterBackward = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, 1), 0, 10);
@@ -253,7 +282,7 @@ export default {
       document.addEventListener('mousemove', this.onMouseMove, false);
 
       // Postprocessing
-      const renderModel = new RenderPass(this.scene, this.camera);
+      const renderModel = new RenderPass(this.scene, this.cameraDrone);
       const effectFilm = new FilmPass(0.35, 0.75, 2048, false);
 
       this.composer = new EffectComposer(this.renderer);
@@ -273,20 +302,27 @@ export default {
       // Controls
       this.controls = this.mainControls;
 
-      this.controls.addEventListener('unlock', (event) => {
-        if (!this.isDrone) this.togglePause(true);
-      });
-
-      this.controls.addEventListener('lock', (event) => {
-        if (!this.isDrone) this.togglePause(false);
-      });
-
       // Переместиться в точку
       // this.controls.getObject().position.x = -1200;
       // this.controls.getObject().position.z = -300;
       this.controls.getObject().position.y = this.height;
 
+      this.camera.lookAt(this.directionStore.multiplyScalar(1000));
+
       this.scene.add(this.controls.getObject());
+    },
+
+    setWithDroneControl() {
+      this.directionStore = this.camera.getWorldDirection(this.direction);
+
+      this.controls = this.droneControls;
+      this.controls.target.set(this.robot.position.x, this.robot.position.y, this.robot.position.z);
+      this.cameraDrone.position.y = OBJECTS.DRONE.startY;
+      this.controls.update();
+    },
+
+    lock() {
+      if (!this.isDrone) this.controls.lock();
     },
 
     onMouseMove(event) {
@@ -317,13 +353,6 @@ export default {
         case 39: // Right
         case 68: // D
           if (!this.moveRight) this.moveRight = true;
-          break;
-
-        case 32: // Space
-          if (!this.moveHidden && this.canJump) {
-            this.velocity.y += DESIGN.HERO_JUMP_SPEED;
-            this.canJump = false;
-          }
           break;
 
         case 16: // Shift
@@ -370,10 +399,22 @@ export default {
           if (this.moveRun) this.moveRun = false;
           break;
 
-        case 27: // Esc
-          event.preventDefault();
-          event.stopPropagation();
-          this.togglePause(!this.isPause);
+        case 32: // Space
+          if (!this.moveHidden && this.canJump) {
+            this.velocity.y += DESIGN.HERO_JUMP_SPEED;
+            this.canJump = false;
+          }
+          break;
+
+        // case 27: // Esc
+        case 80: // P
+          if (!this.isDrone) {
+            if (this.isPause) {
+              this.controls.lock();
+            } else this.controls.unlock();
+          } else {
+            this.togglePause(!this.isPause);
+          }
           break;
       }
     },
@@ -482,6 +523,25 @@ export default {
           }
         }
 
+        // Up
+        this.directionUp = this.directionDown.negate();
+        this.raycasterUp.set(this.camera.getWorldPosition(this.position), this.directionUp);
+        this.intersections = this.raycasterUp.intersectObjects(this.objectsVertical);
+        this.onUp = this.intersections.length > 0;
+        if (this.onUp) this.object = this.intersections[0].object;
+
+        // В камне!! ((((
+        if (this.object
+            && this.object.name !== OBJECTS.MOUNTAINS.name
+            && (this.onUp || (this.onForward && this.onBackward && this.onLeft && this.onRight))) {
+          this.onObjectHeight = this.object.position.y + this.object.geometry.parameters.radius + this.height;
+        } else if (this.object
+          && this.object.name === OBJECTS.MOUNTAINS.name
+          && (this.onUp || (this.onForward && this.onBackward && this.onLeft && this.onRight))) {
+          this.controls.moveRight(this.velocity.x * this.delta * 5);
+          this.controls.moveForward(this.velocity.z * this.delta * 5);
+        }
+
         this.velocity.x -= this.velocity.x * 10 * this.delta;
         this.velocity.z -= this.velocity.z * 10 * this.delta;
 
@@ -509,7 +569,18 @@ export default {
           }
         }
 
-        if (!this.collision) {
+        // Прыжок в гору!!
+        if (this.collision && !this.canJump && this.object && this.object.name === OBJECTS.MOUNTAINS.name) {
+          if ((this.onForward && this.moveForward) ||
+            (this.onBackward && this.moveBackward) ||
+            (this.onLeft && this.moveLeft) ||
+            (this.onRight && this.moveRight)) {
+            this.controls.moveRight(this.velocity.x * this.delta * 5);
+            this.controls.moveForward(this.velocity.z * this.delta * 5);
+            this.velocity.z = 0;
+            this.velocity.x = 0;
+          }
+        } else if (!this.collision) {
           this.controls.moveRight(-this.velocity.x * this.delta * this.moveSpeed);
           this.controls.moveForward(-this.velocity.z * this.delta * this.moveSpeed);
         } else {
@@ -571,25 +642,32 @@ export default {
   },
 
   watch: {
-    isPause(value) {
-      if (!value && !this.isDrone) this.controls.lock();
-    },
-
     isDrone(value) {
       if (value) {
+        // Переключаем на дрон
+
         this.robot.position.copy(this.controls.getObject().position);
+
+        // Down Through
+        this.directionDown = new Three.Vector3(0, 0, 0).crossVectors(this.x, this.z);
+        this.raycasterDown.set(this.camera.getWorldPosition(this.position), this.directionDown);
+        this.intersections = this.raycasterDown.intersectObjects(this.objectsGround);
+        if (this.intersections.length > 0) this.robot.position.y = this.intersections[0].point.y;
+
         this.controls.unlock();
 
-        // Controls
-        this.controls = this.droneControls;
-        this.camera.position.y = OBJECTS.DRONE.startY;
-        this.controls.target.set(this.robot.position.x, this.robot.position.y, this.robot.position.z);
-        this.controls.update();
-
         this.robot.visible = true;
+
+        // Controls
+        this.setWithDroneControl();
+
         this.render();
       } else {
+        // Переключаем на вид от первого лица
+
         this.robot.visible = false;
+
+        // Controls
         this.setInFirstPersonControls();
         this.controls.getObject().position.y = this.height + this.onObjectHeight;
         this.controls.lock();

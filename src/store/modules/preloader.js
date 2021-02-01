@@ -22,8 +22,9 @@ const initialState = {
   isDropComplete: false,
   isOceanComplete: false,
   isWindComplete: false,
-  isTree1Completed: false,
-  isTree2Completed: false,
+  isTree1Loaded: false,
+  isTree2Loaded: false,
+  isTreesBuilt: false,
 };
 const state = initialState;
 

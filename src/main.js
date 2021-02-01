@@ -8,6 +8,8 @@ import i18n from '@/utils/i18n';
 
 Vue.config.productionTip = false;
 
+Vue.prototype.$eventHub = new Vue();
+
 /* eslint-disable no-new */
 new Vue({
   store,

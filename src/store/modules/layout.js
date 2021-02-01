@@ -41,7 +41,6 @@ const mutations = {
 
   toggleDrone: (state, isDrone) => {
     state.isDrone = isDrone;
-    if (isDrone) state.isPause = false;
   },
 };
 

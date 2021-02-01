@@ -23,7 +23,7 @@
           <button
             class="button"
             type="button"
-            @click.prevent.stop="togglePause(false)"
+            @click.prevent.stop="play"
           >{{ $t('layout.startbutton') }}</button>
           <div class="switch__wrapper">
             <LangSwitch />
@@ -82,6 +82,7 @@ export default {
   computed: {
     ...mapGetters({
       isPause: 'layout/isPause',
+      isDrone: 'layout/isDrone',
     }),
   },
 
@@ -92,6 +93,11 @@ export default {
 
     onWindowResize() {
       this.isDesktop = !!ScreenHelper.isDesktop();
+    },
+
+    play() {
+      if (!this.isDrone) this.$eventHub.$emit('lock');
+      this.togglePause(false);
     },
   },
 };

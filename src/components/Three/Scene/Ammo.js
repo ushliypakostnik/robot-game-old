@@ -18,25 +18,6 @@ function Ammo() {
   const stopDistance = 1;
 
   this.init = function(scope) {
-    const shot = () => {
-      if (!scope.isDrone) {
-        if (scope.controls.isLocked) {
-          const ammo = scope.ammos[scope.ammoIdx];
-          ammo.onFly = true;
-
-          scope.scene.add(ammo.mesh);
-          scope.scene.add(ammo.fakeMesh);
-          scope.camera.getWorldDirection(direction);
-
-          ammo.collider.center.copy(scope.controls.getObject().position);
-          ammo.collider.center.y -= 0.5;
-          ammo.velocity.copy(direction).multiplyScalar(25);
-
-          scope.ammoIdx = (scope.ammoIdx + 1) % scope.ammos.length;
-        }
-      }
-    };
-
     // eslint-disable-next-line max-len
     const ammoGeometry = new Three.SphereBufferGeometry(DESIGN.AMMO_RADIUS, 32, 32);
     // eslint-disable-next-line max-len
@@ -85,8 +66,27 @@ function Ammo() {
       raycaster = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, 0), 0, 10);
       raycasterNegate = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, 0), 0, 10);
 
-      document.addEventListener('click',() => shot(), false);
+      document.addEventListener('click',() => shot(scope), false);
     });
+  };
+
+  const shot = (scope) => {
+    if (!scope.isDrone) {
+      if (scope.controls.isLocked) {
+        const ammo = scope.ammos[scope.ammoIdx];
+        ammo.onFly = true;
+
+        scope.scene.add(ammo.mesh);
+        scope.scene.add(ammo.fakeMesh);
+        scope.camera.getWorldDirection(direction);
+
+        ammo.collider.center.copy(scope.controls.getObject().position);
+        ammo.collider.center.y -= 0.5;
+        ammo.velocity.copy(direction).multiplyScalar(25);
+
+        scope.ammoIdx = (scope.ammoIdx + 1) % scope.ammos.length;
+      }
+    }
   };
 
   const damping = (delta) => {
@@ -168,7 +168,7 @@ function Ammo() {
         }
       }
 
-      // Летит или упало, но не попало
+      // Летит или упало, но не попало на камень
       if ((ammo.onFly || ammo.onGround) && !ammo.onWall) {
         ammo.collider.center.addScaledVector(ammo.velocity, scope.delta * 5);
         // eslint-disable-next-line no-param-reassign
