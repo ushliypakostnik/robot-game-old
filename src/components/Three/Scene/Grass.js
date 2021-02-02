@@ -72,7 +72,7 @@ function Grass() {
     ground.material.map.wrapS = ground.material.map.wrapT = Three.RepeatWrapping;
     ground.material.map.encoding = Three.sRGBEncoding;
 
-    // ground.receiveShadow = true;
+    ground.name = OBJECTS.GROUND.name;
 
     ground.updateMatrix();
     ground.matrixAutoUpdate = true;

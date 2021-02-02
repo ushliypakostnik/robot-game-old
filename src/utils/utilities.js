@@ -28,7 +28,7 @@ export const degreesToRadians = (degrees) => {
 export const randomPointInCircle = (radius, x, y) => {
   const r = radius * Math.sqrt(Math.random());
   const theta = Math.random() * 2 * Math.PI;
-  return [x + r * Math.cos(theta), y - r + Math.sin(theta)];
+  return [x + r * Math.cos(theta), y + r + Math.sin(theta)];
 };
 
 export const getNumberSign = (number) => {

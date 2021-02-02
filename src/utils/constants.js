@@ -94,6 +94,9 @@ export const OBJECTS = {
     positionY: -0.2,
     size: size(0.55),
   },
+  GROUND: {
+    name: 'grass',
+  },
   LAKES: {
     name: 'lake',
     positionY: 0,
@@ -136,7 +139,7 @@ export const OBJECTS = {
   STONES: {
     name: 'stone',
     quantityMin: 5,
-    quantityMax: 20,
+    quantityMax: 15,
     largeMin: DESIGN.HERO_JUMP_HEIGHT / 4,
     largeMax: DESIGN.HERO_JUMP_HEIGHT,
     smallMin: size(0.0025),
@@ -186,34 +189,50 @@ export const OBJECTS = {
       [size(-0.14), size(-0.23), size(0.135)],
 
       // Не в море
-      [size(0.405), size(0.405), size(0.06)],
-      [size(0.37), size(0.385), size(0.1)],
+      [size(0.37), size(0.385), size(0.033)],
 
-      [size(-0.425), size(-0.445), size(0.075)],
-      [size(-0.375), size(-0.4), size(0.135)],
-      [size(-0.425), size(-0.375), size(0.2)],
-      [size(-0.46), size(-0.35), size(0.065)],
+      [size(-0.425), size(-0.445), size(0.037)],
+      [size(-0.425), size(-0.375), size(0.045)],
+      [size(-0.46), size(-0.35), size(0.049)],
       [size(0.45), size(-0.36), size(0.045)],
 
-      [size(0.415), size(-0.42), size(0.075)],
-      [size(0.25), size(-0.275), size(0.115)],
+      [size(0.415), size(-0.42), size(0.055)],
+      [size(0.25), size(-0.275), size(0.046)],
 
-      [size(-0.25), size(0.34), size(0.085)],
-      [size(-0.215), size(0.31), size(0.26)],
+      [size(-0.25), size(0.34), size(0.051)],
     ],
   },
   TREES: {
     tree1: {
-      quantity: 36,
-      positionY: -2,
-      heightMin: size(0.029),
-      heightMax: size(0.0325),
+      quantity: 16,
+      positionY: -1.5,
+      heightMin: size(0.033),
+      heightMax: size(0.035),
     },
     tree2: {
-      quantity: 36,
-      positionY: -1,
+      quantity: 16,
+      positionY: -0.5,
       heightMin: size(0.031),
-      heightMax: size(0.033),
+      heightMax: size(0.035),
+    }
+  },
+  FLOWERS: {
+    positionY: 0,
+    anemone: {
+      quantity: 30,
+      scale: 0.11,
+    },
+    crocus: {
+      quantity: 30,
+      scale: 0.07,
+    },
+    daffodil: {
+      quantity: 30,
+      scale: 0.35,
+    },
+    tulip: {
+      quantity: 30,
+      scale: 0.2,
     }
   }
 };
@@ -224,12 +243,14 @@ export const LOCALES = {
       text0: 'Drinking robot',
       text1: 'Shot: LEFT MOUSE',
       text2: 'Move: WASD / Arrows',
-      text3: 'Jump SPACE + WASD',
+      text3: 'Jump SPACE + WASD / Arrows',
       text4: 'Run: Shift + W',
       text5: 'Hidden movement: C or Alt',
       text6: 'Look: MOUSE',
       text7: 'Launch drone: TAB',
       text8: 'Pause: P',
+      music: 'Music: ',
+      musiclink: 'Kafedra',
       startbutton: 'Play',
       gadgetsgate: 'You need a PC keyboard to play',
       chromegate: 'In order to play, open in the Google Chrome (or Yandex) browser',
@@ -243,12 +264,14 @@ export const LOCALES = {
       text0: 'Робот-собутыльник',
       text1: 'Выстрел: Кнопки мыши',
       text2: 'Движение: WASD / Стрелки',
-      text3: 'Прыжок SPACE + WASD',
+      text3: 'Прыжок SPACE + WASD / Стрелки',
       text4: 'Бежать: Shift + W',
       text5: 'Cкрытное передвижение: C или Alt',
       text6: 'Осмотреться: Мышь',
       text7: 'Запустить дрон: TAB',
       text8: 'Pause: P',
+      music: 'Музыка: ',
+      musiclink: 'Kafedra',
       startbutton: 'Играть',
       gadgetstext: 'Для того чтобы играть нужна клавиатура персонального компьютера',
       chromegate: 'Для того чтобы играть откройте в браузере Google Chrome (или Яндекс)',

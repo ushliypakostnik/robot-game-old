@@ -114,6 +114,7 @@ export default {
       objectsGround: [], // все объекты для вертикального рейкастинга
       objectsVertical: [], // все объекты с которыми сталкивается горизонтально
       objectsPuddles: [], // все лужи
+      objectsStoneData: [], // все камни и горы
       atmosphere: null,
       grass: null,
       plants: null,
@@ -239,13 +240,13 @@ export default {
       this.grass = new Grass();
       this.grass.init(this);
 
-      // Plants
-      this.plants = new Plants();
-      this.plants.init(this);
-
       // Stones
       this.stones = new Stones();
       this.stones.init(this);
+
+      // Plants
+      this.plants = new Plants();
+      this.plants.init(this);
 
       // Сharacters
       this.hero = new Hero();

@@ -24,7 +24,15 @@ const initialState = {
   isWindComplete: false,
   isTree1Loaded: false,
   isTree2Loaded: false,
-  isTreesBuilt: false,
+  isTressBuilt: false,
+  isAnemoneLoaded: false,
+  isCrocusLoaded: false,
+  isDaffodilLoaded: false,
+  isTulipLoaded: false,
+  isAnemoneBuilt: false,
+  isCrocusBuilt: false,
+  isDaffodilBuilt: false,
+  isTulipBuilt: false,
 };
 const state = initialState;
 

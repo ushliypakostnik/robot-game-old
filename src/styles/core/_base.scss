@@ -36,11 +36,13 @@ button,
 input,
 textarea,
 a {
+  color: $colors__white;
   outline: none !important;
 
   &:hover,
   &:active,
   &:focus {
+    color: $colors__white;
     outline: none !important;
   }
 }

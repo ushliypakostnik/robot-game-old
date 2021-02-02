@@ -28,6 +28,10 @@
           <div class="switch__wrapper">
             <LangSwitch />
           </div>
+          <h5>
+            {{ $t('layout.music') }}
+            <a href="https://kafedra.bandcamp.com/" target="_blank">{{ $t('layout.musiclink') }}</a>
+          </h5>
         </div>
       </div>
     </Preloader>

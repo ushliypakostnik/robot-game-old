@@ -20,6 +20,7 @@ function Stones() {
     });
     map.anisotropy = 4;
     const material = new Three.MeshLambertMaterial( { map } );
+    material.side = Three.DoubleSide;
 
     // Mountains
     for (let i = 0; i < OBJECTS.MOUNTAINS.position.length; i++) {
@@ -43,6 +44,7 @@ function Stones() {
 
       scope.objectsVertical.push(stone);
       scope.scene.add(stone);
+      scope.objectsStoneData.push([stone.position.x, stone.position.z, bottom]);
     }
 
     // Stones
@@ -69,8 +71,6 @@ function Stones() {
 
         stone.name = OBJECTS.STONES.name;
 
-        stone.material.side = Three.DoubleSide;
-
         // stone.castShadow = true;
         // stone.receiveShadow = true;
 
@@ -80,6 +80,7 @@ function Stones() {
         scope.scene.add(stone);
         scope.objectsVertical.push(stone);
         scope.objectsGround.push(stone);
+        scope.objectsStoneData.push([stone.position.x, stone.position.z, radius]);
       }
     }
     loaderDispatchHelper(scope.$store, 'isStonesBuilt');
