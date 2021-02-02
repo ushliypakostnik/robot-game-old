@@ -360,11 +360,6 @@ export default {
           if (!this.moveHidden && this.moveForward) this.moveRun = true;
           break;
 
-        case 67: // C
-        case 18: // Alt
-          this.moveHidden = !this.moveHidden;
-          break;
-
         case 9: // TAB
           event.preventDefault();
           event.stopPropagation();
@@ -397,6 +392,12 @@ export default {
           break;
 
         case 16: // Shift
+          if (this.moveRun) this.moveRun = false;
+          break;
+
+        case 67: // C
+        case 18: // Alt
+          this.moveHidden = !this.moveHidden;
           if (this.moveRun) this.moveRun = false;
           break;
 
