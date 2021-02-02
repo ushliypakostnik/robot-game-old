@@ -11,6 +11,13 @@ import {
 import { DDSLoader } from '@/components/Three/Modules/Utils/DDSLoader';
 
 function Stones() {
+  let elements;
+  let top;
+  let bottom;
+
+  let geometry;
+  let stone;
+
   this.init = function(scope) {
     const loader = new DDSLoader();
 
@@ -24,11 +31,11 @@ function Stones() {
 
     // Mountains
     for (let i = 0; i < OBJECTS.MOUNTAINS.position.length; i++) {
-      const top = randomInteger(0, OBJECTS.MOUNTAINS.topMax);
-      const bottom = randomInteger(OBJECTS.MOUNTAINS.bottomMin, OBJECTS.MOUNTAINS.bottomMax);
+      top = randomInteger(0, OBJECTS.MOUNTAINS.topMax);
+      bottom = randomInteger(OBJECTS.MOUNTAINS.bottomMin, OBJECTS.MOUNTAINS.bottomMax);
 
-      const geometry = new Three.CylinderBufferGeometry(top, bottom, OBJECTS.MOUNTAINS.position[i][2], 16, 16 );
-      const stone = new Three.Mesh(geometry, material);
+      geometry = new Three.CylinderBufferGeometry(top, bottom, OBJECTS.MOUNTAINS.position[i][2], 16, 16 );
+      stone = new Three.Mesh(geometry, material);
 
       stone.position.x = OBJECTS.MOUNTAINS.position[i][0];
       stone.position.y = OBJECTS.MOUNTAINS.positionY;
@@ -49,7 +56,7 @@ function Stones() {
 
     // Stones
     for (let i = 0; i < OBJECTS.STONES.position.length; i++) {
-      const elements = randomInteger(OBJECTS.STONES.quantityMin, OBJECTS.STONES.quantityMax);
+      elements = randomInteger(OBJECTS.STONES.quantityMin, OBJECTS.STONES.quantityMax);
 
       for (let n = 0; n < elements; n++) {
         let radius;
@@ -59,8 +66,8 @@ function Stones() {
           radius = randomInteger(OBJECTS.STONES.smallMin, OBJECTS.STONES.smallMax);
         }
 
-        const geometry = new Three.OctahedronBufferGeometry(radius, randomInteger(1, 5));
-        const stone = new Three.Mesh(geometry, material);
+        geometry = new Three.OctahedronBufferGeometry(radius, randomInteger(1, 5));
+        stone = new Three.Mesh(geometry, material);
 
         stone.position.x = OBJECTS.STONES.position[i][0] + randomInteger(20, 80) * yesOrNo();
         stone.position.y = randomInteger(-0.5 * radius, radius * 0.5);

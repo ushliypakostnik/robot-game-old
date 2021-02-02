@@ -4,6 +4,9 @@ import { OBJECTS } from '@/utils/constants';
 import { loaderDispatchHelper } from '@/utils/utilities';
 
 function Sands() {
+  let geometry;
+  let sand;
+
   this.init = function(scope) {
     const mapBeach = new Three.TextureLoader().load('./images/textures/sand.jpg', (texture) => {
       scope.render();
@@ -15,7 +18,6 @@ function Sands() {
     });
     const materialBeach = new Three.MeshLambertMaterial({ color: 0xf0db7d, map: mapBeach });
     const materialSand = new Three.MeshLambertMaterial({ color: 0xf0db7d, map: mapSand });
-    let geometry;
 
     // Beach
     geometry = new Three.CircleBufferGeometry(OBJECTS.BEACH.size, 128);
@@ -43,7 +45,7 @@ function Sands() {
     for (let i = 0; i < OBJECTS.SANDS.position.length; i++) {
       geometry = new Three.CircleBufferGeometry(OBJECTS.SANDS.position[i][2], 32);
 
-      const sand = new Three.Mesh(geometry, materialSand);
+      sand = new Three.Mesh(geometry, materialSand);
       sand.rotation.x = -Math.PI / 2;
       sand.material.map.repeat.set(24, 24);
       // eslint-disable-next-line no-multi-assign

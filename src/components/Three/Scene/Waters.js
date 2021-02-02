@@ -13,6 +13,22 @@ import {
 function Waters(scope) {
   let waters = [];
 
+  let pseudoOcean;
+  let pseudoLake;
+  let pseudoPuddle;
+
+  let water;
+  let geometry;
+  let pseudoGeometry;
+  let counter;
+
+  let radius;
+  let randomX;
+  let randomZ;
+
+  const square = Math.round(Math.sqrt(OBJECTS.PUDDLES.quantity));
+  const step = DESIGN.GROUND_SIZE / square;
+
   const waterNormals = new Three.TextureLoader().load('./images/textures/water.jpg', (texture) => {
     texture.wrapS = texture.wrapT = Three.RepeatWrapping;
     scope.render();
@@ -48,18 +64,13 @@ function Waters(scope) {
   const fakeMaterial = new Three.MeshLambertMaterial( { color: 0xff0000 } );
 
   this.init = function() {
-    let water;
-    let geometry;
-    let pseudoGeometry;
-    let counter;
-
     // Ocean
     geometry = new Three.CircleBufferGeometry(OBJECTS.OCEAN.position[2], 32);
     water = initWater(scope.scene, geometry);
     water.position.set(OBJECTS.OCEAN.position[0], OBJECTS.OCEAN.position[3], OBJECTS.OCEAN.position[1]);
 
     pseudoGeometry = new Three.CircleBufferGeometry(OBJECTS.OCEAN.position[2], 32);
-    const pseudoOcean = new Three.Mesh(pseudoGeometry, fakeMaterial);
+    pseudoOcean = new Three.Mesh(pseudoGeometry, fakeMaterial);
     pseudoOcean.position.set(OBJECTS.OCEAN.position[0], OBJECTS.OCEAN.position[3], OBJECTS.OCEAN.position[1]);
     pseudoOcean.rotation.x = -Math.PI / 2;
     pseudoOcean.name = OBJECTS.OCEAN.name;
@@ -80,7 +91,7 @@ function Waters(scope) {
       water.position.set(OBJECTS.LAKES.position[i][0], OBJECTS.LAKES.positionY, OBJECTS.LAKES.position[i][1]);
 
       pseudoGeometry = new Three.CircleBufferGeometry(OBJECTS.LAKES.position[i][2], 32);
-      const pseudoLake = new Three.Mesh(pseudoGeometry, fakeMaterial);
+      pseudoLake = new Three.Mesh(pseudoGeometry, fakeMaterial);
       pseudoLake.position.set(OBJECTS.LAKES.position[i][0], OBJECTS.LAKES.positionY, OBJECTS.LAKES.position[i][1]);
       pseudoLake.rotation.x = -Math.PI / 2;
       pseudoLake.name = OBJECTS.LAKES.name;
@@ -92,20 +103,18 @@ function Waters(scope) {
       scope.scene.add(water);
       scope.scene.add(pseudoLake);
       scope.objectsGround.push(pseudoLake);
+      scope.objectsWaterData.push(pseudoLake.position.x, pseudoLake.position.z, OBJECTS.LAKES.position[i][2]);
       waters.push(water);
     }
 
     // Puddles
-    const square = Math.round(Math.sqrt(OBJECTS.PUDDLES.quantity));
-    const step = DESIGN.GROUND_SIZE / square;
-
     for (let x = 0; x < square; x++) {
       for (let z = 0; z < square; z++) {
-        const radius = randomInteger(OBJECTS.PUDDLES.min, OBJECTS.PUDDLES.max);
+        radius = randomInteger(OBJECTS.PUDDLES.min, OBJECTS.PUDDLES.max);
         geometry = new Three.CircleBufferGeometry(radius, 32);
         water = initWater(scope.scene, geometry);
-        let randomX = (x * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2);
-        let randomZ = (z * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2);
+        randomX = (x * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2);
+        randomZ = (z * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2);
 
         // Не внутри другого озера
         if (isInLake(randomX, randomZ, radius)) {
@@ -157,7 +166,7 @@ function Waters(scope) {
         water.position.set(randomX, OBJECTS.PUDDLES.positionY, randomZ);
 
         pseudoGeometry = new Three.CircleBufferGeometry(radius, 32);
-        const pseudoPuddle = new Three.Mesh(pseudoGeometry, fakeMaterial);
+        pseudoPuddle = new Three.Mesh(pseudoGeometry, fakeMaterial);
         pseudoPuddle.position.set(randomX, OBJECTS.PUDDLES.positionY, randomZ);
         pseudoPuddle.rotation.x = -Math.PI / 2;
         pseudoPuddle.name = OBJECTS.PUDDLES.name;
@@ -170,6 +179,7 @@ function Waters(scope) {
         scope.scene.add(pseudoPuddle);
         scope.objectsGround.push(pseudoPuddle);
         scope.objectsPuddles.push(pseudoPuddle);
+        scope.objectsWaterData.push(pseudoPuddle.rotation.x, pseudoPuddle.rotation.z, radius);
         waters.push(water);
       }
     }

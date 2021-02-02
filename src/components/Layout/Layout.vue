@@ -32,6 +32,7 @@
             {{ $t('layout.music') }}
             <a href="https://kafedra.bandcamp.com/" target="_blank">{{ $t('layout.musiclink') }}</a>
           </h5>
+          <div class="layout__attention">{{ $t('layout.attention') }}</div>
         </div>
       </div>
     </Preloader>
@@ -130,6 +131,15 @@ export default {
   &__instructions {
     text-align: center;
     color: $colors__white;
+  }
+
+  &__attention {
+    position: absolute;
+    bottom: $gutter;
+    left: 0;
+    right: 0;
+    text-align: center;
+    @include text($font-size--xsmall * 0.75);
   }
 }
 

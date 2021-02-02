@@ -53,17 +53,24 @@ export default {
       controls: null,
       mainControls: null,
       droneControls: null,
-      jsonLoader: null,
-      robot: null,
+      // mouse: null,
+
+      time: null,
+      delta: null,
+      prevTime: null,
 
       stats: null,
 
-      prevTime: null,
       velocity: null,
       direction: null,
       directionStore: null,
       position: null,
 
+      x: null,
+      y: null,
+      z: null,
+
+      moveSpeed: null,
       moveForward: false,
       moveBackward: false,
       moveLeft: false,
@@ -72,49 +79,41 @@ export default {
       moveHidden: false,
       canJump: true,
 
+      raycasterUp: null,
       raycasterDown: null,
       raycasterForward: null,
       raycasterBackward: null,
       raycasterRight: null,
       raycasterLeft: null,
-      mouse: null,
-
-      x: null,
-      y: null,
-      z: null,
 
       directionUp: null,
       directionDown: null,
       directionForward: null,
       directionBackward: null,
-      directionRight: null,
       directionLeft: null,
+      directionRight: null,
 
+      intersections: null,
+      layers: [],
+      layersNew: [],
       object: null,
+      collision: null,
+      height: DESIGN.UNDER_FLOOR,
       onObjectHeight: 0,
       onUp: null,
       onForward: null,
       onBackward: null,
-      onRight: null,
       onLeft: null,
+      onRight: null,
       inWater: null,
       inLargeWater: null,
-
-      intersections: null,
-      stopDistance: 5,
-      collision: null,
-      moveSpeed: null,
-      time: null,
-      delta: null,
-
-      height: DESIGN.UNDER_FLOOR,
-      layers: [],
-      layersNew: [],
 
       objectsGround: [], // все объекты для вертикального рейкастинга
       objectsVertical: [], // все объекты с которыми сталкивается горизонтально
       objectsPuddles: [], // все лужи
-      objectsStoneData: [], // все камни и горы
+      objectsStoneData: [], // все камни и горы - данные - [x, z, r]
+      objectsWaterData: [], // все озера и лужи - данные - [x, z, r]
+
       atmosphere: null,
       grass: null,
       plants: null,
@@ -122,6 +121,7 @@ export default {
       sands: null,
       stones: null,
       hero: null,
+      robot: null,
       // horses: null,
       // parrots: null,
 
@@ -136,10 +136,10 @@ export default {
     this.direction = new Three.Vector3();
     this.directionStore = new Three.Vector3(-0.7071067758832469, 0, -0.7071067864898483);
     this.position = new Three.Vector3();
-    this.mouse = new Three.Vector2();
     this.x = new Three.Vector3(1, 0, 0);
     this.y = new Three.Vector3(0, -1, 0);
     this.z = new Three.Vector3(0, 0, 1);
+    // this.mouse = new Three.Vector2();
 
     this.init();
     this.animate();
@@ -153,7 +153,7 @@ export default {
     window.removeEventListener('resize', this.onWindowResize, false);
     document.removeEventListener('keydown', this.onKeyDown, false);
     document.removeEventListener('keyup', this.onKeyUp, false);
-    document.removeEventListener('mousemove', this.onMouseMove, false);
+    // document.removeEventListener('mousemove', this.onMouseMove, false);
 
     if (this.$eventHub._events['lock']) this.$eventHub.$off('lock');
   },
@@ -268,7 +268,7 @@ export default {
 
       // Raycasters
       /* eslint-disable max-len */
-      this.raycasterUp = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 1, 0), 0, 40);
+      this.raycasterUp = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 1, 0), 0, 100);
       this.raycasterDown = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, -1, 0), 0, 100);
       this.raycasterForward = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, -1), 0, 10);
       this.raycasterBackward = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, 1), 0, 10);
@@ -280,7 +280,7 @@ export default {
       window.addEventListener('resize', this.onWindowResize, false);
       document.addEventListener('keydown', this.onKeyDown, false);
       document.addEventListener('keyup', this.onKeyUp, false);
-      document.addEventListener('mousemove', this.onMouseMove, false);
+      // document.addEventListener('mousemove', this.onMouseMove, false);
 
       // Postprocessing
       const renderModel = new RenderPass(this.scene, this.cameraDrone);
@@ -329,8 +329,8 @@ export default {
     onMouseMove(event) {
       // calculate mouse position in normalized device coordinates
       // (-1 to +1) for both components
-      this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      // this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      // this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     },
 
     onKeyDown(event) {
@@ -450,168 +450,6 @@ export default {
         this.horses.animate(delta, this.objects);
         this.parrots.animate(delta, this.objects);
         */
-
-        // Check objects
-
-        // Forward
-        this.directionForward = this.camera.getWorldDirection(this.direction);
-        this.raycasterForward.set(this.camera.getWorldPosition(this.position), this.directionForward);
-        this.intersections = this.raycasterForward.intersectObjects(this.objectsVertical);
-        this.onForward = this.intersections.length > 0 ? this.intersections[0].distance < this.stopDistance : false;
-        if (this.onForward) this.object = this.intersections[0].object;
-
-        // Backward
-        this.directionBackward = this.directionForward.negate();
-        this.raycasterBackward.set(this.camera.getWorldPosition(this.position), this.directionBackward);
-        this.intersections = this.raycasterBackward.intersectObjects(this.objectsVertical);
-        this.onBackward = this.intersections.length > 0 ? this.intersections[0].distance < this.stopDistance : false;
-        if (this.onBackward) this.object = this.intersections[0].object;
-
-        // Right
-        this.directionRight = new Three.Vector3(0, 0, 0).crossVectors(this.directionForward, this.y);
-        this.raycasterRight.set(this.camera.getWorldPosition(this.position), this.directionRight);
-        this.intersections = this.raycasterRight.intersectObjects(this.objectsVertical);
-        this.onRight = this.intersections.length > 0 ? this.intersections[0].distance < this.stopDistance : false;
-        if (this.onRight) this.object = this.intersections[0].object;
-
-        // Left
-        this.directionLeft = this.directionRight.negate();
-        this.raycasterLeft.set(this.camera.getWorldPosition(this.position), this.directionLeft);
-        this.intersections = this.raycasterLeft.intersectObjects(this.objectsVertical);
-        this.onLeft = this.intersections.length > 0 ? this.intersections[0].distance < this.stopDistance : false;
-        if (this.onLeft) this.object = this.intersections[0].object;
-
-        this.collision = this.onForward || this.onBackward || this.onLeft || this.onRight;
-
-        // Down Through
-        this.directionDown = new Three.Vector3(0, 0, 0).crossVectors(this.x, this.z);
-        this.raycasterDown.set(this.camera.getWorldPosition(this.position), this.directionDown);
-        this.intersections = this.raycasterDown.intersectObjects(this.objectsGround);
-
-        if (this.intersections.length > 0) {
-          this.layersNew = [];
-          this.intersections.forEach((intersection) => {
-            if (!this.layersNew.includes(intersection.object.name)) this.layersNew.push(intersection.object.name);
-          });
-          if (this.layersNew.length !== this.layers.length) {
-            // console.log(this.layers, this.layersNew);
-            //  На любой воде
-            if (((this.layersNew.includes(OBJECTS.OCEAN.name) &&
-              !this.layersNew.includes(OBJECTS.BEACH.name)) ||
-              this.layersNew.includes(OBJECTS.LAKES.name) ||
-              this.layersNew.includes(OBJECTS.PUDDLES.name)) &&
-              !this.layersNew.includes(OBJECTS.SANDS.name)) {
-              this.inWater = true;
-            } else this.inWater = false;
-
-            // На большой воде
-            if (
-              ((this.layersNew.includes(OBJECTS.OCEAN.name) &&
-                !this.layersNew.includes(OBJECTS.BEACH.name) &&
-                !this.layersNew.includes(OBJECTS.SANDS.name)) ||
-                (this.layersNew.includes(OBJECTS.LAKES.name) &&
-                  !this.layersNew.includes(OBJECTS.SANDS.name)))
-            ) {
-              this.inLargeWater = true;
-            } else this.inLargeWater = false;
-
-            // На камне
-            if (this.layersNew.includes(OBJECTS.STONES.name)) {
-              this.object = this.intersections.filter(object => object.object.name === OBJECTS.STONES.name)[0].object;
-              this.onObjectHeight = this.object.position.y + this.object.geometry.parameters.radius + this.height;
-            } else this.onObjectHeight = 0;
-
-            this.layers = this.layersNew;
-          }
-        }
-
-        // Up
-        this.directionUp = this.directionDown.negate();
-        this.raycasterUp.set(this.camera.getWorldPosition(this.position), this.directionUp);
-        this.intersections = this.raycasterUp.intersectObjects(this.objectsVertical);
-        this.onUp = this.intersections.length > 0;
-        if (this.onUp) this.object = this.intersections[0].object;
-
-        // В камне!! ((((
-        if (this.object
-            && this.object.name !== OBJECTS.MOUNTAINS.name
-            && (this.onUp || (this.onForward && this.onBackward && this.onLeft && this.onRight))) {
-          this.onObjectHeight = this.object.position.y + this.object.geometry.parameters.radius + this.height;
-        } else if (this.object
-          && this.object.name === OBJECTS.MOUNTAINS.name
-          && (this.onUp || (this.onForward && this.onBackward && this.onLeft && this.onRight))) {
-          this.controls.moveRight(this.velocity.x * this.delta * 5);
-          this.controls.moveForward(this.velocity.z * this.delta * 5);
-        }
-
-        this.velocity.x -= this.velocity.x * 10 * this.delta;
-        this.velocity.z -= this.velocity.z * 10 * this.delta;
-
-        this.direction.z = Number(this.moveForward) - Number(this.moveBackward);
-        this.direction.x = Number(this.moveRight) - Number(this.moveLeft);
-        this.direction.normalize(); // this ensures consistent movements in all directions
-
-        // eslint-disable-next-line max-len
-        if (this.moveForward || this.moveBackward) this.velocity.z -= this.direction.z * DESIGN.HERO_SPEED * this.delta;
-        // eslint-disable-next-line max-len
-        if (this.moveLeft || this.moveRight) this.velocity.x -= this.direction.x * DESIGN.HERO_SPEED * this.delta;
-
-        // Скорость движения в зависимости от режима
-        if (this.moveHidden) {
-          this.moveSpeed = 0.25;
-        } else {
-          if (this.moveRun) {
-            if (this.inWater) {
-              this.moveSpeed = 1.75;
-            } else this.moveSpeed = 2.5;
-          } else {
-            if (this.inWater) {
-              this.moveSpeed = 0.7;
-            } else this.moveSpeed = 1;
-          }
-        }
-
-        // Прыжок в гору!!
-        if (this.collision && !this.canJump && this.object && this.object.name === OBJECTS.MOUNTAINS.name) {
-          if ((this.onForward && this.moveForward) ||
-            (this.onBackward && this.moveBackward) ||
-            (this.onLeft && this.moveLeft) ||
-            (this.onRight && this.moveRight)) {
-            this.controls.moveRight(this.velocity.x * this.delta * 5);
-            this.controls.moveForward(this.velocity.z * this.delta * 5);
-            this.velocity.z = 0;
-            this.velocity.x = 0;
-          }
-        } else if (!this.collision) {
-          this.controls.moveRight(-this.velocity.x * this.delta * this.moveSpeed);
-          this.controls.moveForward(-this.velocity.z * this.delta * this.moveSpeed);
-        } else {
-          if ((this.onForward && this.moveForward) ||
-            (this.onBackward && this.moveBackward) ||
-            (this.onLeft && this.moveLeft) ||
-            (this.onRight && this.moveRight)) {
-            this.moveRun = false;
-            this.velocity.z = 0;
-            this.velocity.x = 0;
-          } else {
-            this.controls.moveRight(-this.velocity.x * this.delta * this.moveSpeed);
-            this.controls.moveForward(-this.velocity.z * this.delta * this.moveSpeed);
-          }
-        }
-
-        this.velocity.y -= 9.8 * DESIGN.HERO_MASS * this.delta;
-
-        this.controls.getObject().position.y += (this.velocity.y * this.delta);
-
-        if (this.moveHidden || this.inLargeWater) {
-          this.height = DESIGN.UNDER_FLOOR / 2;
-        } else this.height = DESIGN.UNDER_FLOOR;
-
-        if (this.controls.getObject().position.y < this.height + this.onObjectHeight) {
-          this.velocity.y = 0;
-          this.controls.getObject().position.y = this.height + this.onObjectHeight;
-          this.canJump = true;
-        }
       } else {
         this.atmosphere.stop();
         this.hero.stop();

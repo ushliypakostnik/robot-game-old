@@ -220,19 +220,19 @@ export const OBJECTS = {
     positionY: 0,
     anemone: {
       quantity: 30,
-      scale: 0.11,
+      scale: 0.08,
     },
     crocus: {
       quantity: 30,
-      scale: 0.07,
+      scale: 0.055,
     },
     daffodil: {
       quantity: 30,
-      scale: 0.35,
+      scale: 0.295,
     },
     tulip: {
       quantity: 30,
-      scale: 0.2,
+      scale: 0.15,
     }
   }
 };
@@ -252,6 +252,7 @@ export const LOCALES = {
       music: 'Music: ',
       musiclink: 'Kafedra',
       startbutton: 'Play',
+      attention: 'Attention!!! It is recommended to play on computers with a powerful video card.',
       gadgetsgate: 'You need a PC keyboard to play',
       chromegate: 'In order to play, open in the Google Chrome (or Yandex) browser',
     },
@@ -273,6 +274,7 @@ export const LOCALES = {
       music: 'Музыка: ',
       musiclink: 'Kafedra',
       startbutton: 'Играть',
+      attention: 'Внимание!!! Рекомендуется играть на компьютерах с производительной видеокартой.',
       gadgetstext: 'Для того чтобы играть нужна клавиатура персонального компьютера',
       chromegate: 'Для того чтобы играть откройте в браузере Google Chrome (или Яндекс)',
     },

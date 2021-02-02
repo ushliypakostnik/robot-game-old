@@ -30,12 +30,19 @@ function Plants() {
   const FLOWER_RADIUS = DESIGN.GROUND_SIZE * 0.45;
 
   const fixTreePosition = (x, z) => {
-    if (distance2D(0, 0, x, z) < 10) {
-      x *= (Math.round + 0.1) * randomInteger(1, 5);
-      z *= (Math.round + 0.1) * randomInteger(1, 5);
+    if (distance2D(0, 0, x, z) < 15) {
+      let counter = 0;
+      while (distance2D(0, 0, x, z) < 10) {
+        console.log('fixTreePosition 1!', counter, x, z);
+        counter++;
+        x *= (Math.round + 1) * randomInteger(1, 4);
+        z *= (Math.round + 1) * randomInteger(1, 4);
+        if (counter > 50) break;
+      }
     }
 
     if (distance2D(0, 0, x, z) > DESIGN.GROUND_SIZE * 0.6) {
+      console.log('fixTreePosition! 2', x, z);
       x = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
       z = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
     }
@@ -49,16 +56,16 @@ function Plants() {
 
   const isInStones = (stones, x, z) => {
     const result = stones.filter(stone => distance2D(stone[0], stone[1], x, z) < stone[2] * 1.1);
-    console.log(result.length > 0);
     return result.length > 0 ? true : false;
   };
 
   const fixFlowersPosition = (stones, x, z) => {
     let counter = 0;
     while (isInTress(x, z) ||  isInStones(stones) || (distance2D(0, 0, x, z) > FLOWER_RADIUS)) {
+      console.log('fixFlowersPosition!', x, z);
       counter++;
       x = randomInteger(FLOWER_RADIUS * -1, FLOWER_RADIUS);
-      z = randomInteger(FLOWER_RADIUS * 1, FLOWER_RADIUS);
+      z = randomInteger(FLOWER_RADIUS * -1, FLOWER_RADIUS);
       if (counter > 50) break;
     }
     return [x, z];
@@ -98,8 +105,8 @@ function Plants() {
           scale = (Math.random() + 0.1) * randomInteger(heightMin, heightMax) * 0.0035;
           randomY = positionY - (Math.random() + 0.1);
 
-          randomX = (i * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2) / (DESIGN.GROUND_SIZE / 10) * Math.exp(randomInteger(0, 10)) + yesOrNo() * randomInteger(-1 * step, step) + 10;
-          randomZ = (k * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2) / (DESIGN.GROUND_SIZE / 10) * Math.exp(randomInteger(0, 10)) + yesOrNo() * randomInteger(-1 * step, step) - 10;
+          randomX = (i * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2) / (Math.exp(randomInteger(1, 3)) * randomInteger(1, 3)) * randomInteger(-10, 10) + 15;
+          randomZ = (k * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2) / (Math.exp(randomInteger(1, 3)) * randomInteger(1, 3)) * randomInteger(-10, 10) - 15;
 
           const [x, z] = fixTreePosition(randomX, randomZ);
 
@@ -126,12 +133,12 @@ function Plants() {
 
     for (let i = 0; i < quantity; i++) {
       flower = plant.clone();
-      s = (Math.random() + 1.1) * 0.75 * scale;
+      s = (Math.random() + 1.1) * 0.525 * scale;
       flower.scale.set(s, s, s);
       flower.rotateX(-Math.PI / 2);
       flower.rotateZ(degreesToRadians(randomInteger(-1, 360)));
 
-      const [X, Z] = randomPointInCircle(FLOWER_RADIUS, 0, -0.5 * FLOWER_RADIUS);
+      const [X, Z] = randomPointInCircle(FLOWER_RADIUS, 0, 0);
       const [x, z] = fixFlowersPosition(scope.objectsStoneData, X, Z);
       flower.position.set(x, 0, z);
 

@@ -21,6 +21,7 @@ function Hero() {
   let jump;
   let spit;
 
+  const STOP_DISTANCE = 5;
   let onFly = true;
   let onFloor = 0;
   let shot = 0;
@@ -41,7 +42,7 @@ function Hero() {
         audio.setBuffer(buffer);
         audio.setVolume(DESIGN.VOLUME.masha);
 
-        // attention: see Modules/Controls/OrbitControls.js !!!
+        // For positioned audio
         // audio.setRefDistance(15);
         // audio.setMaxDistance(500);
         // audio.setRolloffFactor(1) ;
@@ -177,6 +178,168 @@ function Hero() {
 
   this.animate = function(scope) {
     if (!scope.isPause && !scope.isDrone) {
+      // Check objects
+
+      // Forward
+      scope.directionForward = scope.camera.getWorldDirection(scope.direction);
+      scope.raycasterForward.set(scope.camera.getWorldPosition(scope.position), scope.directionForward);
+      scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical);
+      scope.onForward = scope.intersections.length > 0 ? scope.intersections[0].distance < STOP_DISTANCE : false;
+      if (scope.onForward) scope.object = scope.intersections[0].object;
+
+      // Backward
+      scope.directionBackward = scope.directionForward.negate();
+      scope.raycasterBackward.set(scope.camera.getWorldPosition(scope.position), scope.directionBackward);
+      scope.intersections = scope.raycasterBackward.intersectObjects(scope.objectsVertical);
+      scope.onBackward = scope.intersections.length > 0 ? scope.intersections[0].distance < STOP_DISTANCE : false;
+      if (scope.onBackward) scope.object = scope.intersections[0].object;
+
+      // Right
+      scope.directionRight = new Three.Vector3(0, 0, 0).crossVectors(scope.directionForward, scope.y);
+      scope.raycasterRight.set(scope.camera.getWorldPosition(scope.position), scope.directionRight);
+      scope.intersections = scope.raycasterRight.intersectObjects(scope.objectsVertical);
+      scope.onRight = scope.intersections.length > 0 ? scope.intersections[0].distance < STOP_DISTANCE : false;
+      if (scope.onRight) scope.object = scope.intersections[0].object;
+
+      // Left
+      scope.directionLeft = scope.directionRight.negate();
+      scope.raycasterLeft.set(scope.camera.getWorldPosition(scope.position), scope.directionLeft);
+      scope.intersections = scope.raycasterLeft.intersectObjects(scope.objectsVertical);
+      scope.onLeft = scope.intersections.length > 0 ? scope.intersections[0].distance < STOP_DISTANCE : false;
+      if (scope.onLeft) scope.object = scope.intersections[0].object;
+
+      scope.collision = scope.onForward || scope.onBackward || scope.onLeft || scope.onRight;
+
+      // Down Through
+      scope.directionDown = new Three.Vector3(0, 0, 0).crossVectors(scope.x, scope.z);
+      scope.raycasterDown.set(scope.camera.getWorldPosition(scope.position), scope.directionDown);
+      scope.intersections = scope.raycasterDown.intersectObjects(scope.objectsGround);
+
+      if (scope.intersections.length > 0) {
+        scope.layersNew = [];
+        scope.intersections.forEach((intersection) => {
+          if (!scope.layersNew.includes(intersection.object.name)) scope.layersNew.push(intersection.object.name);
+        });
+        if (scope.layersNew.length !== scope.layers.length) {
+          // console.log(scope.layers, scope.layersNew);
+          //  На любой воде
+          if (((scope.layersNew.includes(OBJECTS.OCEAN.name) &&
+            !scope.layersNew.includes(OBJECTS.BEACH.name)) ||
+            scope.layersNew.includes(OBJECTS.LAKES.name) ||
+            scope.layersNew.includes(OBJECTS.PUDDLES.name)) &&
+            !scope.layersNew.includes(OBJECTS.SANDS.name)) {
+            scope.inWater = true;
+          } else scope.inWater = false;
+
+          // На большой воде
+          if (
+            ((scope.layersNew.includes(OBJECTS.OCEAN.name) &&
+              !scope.layersNew.includes(OBJECTS.BEACH.name) &&
+              !scope.layersNew.includes(OBJECTS.SANDS.name)) ||
+              (scope.layersNew.includes(OBJECTS.LAKES.name) &&
+                !scope.layersNew.includes(OBJECTS.SANDS.name)))
+          ) {
+            scope.inLargeWater = true;
+          } else scope.inLargeWater = false;
+
+          // На камне
+          if (scope.layersNew.includes(OBJECTS.STONES.name)) {
+            scope.object = scope.intersections.filter(object => object.object.name === OBJECTS.STONES.name)[0].object;
+            scope.onObjectHeight = scope.object.position.y + scope.object.geometry.parameters.radius + scope.height;
+          } else scope.onObjectHeight = 0;
+
+          scope.layers = scope.layersNew;
+        }
+      }
+
+      // Up
+      scope.directionUp = scope.directionDown.negate();
+      scope.raycasterUp.set(scope.camera.getWorldPosition(scope.position), scope.directionUp);
+      scope.intersections = scope.raycasterUp.intersectObjects(scope.objectsVertical);
+      scope.onUp = scope.intersections.length > 0;
+      if (scope.onUp) scope.object = scope.intersections[0].object;
+
+      // В камне!! ((((
+      if (scope.object
+        && scope.object.name !== OBJECTS.MOUNTAINS.name
+        && (scope.onUp || (scope.onForward && scope.onBackward && scope.onLeft && scope.onRight))) {
+        scope.onObjectHeight = scope.object.position.y + scope.object.geometry.parameters.radius + scope.height;
+      } else if (scope.object
+        && scope.object.name === OBJECTS.MOUNTAINS.name
+        && (scope.onUp || (scope.onForward && scope.onBackward && scope.onLeft && scope.onRight))) {
+        scope.controls.moveRight(scope.velocity.x * scope.delta * 5);
+        scope.controls.moveForward(scope.velocity.z * scope.delta * 5);
+      }
+
+      scope.velocity.x -= scope.velocity.x * 10 * scope.delta;
+      scope.velocity.z -= scope.velocity.z * 10 * scope.delta;
+
+      scope.direction.z = Number(scope.moveForward) - Number(scope.moveBackward);
+      scope.direction.x = Number(scope.moveRight) - Number(scope.moveLeft);
+      scope.direction.normalize(); // this ensures consistent movements in all directions
+
+      // eslint-disable-next-line max-len
+      if (scope.moveForward || scope.moveBackward) scope.velocity.z -= scope.direction.z * DESIGN.HERO_SPEED * scope.delta;
+      // eslint-disable-next-line max-len
+      if (scope.moveLeft || scope.moveRight) scope.velocity.x -= scope.direction.x * DESIGN.HERO_SPEED * scope.delta;
+
+      // Скорость движения в зависимости от режима
+      if (scope.moveHidden) {
+        scope.moveSpeed = 0.25;
+      } else {
+        if (scope.moveRun) {
+          if (scope.inWater) {
+            scope.moveSpeed = 1.75;
+          } else scope.moveSpeed = 2.5;
+        } else {
+          if (scope.inWater) {
+            scope.moveSpeed = 0.7;
+          } else scope.moveSpeed = 1;
+        }
+      }
+
+      // Прыжок в гору!!
+      if (scope.collision && !scope.canJump && scope.object && scope.object.name === OBJECTS.MOUNTAINS.name) {
+        if ((scope.onForward && scope.moveForward) ||
+          (scope.onBackward && scope.moveBackward) ||
+          (scope.onLeft && scope.moveLeft) ||
+          (scope.onRight && scope.moveRight)) {
+          scope.controls.moveRight(scope.velocity.x * scope.delta * 5);
+          scope.controls.moveForward(scope.velocity.z * scope.delta * 5);
+          scope.velocity.z = 0;
+          scope.velocity.x = 0;
+        }
+      } else if (!scope.collision) {
+        scope.controls.moveRight(-scope.velocity.x * scope.delta * scope.moveSpeed);
+        scope.controls.moveForward(-scope.velocity.z * scope.delta * scope.moveSpeed);
+      } else {
+        if ((scope.onForward && scope.moveForward) ||
+          (scope.onBackward && scope.moveBackward) ||
+          (scope.onLeft && scope.moveLeft) ||
+          (scope.onRight && scope.moveRight)) {
+          scope.moveRun = false;
+          scope.velocity.z = 0;
+          scope.velocity.x = 0;
+        } else {
+          scope.controls.moveRight(-scope.velocity.x * scope.delta * scope.moveSpeed);
+          scope.controls.moveForward(-scope.velocity.z * scope.delta * scope.moveSpeed);
+        }
+      }
+
+      scope.velocity.y -= 9.8 * DESIGN.HERO_MASS * scope.delta;
+
+      scope.controls.getObject().position.y += (scope.velocity.y * scope.delta);
+
+      if (scope.moveHidden || scope.inLargeWater) {
+        scope.height = DESIGN.UNDER_FLOOR / 2;
+      } else scope.height = DESIGN.UNDER_FLOOR;
+
+      if (scope.controls.getObject().position.y < scope.height + scope.onObjectHeight) {
+        scope.velocity.y = 0;
+        scope.controls.getObject().position.y = scope.height + scope.onObjectHeight;
+        scope.canJump = true;
+      }
+
       if (scope.ammoIdx !== shot) {
         if (spit && spit.children[0]) {
           spit.children[0].play();

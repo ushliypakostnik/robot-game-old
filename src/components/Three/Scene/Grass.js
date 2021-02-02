@@ -8,6 +8,9 @@ import {
 } from '@/utils/utilities';
 
 function Grass() {
+  let inLake;
+  let onPuddleEdge;
+
   const isInLakes = (x, z) => {
     const result = OBJECTS.LAKES.position.filter(lake => distance2D(lake[0], lake[1], x, z) < lake[2] * 1.25);
     return result.length > 0 ? result[0] : false;
@@ -45,11 +48,11 @@ function Grass() {
       if ((distance2D(0, 0, vertex.x, vertex.y) < (DESIGN.GROUND_SIZE * 0.975) / (4 + Math.random() * yesOrNo())) && vertex.z < -0.1) vertex.z = -0.01;
 
       // Меньше травы внутри озер
-      const inLake = isInLakes(vertex.y, vertex.x);
+      inLake = isInLakes(vertex.y, vertex.x);
       if (inLake) vertex.z -= (Math.random() * 1.5) * inLake[2] / distance2D(inLake[0], inLake[1], vertex.y, vertex.x);
 
       // Подъем на краю луж
-      const onPuddleEdge = isOnEdgePuddles(scope.objectsPuddles, vertex.y, vertex.x);
+      onPuddleEdge = isOnEdgePuddles(scope.objectsPuddles, vertex.y, vertex.x);
       if (onPuddleEdge) vertex.z = (Math.random() + 0.1) / 1.75 + OBJECTS.PUDDLES.positionY;
 
       position.setXYZ(i, vertex.x, vertex.y, vertex.z);
