@@ -1,4 +1,5 @@
-/* eslint-disable import/no-cycle, no-shadow */
+import storage from '@/utils/storage';
+
 const initialState = {
   isGameLoaded: false,
   isHeroLoaded: false,
@@ -41,8 +42,8 @@ const getters = {
 };
 
 const actions = {
-  preloadOrBuilt: ({ commit }, name) => {
-    commit('preloadOrBuilt', name);
+  preloadOrBuilt: ({ commit }, field) => {
+    commit('preloadOrBuilt', field);
   },
 
   isAllLoadedAndBuilt: ({ commit }) => {
@@ -51,15 +52,14 @@ const actions = {
 };
 
 const mutations = {
-  preloadOrBuilt: (state, name) => {
-    // console.log('preloadOrBuilt', name);
-    state[name] = true;
+  preloadOrBuilt: (state, field) => {
+    state[field] = true;
   },
 
   isAllLoadedAndBuilt: (state) => {
-    let stateCopy = Object.assign({}, state);
+    const stateCopy = Object.assign({}, state);
     delete stateCopy.isGameLoaded;
-    const result = Object.values(stateCopy).every(element => element === true)
+    const result = Object.values(stateCopy).every(field => field === true);
     if (result) state.isGameLoaded = true;
   },
 };

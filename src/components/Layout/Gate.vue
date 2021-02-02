@@ -15,7 +15,7 @@ export default {
       default: null,
       required: true,
     },
-  }
+  },
 };
 </script>
 

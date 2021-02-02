@@ -5,7 +5,6 @@ import { randomInteger } from '@/utils/utilities';
 
 import { GLTFLoader } from '@/components/Three/Modules/Utils/GLTFLoader';
 
-/* eslint-disable no-param-reassign, func-names */
 function Parrots() {
   const parrots = [];
   let raycaster;
@@ -14,7 +13,6 @@ function Parrots() {
   this.init = function (scope) {
     const loader = new GLTFLoader();
     loader.load('./images/models/Parrot.glb', (gltf) => {
-      // eslint-disable-next-line no-plusplus
       for (let i = 0; i < OBJECTS.PARROTS.quantity; i++) {
         const parrot = gltf.scene.clone(true).children[0];
         parrot.scale.set(0.4, 0.4, 0.4);
@@ -24,9 +22,6 @@ function Parrots() {
         const z = randomInteger(-1 * DESIGN.GROUND_SIZE / 2, DESIGN.GROUND_SIZE / 2);
 
         parrot.position.set(x, y, z);
-
-        // parrot.castShadow = true;
-        // parrot.receiveShadow = true;
 
         const rotate = randomInteger(-180, 180);
         const bend = randomInteger(-1, 1);
@@ -68,7 +63,7 @@ function Parrots() {
         while (parrot.side === 0 || parrot.side === null) {
           parrot.side = randomInteger(-1, 1);
         }
-        // eslint-disable-next-line max-len
+
         parrot.mesh.position.add(parrot.mesh.getWorldDirection(direction).negate().multiplyScalar((OBJECTS.PARROTS.velocity * parrot.accelerationVelocity) * delta));
         parrot.mesh.rotateY(parrot.side * 45);
       } else {
@@ -86,7 +81,6 @@ function Parrots() {
         const decisionAccelerationVelocity = randomInteger(1, 150) === 1;
         if (decisionAccelerationVelocity) parrot.accelerationVelocity = Math.random() + 0.5;
 
-        // eslint-disable-next-line max-len
         parrot.mesh.position.add(parrot.mesh.getWorldDirection(direction).multiplyScalar((OBJECTS.PARROTS.velocity * parrot.accelerationVelocity) * delta));
       }
 

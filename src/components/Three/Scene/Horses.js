@@ -5,7 +5,6 @@ import { randomInteger } from '@/utils/utilities';
 
 import { GLTFLoader } from '@/components/Three/Modules/Utils/GLTFLoader';
 
-/* eslint-disable no-param-reassign, func-names */
 function Horses() {
   const horses = [];
   let raycaster;
@@ -14,14 +13,10 @@ function Horses() {
   this.init = function (scope) {
     const loader = new GLTFLoader();
     loader.load('./images/models/Horse.glb', (gltf) => {
-      // eslint-disable-next-line no-plusplus
       for (let i = 0; i < OBJECTS.HORSES.start.length; i++) {
         const horse = gltf.scene.clone(true).children[0];
         horse.scale.set(OBJECTS.HORSES.size, OBJECTS.HORSES.size, OBJECTS.HORSES.size);
         horse.position.set(OBJECTS.HORSES.start[i][0], 0, OBJECTS.HORSES.start[i][1]);
-
-        // horse.castShadow = true;
-        // horse.receiveShadow = true;
 
         const rotate = randomInteger(-180, 180);
         const bend = randomInteger(-1, 1);
@@ -63,7 +58,6 @@ function Horses() {
         while (horse.side === 0 || horse.side === null) {
           horse.side = randomInteger(-1, 1);
         }
-        // eslint-disable-next-line max-len
         horse.mesh.position.add(horse.mesh.getWorldDirection(direction).negate().multiplyScalar((OBJECTS.HORSES.velocity * horse.accelerationVelocity) * delta));
         horse.mesh.rotateY(horse.side * 45);
       } else {
@@ -81,7 +75,6 @@ function Horses() {
         const decisionAccelerationVelocity = randomInteger(1, 150) === 1;
         if (decisionAccelerationVelocity) horse.accelerationVelocity = Math.random() + 0.5;
 
-        // eslint-disable-next-line max-len
         horse.mesh.position.add(horse.mesh.getWorldDirection(direction).multiplyScalar((OBJECTS.HORSES.velocity * horse.accelerationVelocity) * delta));
       }
 

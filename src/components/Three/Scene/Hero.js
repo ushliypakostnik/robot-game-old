@@ -22,6 +22,7 @@ function Hero() {
   let spit;
 
   const STOP_DISTANCE = 5;
+  const WATER_DAMAGE = 1;
   let onFly = true;
   let onFloor = 0;
   let shot = 0;
@@ -29,15 +30,15 @@ function Hero() {
   const geometry = new Three.SphereBufferGeometry(1, 1, 1);
   const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
 
-  this.init = function(scope) {
-    loader.load( './images/models/Hero.fbx', (hero) => {
+  this.init = function (scope) {
+    loader.load('./images/models/Hero.fbx', (hero) => {
       hero.scale.set(OBJECTS.HERO.scale, OBJECTS.HERO.scale, OBJECTS.HERO.scale);
       hero.visible = false;
 
       mixer = new Three.AnimationMixer(hero);
       mixer.clipAction(hero.animations[0]).setDuration(1).play();
 
-      audioLoader.load( './audio/masha.mp3', (buffer) => {
+      audioLoader.load('./audio/masha.mp3', (buffer) => {
         audio = new Three.Audio(listener);
         audio.setBuffer(buffer);
         audio.setVolume(DESIGN.VOLUME.masha);
@@ -61,7 +62,7 @@ function Hero() {
 
     steps = new Three.Mesh(geometry, material);
 
-    audioLoader.load( './audio/steps.mp3', (buffer) => {
+    audioLoader.load('./audio/steps.mp3', (buffer) => {
       audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
@@ -76,7 +77,7 @@ function Hero() {
 
     run = new Three.Mesh(geometry, material);
 
-    audioLoader.load( './audio/run.mp3', (buffer) => {
+    audioLoader.load('./audio/run.mp3', (buffer) => {
       audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
@@ -91,7 +92,7 @@ function Hero() {
 
     watersteps = new Three.Mesh(geometry, material);
 
-    audioLoader.load( './audio/waterstep.mp3', (buffer) => {
+    audioLoader.load('./audio/waterstep.mp3', (buffer) => {
       audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
@@ -106,7 +107,7 @@ function Hero() {
 
     waterrun = new Three.Mesh(geometry, material);
 
-    audioLoader.load( './audio/waterrun.mp3', (buffer) => {
+    audioLoader.load('./audio/waterrun.mp3', (buffer) => {
       audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
@@ -121,7 +122,7 @@ function Hero() {
 
     jump = new Three.Mesh(geometry, material);
 
-    audioLoader.load( './audio/jump.mp3', (buffer) => {
+    audioLoader.load('./audio/jump.mp3', (buffer) => {
       audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
@@ -135,7 +136,7 @@ function Hero() {
 
     waterjump = new Three.Mesh(geometry, material);
 
-    audioLoader.load( './audio/waterjump.mp3', (buffer) => {
+    audioLoader.load('./audio/waterjump.mp3', (buffer) => {
       audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
@@ -149,7 +150,7 @@ function Hero() {
 
     spit = new Three.Mesh(geometry, material);
 
-    audioLoader.load( './audio/spit.mp3', (buffer) => {
+    audioLoader.load('./audio/spit.mp3', (buffer) => {
       audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
@@ -163,20 +164,18 @@ function Hero() {
   };
 
   const jumps = (scope) => {
-    if (scope.inWater) {
+    if (scope.onWater) {
       if (waterjump && waterjump.children[0]) {
         this.stop();
         waterjump.children[0].play();
       }
-    } else {
-      if (jump && jump.children[0]) {
-        this.stop();
-        jump.children[0].play();
-      }
+    } else if (jump && jump.children[0]) {
+      this.stop();
+      jump.children[0].play();
     }
   };
 
-  this.animate = function(scope) {
+  this.animate = function (scope) {
     if (!scope.isPause && !scope.isDrone) {
       // Check objects
 
@@ -223,24 +222,24 @@ function Hero() {
         if (scope.layersNew.length !== scope.layers.length) {
           // console.log(scope.layers, scope.layersNew);
           //  На любой воде
-          if (((scope.layersNew.includes(OBJECTS.OCEAN.name) &&
-            !scope.layersNew.includes(OBJECTS.BEACH.name)) ||
-            scope.layersNew.includes(OBJECTS.LAKES.name) ||
-            scope.layersNew.includes(OBJECTS.PUDDLES.name)) &&
-            !scope.layersNew.includes(OBJECTS.SANDS.name)) {
-            scope.inWater = true;
-          } else scope.inWater = false;
+          if (((scope.layersNew.includes(OBJECTS.OCEAN.name)
+            && !scope.layersNew.includes(OBJECTS.BEACH.name))
+            || scope.layersNew.includes(OBJECTS.LAKES.name)
+            || scope.layersNew.includes(OBJECTS.PUDDLES.name))
+            && !scope.layersNew.includes(OBJECTS.SANDS.name)) {
+            scope.onWater = true;
+          } else scope.onWater = false;
 
           // На большой воде
           if (
-            ((scope.layersNew.includes(OBJECTS.OCEAN.name) &&
-              !scope.layersNew.includes(OBJECTS.BEACH.name) &&
-              !scope.layersNew.includes(OBJECTS.SANDS.name)) ||
-              (scope.layersNew.includes(OBJECTS.LAKES.name) &&
-                !scope.layersNew.includes(OBJECTS.SANDS.name)))
+            ((scope.layersNew.includes(OBJECTS.OCEAN.name)
+              && !scope.layersNew.includes(OBJECTS.BEACH.name)
+              && !scope.layersNew.includes(OBJECTS.SANDS.name))
+              || (scope.layersNew.includes(OBJECTS.LAKES.name)
+                && !scope.layersNew.includes(OBJECTS.SANDS.name)))
           ) {
-            scope.inLargeWater = true;
-          } else scope.inLargeWater = false;
+            scope.onLargeWater = true;
+          } else scope.onLargeWater = false;
 
           // На камне
           if (scope.layersNew.includes(OBJECTS.STONES.name)) {
@@ -251,6 +250,9 @@ function Hero() {
           scope.layers = scope.layersNew;
         }
       }
+
+      // Урон от воды
+      if (scope.onWater && scope.canJump) scope.setDamage(WATER_DAMAGE);
 
       // Up
       scope.directionUp = scope.directionDown.negate();
@@ -286,24 +288,20 @@ function Hero() {
       // Скорость движения в зависимости от режима
       if (scope.moveHidden) {
         scope.moveSpeed = 0.25;
-      } else {
-        if (scope.moveRun) {
-          if (scope.inWater) {
-            scope.moveSpeed = 1.75;
-          } else scope.moveSpeed = 2.5;
-        } else {
-          if (scope.inWater) {
-            scope.moveSpeed = 0.7;
-          } else scope.moveSpeed = 1;
-        }
-      }
+      } else if (scope.moveRun) {
+        if (scope.onWater) {
+          scope.moveSpeed = 1.75;
+        } else scope.moveSpeed = 2.5;
+      } else if (scope.onWater) {
+        scope.moveSpeed = 0.7;
+      } else scope.moveSpeed = 1;
 
       // Прыжок в гору!!
       if (scope.collision && !scope.canJump && scope.object && scope.object.name === OBJECTS.MOUNTAINS.name) {
-        if ((scope.onForward && scope.moveForward) ||
-          (scope.onBackward && scope.moveBackward) ||
-          (scope.onLeft && scope.moveLeft) ||
-          (scope.onRight && scope.moveRight)) {
+        if ((scope.onForward && scope.moveForward)
+          || (scope.onBackward && scope.moveBackward)
+          || (scope.onLeft && scope.moveLeft)
+          || (scope.onRight && scope.moveRight)) {
           scope.controls.moveRight(scope.velocity.x * scope.delta * 5);
           scope.controls.moveForward(scope.velocity.z * scope.delta * 5);
           scope.velocity.z = 0;
@@ -312,25 +310,23 @@ function Hero() {
       } else if (!scope.collision) {
         scope.controls.moveRight(-scope.velocity.x * scope.delta * scope.moveSpeed);
         scope.controls.moveForward(-scope.velocity.z * scope.delta * scope.moveSpeed);
+      } else if ((scope.onForward && scope.moveForward)
+          || (scope.onBackward && scope.moveBackward)
+          || (scope.onLeft && scope.moveLeft)
+          || (scope.onRight && scope.moveRight)) {
+        scope.moveRun = false;
+        scope.velocity.z = 0;
+        scope.velocity.x = 0;
       } else {
-        if ((scope.onForward && scope.moveForward) ||
-          (scope.onBackward && scope.moveBackward) ||
-          (scope.onLeft && scope.moveLeft) ||
-          (scope.onRight && scope.moveRight)) {
-          scope.moveRun = false;
-          scope.velocity.z = 0;
-          scope.velocity.x = 0;
-        } else {
-          scope.controls.moveRight(-scope.velocity.x * scope.delta * scope.moveSpeed);
-          scope.controls.moveForward(-scope.velocity.z * scope.delta * scope.moveSpeed);
-        }
+        scope.controls.moveRight(-scope.velocity.x * scope.delta * scope.moveSpeed);
+        scope.controls.moveForward(-scope.velocity.z * scope.delta * scope.moveSpeed);
       }
 
       scope.velocity.y -= 9.8 * DESIGN.HERO_MASS * scope.delta;
 
       scope.controls.getObject().position.y += (scope.velocity.y * scope.delta);
 
-      if (scope.moveHidden || scope.inLargeWater) {
+      if (scope.moveHidden || scope.onLargeWater) {
         scope.height = DESIGN.UNDER_FLOOR / 2;
       } else scope.height = DESIGN.UNDER_FLOOR;
 
@@ -351,44 +347,38 @@ function Hero() {
       } else if (scope.onObjectHeight !== onFloor) {
         jumps(scope);
         onFloor = scope.onObjectHeight;
-      } else {
-        if (scope.moveForward || scope.moveBackward || scope.moveLeft || scope.moveRight) {
-          if (scope.moveRun) {
-            if (scope.inWater) {
-              if (waterrun && waterrun.children[0]) {
-                this.stop('waterrun');
-                waterrun.children[0].play();
-              }
-            } else {
-              if (run && run.children[0]) {
-                this.stop('run');
-                run.children[0].play();
-              }
+      } else if (scope.moveForward || scope.moveBackward || scope.moveLeft || scope.moveRight) {
+        if (scope.moveRun) {
+          if (scope.onWater) {
+            if (waterrun && waterrun.children[0]) {
+              this.stop('waterrun');
+              waterrun.children[0].play();
             }
+          } else if (run && run.children[0]) {
+            this.stop('run');
+            run.children[0].play();
           }
-
-          if (!scope.moveRun) {
-            if (scope.inWater) {
-              if (watersteps && watersteps.children[0]){
-                this.stop('watersteps');
-                if (scope.moveHidden) {
-                  watersteps.children[0].setPlaybackRate(0.75);
-                } else watersteps.children[0].setPlaybackRate(1);
-                watersteps.children[0].play();
-              }
-            } else {
-              if (steps && steps.children[0]){
-                if (scope.moveHidden) {
-                  steps.children[0].setPlaybackRate(0.75);
-                } else steps.children[0].setPlaybackRate(1);
-                this.stop('steps');
-                steps.children[0].play();
-              }
-            }
-          }
-        } else {
-          this.stop();
         }
+
+        if (!scope.moveRun) {
+          if (scope.onWater) {
+            if (watersteps && watersteps.children[0]) {
+              this.stop('watersteps');
+              if (scope.moveHidden) {
+                watersteps.children[0].setPlaybackRate(0.75);
+              } else watersteps.children[0].setPlaybackRate(1);
+              watersteps.children[0].play();
+            }
+          } else if (steps && steps.children[0]) {
+            if (scope.moveHidden) {
+              steps.children[0].setPlaybackRate(0.75);
+            } else steps.children[0].setPlaybackRate(1);
+            this.stop('steps');
+            steps.children[0].play();
+          }
+        }
+      } else {
+        this.stop();
       }
     } else {
       this.stop();
@@ -402,7 +392,7 @@ function Hero() {
     if (play !== 'waterrun' && waterrun && waterrun.children[0] && waterrun.children[0].isPlaying) waterrun.children[0].stop();
   };
 
-  this.animateDrone = function(scope) {
+  this.animateDrone = function (scope) {
     if (!scope.isPause) {
       if (mixer) mixer.update(scope.delta / 20);
 
@@ -412,7 +402,7 @@ function Hero() {
     }
   };
 
-  this.stopDrone = function(scope) {
+  this.stopDrone = function (scope) {
     if (scope.robot && scope.robot.children[3] && scope.robot.children[3].isPlaying) scope.robot.children[3].pause();
   };
 }

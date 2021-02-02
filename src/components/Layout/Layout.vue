@@ -6,6 +6,8 @@
     <Preloader>
       <Scene />
 
+      <Game />
+
       <div
         v-if="isPause"
         class="layout__blocker"
@@ -57,6 +59,7 @@ import Gate from '@/components/Layout/Gate.vue';
 import Preloader from '@/components/Layout/Preloader.vue';
 import Scene from '@/components/Three/Scene/Scene.vue';
 import LangSwitch from '@/components/Layout/LangSwitch.vue';
+import Game from '@/components/Layout/Game.vue';
 
 export default {
   name: 'Layout',
@@ -66,6 +69,7 @@ export default {
     Preloader,
     Scene,
     LangSwitch,
+    Game,
   },
 
   data() {

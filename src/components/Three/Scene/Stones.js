@@ -4,7 +4,7 @@ import { OBJECTS } from '@/utils/constants';
 import {
   randomInteger,
   yesOrNo,
-  loaderDispatchHelper
+  loaderDispatchHelper,
 } from '@/utils/utilities';
 
 
@@ -18,7 +18,7 @@ function Stones() {
   let geometry;
   let stone;
 
-  this.init = function(scope) {
+  this.init = function (scope) {
     const loader = new DDSLoader();
 
     const map = loader.load('./images/textures/stone.dds', () => {
@@ -26,7 +26,7 @@ function Stones() {
       loaderDispatchHelper(scope.$store, 'isStoneLoaded');
     });
     map.anisotropy = 4;
-    const material = new Three.MeshLambertMaterial( { map } );
+    const material = new Three.MeshLambertMaterial({ map });
     material.side = Three.DoubleSide;
 
     // Mountains
@@ -34,7 +34,7 @@ function Stones() {
       top = randomInteger(0, OBJECTS.MOUNTAINS.topMax);
       bottom = randomInteger(OBJECTS.MOUNTAINS.bottomMin, OBJECTS.MOUNTAINS.bottomMax);
 
-      geometry = new Three.CylinderBufferGeometry(top, bottom, OBJECTS.MOUNTAINS.position[i][2], 16, 16 );
+      geometry = new Three.CylinderBufferGeometry(top, bottom, OBJECTS.MOUNTAINS.position[i][2], 16, 16);
       stone = new Three.Mesh(geometry, material);
 
       stone.position.x = OBJECTS.MOUNTAINS.position[i][0];
@@ -42,9 +42,6 @@ function Stones() {
       stone.position.z = OBJECTS.MOUNTAINS.position[i][1];
 
       stone.name = OBJECTS.MOUNTAINS.name;
-
-      // stone.castShadow = true;
-      // stone.receiveShadow = true;
 
       stone.updateMatrix();
       stone.matrixAutoUpdate = false;
@@ -71,15 +68,12 @@ function Stones() {
 
         stone.position.x = OBJECTS.STONES.position[i][0] + randomInteger(20, 80) * yesOrNo();
         stone.position.y = randomInteger(-0.5 * radius, radius * 0.5);
-        stone.position.z =  OBJECTS.STONES.position[i][1] + randomInteger(20, 80) * yesOrNo();
+        stone.position.z = OBJECTS.STONES.position[i][1] + randomInteger(20, 80) * yesOrNo();
 
         if (stone.position.y - radius > 0) stone.position.y -= radius / 2;
         if (stone.position.y + radius < 0) stone.position.y += radius / 2;
 
         stone.name = OBJECTS.STONES.name;
-
-        // stone.castShadow = true;
-        // stone.receiveShadow = true;
 
         stone.updateMatrix();
         stone.matrixAutoUpdate = false;

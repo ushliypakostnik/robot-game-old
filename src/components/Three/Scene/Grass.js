@@ -1,6 +1,6 @@
 import * as Three from 'three';
 
-import { DESIGN, OBJECTS } from '@/utils/constants';
+import { LOCALSTORAGE, DESIGN, OBJECTS } from '@/utils/constants';
 import {
   yesOrNo,
   loaderDispatchHelper,
@@ -11,23 +11,28 @@ function Grass() {
   let inLake;
   let onPuddleEdge;
 
+  let result;
+  let px;
+  let pz;
+  let pr;
+
   const isInLakes = (x, z) => {
-    const result = OBJECTS.LAKES.position.filter(lake => distance2D(lake[0], lake[1], x, z) < lake[2] * 1.25);
+    result = OBJECTS.LAKES.position.filter(lake => distance2D(lake[0], lake[1], x, z) < lake[2] * 1.25);
     return result.length > 0 ? result[0] : false;
   };
 
   const isOnEdgePuddles = (puddles, x, z) => {
-    const result = puddles.filter((puddle) => {
-      const px = puddle.position.x;
-      const pz = puddle.position.z;
-      const pr = puddle.geometry.parameters.radius;
+    result = puddles.filter((puddle) => {
+      px = puddle.position.x;
+      pz = puddle.position.z;
+      pr = puddle.geometry.parameters.radius;
 
       return ((distance2D(px, pz, x, z) < pr + 1.5) && (distance2D(px, pz, x, z) > pr - 0.5));
     });
     return result.length > 0;
   };
 
-  this.init = function(scope) {
+  this.init = function (scope) {
     // Vertex displacement
     const vertex = new Three.Vector3();
 
@@ -35,7 +40,6 @@ function Grass() {
     let geometry = new Three.PlaneBufferGeometry(DESIGN.GROUND_SIZE * 0.9875, DESIGN.GROUND_SIZE * 0.9875, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE / 10);
 
     const { position } = geometry.attributes;
-    // eslint-disable-next-line no-plusplus
     for (let i = 0, l = position.count; i < l; i++) {
       vertex.fromBufferAttribute(position, i);
 
@@ -60,7 +64,7 @@ function Grass() {
 
     geometry = geometry.toNonIndexed(); // ensure each face has unique vertices
 
-    const map = new Three.TextureLoader().load('./images/textures/grass.jpg', () => {
+    const map = new Three.TextureLoader().load('./images/textures/grass.jpg', (texture) => {
       scope.render();
       loaderDispatchHelper(scope.$store, 'isGrassLoaded');
     });
@@ -71,7 +75,6 @@ function Grass() {
     ground.rotation.z = -Math.PI / 2;
     ground.position.set(0, 0, 0);
     ground.material.map.repeat.set(256, 256);
-    // eslint-disable-next-line no-multi-assign
     ground.material.map.wrapS = ground.material.map.wrapT = Three.RepeatWrapping;
     ground.material.map.encoding = Three.sRGBEncoding;
 

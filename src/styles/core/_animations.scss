@@ -22,12 +22,16 @@
 // Keyframes example
 //////////////////////////////////////////////////////
 
-@keyframes fade {
+@keyframes hit {
   from {
     opacity: 0;
   }
 
-  to {
+  50% {
     opacity: 1;
+  }
+
+  to {
+    opacity: 0;
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import * as Three from 'three';
 
 import { FBXLoader } from '@/components/Three/Modules/Utils/FBXLoader.js';
@@ -12,7 +13,6 @@ import {
   degreesToRadians,
   randomPointInCircle,
 } from '@/utils/utilities';
-import { yesOrNo } from '../../../utils/utilities';
 
 function Plants() {
   const loader = new FBXLoader();
@@ -30,19 +30,17 @@ function Plants() {
   const FLOWER_RADIUS = DESIGN.GROUND_SIZE * 0.45;
 
   const fixTreePosition = (x, z) => {
-    if (distance2D(0, 0, x, z) < 15) {
+    if (distance2D(0, 0, x, z) < 20) {
       let counter = 0;
-      while (distance2D(0, 0, x, z) < 10) {
-        console.log('fixTreePosition 1!', counter, x, z);
+      while (distance2D(0, 0, x, z) < 20) {
         counter++;
-        x *= (Math.round + 1) * randomInteger(1, 4);
-        z *= (Math.round + 1) * randomInteger(1, 4);
+        x *= 1.25;
+        z *= 1.25;
         if (counter > 50) break;
       }
     }
 
     if (distance2D(0, 0, x, z) > DESIGN.GROUND_SIZE * 0.6) {
-      console.log('fixTreePosition! 2', x, z);
       x = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
       z = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
     }
@@ -62,7 +60,6 @@ function Plants() {
   const fixFlowersPosition = (stones, x, z) => {
     let counter = 0;
     while (isInTress(x, z) ||  isInStones(stones) || (distance2D(0, 0, x, z) > FLOWER_RADIUS)) {
-      console.log('fixFlowersPosition!', x, z);
       counter++;
       x = randomInteger(FLOWER_RADIUS * -1, FLOWER_RADIUS);
       z = randomInteger(FLOWER_RADIUS * -1, FLOWER_RADIUS);
@@ -126,11 +123,6 @@ function Plants() {
   };
 
   const buitRandomFlowers = (scope, plant, quantity, scale) => {
-    let maxX = 0;
-    let maxZ = 0;
-    let minX = 0;
-    let minZ = 0;
-
     for (let i = 0; i < quantity; i++) {
       flower = plant.clone();
       s = (Math.random() + 1.1) * 0.525 * scale;
@@ -142,18 +134,11 @@ function Plants() {
       const [x, z] = fixFlowersPosition(scope.objectsStoneData, X, Z);
       flower.position.set(x, 0, z);
 
-      maxX = Math.max(maxX, x);
-      maxZ = Math.max(maxZ, z);
-      minZ = Math.min(minX, x);
-      minZ = Math.min(minZ, z);
-
       flower.updateMatrix();
       flower.matrixAutoUpdate = false;
 
       scope.scene.add(flower);
     }
-
-    console.log('position: ', maxX, maxZ, minZ, minZ);
   };
 
   this.init = function(scope) {

@@ -1,34 +1,26 @@
 import * as Three from 'three';
 
-import { DESIGN } from '@/utils/constants';
+import { DESIGN, OBJECTS } from '@/utils/constants';
 
 import { loaderDispatchHelper } from '@/utils/utilities';
-import { OBJECTS } from '../../../utils/constants';
+
 
 function Ammo() {
   let audio;
   const audioLoader = new Three.AudioLoader();
   const listener = new Three.AudioListener();
 
-  let raycaster;
-  let raycasterNegate;
-  let direction = new Three.Vector3();
-  let intersections;
-  let beforeObject;
-  const stopDistance = 1;
+  let ammo;
+  let fakeAmmo;
 
-  this.init = function(scope) {
-    // eslint-disable-next-line max-len
+  const STOP_DISTANCE = 1;
+
+  this.init = function (scope) {
     const ammoGeometry = new Three.SphereBufferGeometry(DESIGN.AMMO_RADIUS, 32, 32);
-    // eslint-disable-next-line max-len
     const ammoMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.primary0x, roughness: 0.8, metalness: 0.5 });
-    const fakeAmmoMaterial = new Three.MeshStandardMaterial( { color: 0xff0000 } );
+    const fakeAmmoMaterial = new Three.MeshStandardMaterial({ color: 0xff0000 });
 
-    audioLoader.load( './audio/drop.mp3', (buffer) => {
-      let ammo;
-      let fakeAmmo;
-
-      // eslint-disable-next-line no-plusplus
+    audioLoader.load('./audio/drop.mp3', (buffer) => {
       for (let i = 0; i < DESIGN.NUM_AMMO; i++) {
         ammo = new Three.Mesh(ammoGeometry, ammoMaterial);
         fakeAmmo = new Three.Mesh(ammoGeometry, fakeAmmoMaterial);
@@ -45,9 +37,6 @@ function Ammo() {
         fakeAmmo.visible = false;
         fakeAmmo.matrixAutoUpdate = false;
 
-        // ammo.castShadow = true;
-        // ammo.receiveShadow = true;
-
         scope.ammos.push({
           mesh: ammo,
           fakeMesh: fakeAmmo,
@@ -63,26 +52,23 @@ function Ammo() {
       }
       loaderDispatchHelper(scope.$store, 'isDropComplete');
 
-      raycaster = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, 0), 0, 10);
-      raycasterNegate = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, 0), 0, 10);
-
-      document.addEventListener('click',() => shot(scope), false);
+      document.addEventListener('click', () => shot(scope), false);
     });
   };
 
   const shot = (scope) => {
     if (!scope.isDrone) {
       if (scope.controls.isLocked) {
-        const ammo = scope.ammos[scope.ammoIdx];
+        ammo = scope.ammos[scope.ammoIdx];
         ammo.onFly = true;
 
         scope.scene.add(ammo.mesh);
         scope.scene.add(ammo.fakeMesh);
-        scope.camera.getWorldDirection(direction);
+        scope.camera.getWorldDirection(scope.direction);
 
         ammo.collider.center.copy(scope.controls.getObject().position);
         ammo.collider.center.y -= 0.5;
-        ammo.velocity.copy(direction).multiplyScalar(25);
+        ammo.velocity.copy(scope.direction).multiplyScalar(25);
 
         scope.ammoIdx = (scope.ammoIdx + 1) % scope.ammos.length;
       }
@@ -114,37 +100,37 @@ function Ammo() {
     return ammo;
   };
 
-  this.animate = function(scope) {
+  this.animate = function (scope) {
     scope.ammos.forEach((ammo) => {
       // Летит
       if (ammo.onFly) {
         if (!ammo.onWall) {
-          direction.copy(ammo.velocity).normalize();
-          raycaster.set(ammo.mesh.position, direction);
-          intersections = raycaster.intersectObjects(scope.objectsVertical);
-          beforeObject = intersections.length > 0 ? intersections[0].distance < stopDistance : false;
+          scope.direction.copy(ammo.velocity).normalize();
+          scope.raycasterForward.set(ammo.mesh.position, scope.direction);
+          scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical);
+          scope.onForward = scope.intersections.length > 0 ? scope.intersections[0].distance < STOP_DISTANCE : false;
 
-          if (beforeObject) {
+          if (scope.onForward) {
             play(scope, ammo);
             ammo.onWall = true;
             ammo.velocity.x = 0;
             ammo.velocity.y = 0;
             ammo.velocity.z = 0;
           } else {
-            raycasterNegate.set(ammo.mesh.position, direction.negate());
-            intersections = raycasterNegate.intersectObjects(scope.objectsVertical);
-            beforeObject = intersections.length > 0;
+            scope.raycasterBackward.set(ammo.mesh.position, scope.direction.negate());
+            scope.intersections = scope.raycasterBackward.intersectObjects(scope.objectsVertical);
+            scope.onBackward = scope.intersections.length > 0;
 
-            if (beforeObject) {
+            if (scope.onBackward) {
               play(scope, ammo);
               ammo.onWall = true;
               ammo.velocity.x = 0;
               ammo.velocity.y = 0;
               ammo.velocity.z = 0;
 
-              ammo.mesh.x = intersections[0].point.x + ammo.collider.center.addScaledVector(ammo.velocity.negate(), scope.delta * 200).x;
-              ammo.mesh.y = intersections[0].point.y + ammo.collider.center.addScaledVector(ammo.velocity.negate(), scope.delta * 200).y;
-              ammo.mesh.z = intersections[0].point.z + + ammo.collider.center.addScaledVector(ammo.velocity.negate(), scope.delta * 200).z;
+              ammo.mesh.x = scope.intersections[0].point.x + ammo.collider.center.addScaledVector(ammo.velocity.negate(), scope.delta * 200).x;
+              ammo.mesh.y = scope.intersections[0].point.y + ammo.collider.center.addScaledVector(ammo.velocity.negate(), scope.delta * 200).y;
+              ammo.mesh.z = scope.intersections[0].point.z + +ammo.collider.center.addScaledVector(ammo.velocity.negate(), scope.delta * 200).z;
             }
           }
         }
@@ -171,7 +157,6 @@ function Ammo() {
       // Летит или упало, но не попало на камень
       if ((ammo.onFly || ammo.onGround) && !ammo.onWall) {
         ammo.collider.center.addScaledVector(ammo.velocity, scope.delta * 5);
-        // eslint-disable-next-line no-param-reassign
         ammo.velocity.y -= DESIGN.AMMO_GRAVITY * scope.delta;
         ammo.velocity.addScaledVector(ammo.velocity, damping(scope.delta));
 

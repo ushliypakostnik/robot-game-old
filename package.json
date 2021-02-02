@@ -59,7 +59,8 @@
     ],
     "rules": {
       "arrow-body-style": "off",
-      "implicit-arrow-linebreak": "off"
+      "implicit-arrow-linebreak": "off",
+      "vue/max-attributes-per-line": "off"
     },
     "parserOptions": {
       "parser": "babel-eslint"

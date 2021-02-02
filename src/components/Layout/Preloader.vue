@@ -11,7 +11,7 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
+import { mapGetters } from 'vuex';
 
 import Loader from '@/components/Layout/Loader.vue';
 
@@ -44,6 +44,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    @include size(100%, 100%);
   }
 }
 </style>

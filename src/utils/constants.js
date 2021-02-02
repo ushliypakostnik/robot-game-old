@@ -1,8 +1,6 @@
-import Atmosphere from '../components/Three/Scene/Atmosphere';
-
-const isProd = process.env.NODE_ENV === 'production';
-const apiUrl = process.env.VUE_APP_API_URL;
-export const API_URL = isProd ? apiUrl || 'https://???' : apiUrl || 'http://localhost:8082';
+// const isProd = process.env.NODE_ENV === 'production';
+// const apiUrl = process.env.VUE_APP_API_URL;
+// export const API_URL = isProd ? apiUrl || 'https://???' : apiUrl || 'http://localhost:8082';
 
 export const LOCALSTORAGE = {
   LANGUAGE: 'language',
@@ -45,7 +43,7 @@ export const DESIGN = {
 };
 
 const size = (size) => {
- return size * DESIGN.GROUND_SIZE;
+  return size * DESIGN.GROUND_SIZE;
 };
 
 export const OBJECTS = {
@@ -214,7 +212,7 @@ export const OBJECTS = {
       positionY: -0.5,
       heightMin: size(0.031),
       heightMax: size(0.035),
-    }
+    },
   },
   FLOWERS: {
     positionY: 0,
@@ -233,8 +231,8 @@ export const OBJECTS = {
     tulip: {
       quantity: 30,
       scale: 0.15,
-    }
-  }
+    },
+  },
 };
 
 export const LOCALES = {
@@ -256,8 +254,9 @@ export const LOCALES = {
       gadgetsgate: 'You need a PC keyboard to play',
       chromegate: 'In order to play, open in the Google Chrome (or Yandex) browser',
     },
-    page404: {
-      text: 'Page not found!!!',
+    gameplay: {
+      gameover: 'GAME OVER',
+      gameovebutton: 'Replay',
     },
   },
   [LANGUAGES[1].name]: {
@@ -278,8 +277,9 @@ export const LOCALES = {
       gadgetstext: 'Для того чтобы играть нужна клавиатура персонального компьютера',
       chromegate: 'Для того чтобы играть откройте в браузере Google Chrome (или Яндекс)',
     },
-    page404: {
-      text: 'Страница не найдена!!!',
+    gameplay: {
+      gameover: 'КОНЕЦ ИГРЫ',
+      gameovebutton: 'Играть заново',
     },
   },
 };

@@ -6,7 +6,6 @@
 </template>
 
 <script>
-/* eslint-disable no-use-before-define, import/first, import/order */
 import * as Three from 'three';
 
 import { mapActions, mapGetters } from 'vuex';
@@ -55,9 +54,8 @@ export default {
       droneControls: null,
       // mouse: null,
 
-      time: null,
+      clock: null,
       delta: null,
-      prevTime: null,
 
       stats: null,
 
@@ -100,13 +98,13 @@ export default {
       collision: null,
       height: DESIGN.UNDER_FLOOR,
       onObjectHeight: 0,
+
       onUp: null,
       onForward: null,
       onBackward: null,
       onLeft: null,
       onRight: null,
-      inWater: null,
-      inLargeWater: null,
+      onLargeWater: null,
 
       objectsGround: [], // все объекты для вертикального рейкастинга
       objectsVertical: [], // все объекты с которыми сталкивается горизонтально
@@ -131,7 +129,6 @@ export default {
   },
 
   mounted() {
-    this.prevTime = performance.now();
     this.velocity = new Three.Vector3();
     this.direction = new Three.Vector3();
     this.directionStore = new Three.Vector3(-0.7071067758832469, 0, -0.7071067864898483);
@@ -140,6 +137,8 @@ export default {
     this.y = new Three.Vector3(0, -1, 0);
     this.z = new Three.Vector3(0, 0, 1);
     // this.mouse = new Three.Vector2();
+
+    this.clock = new Three.Clock();
 
     this.init();
     this.animate();
@@ -155,20 +154,35 @@ export default {
     document.removeEventListener('keyup', this.onKeyUp, false);
     // document.removeEventListener('mousemove', this.onMouseMove, false);
 
-    if (this.$eventHub._events['lock']) this.$eventHub.$off('lock');
+    if (this.$eventHub._events.lock) this.$eventHub.$off('lock');
   },
 
   computed: {
     ...mapGetters({
       isPause: 'layout/isPause',
       isDrone: 'layout/isDrone',
+      isGameOver: 'layout/isGameOver',
+
+      heroOnWater: 'hero/heroOnWater',
     }),
+
+    onWater: {
+      get() {
+        return this.heroOnWater;
+      },
+      set(value) {
+        this.setHeroOnWater(value);
+      }
+    },
   },
 
   methods: {
     ...mapActions({
       togglePause: 'layout/togglePause',
       toggleDrone: 'layout/toggleDrone',
+
+      setHeroOnWater: 'hero/setHeroOnWater',
+      setDamage: 'hero/setDamage',
     }),
 
     init() {
@@ -191,7 +205,6 @@ export default {
 
       // Cameras
 
-      // eslint-disable-next-line max-len
       this.camera = new Three.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 1, DESIGN.GROUND_SIZE);
       this.cameraDrone = this.camera.clone();
 
@@ -207,7 +220,7 @@ export default {
       this.mainControls = new PointerLockControls(this.camera, this.renderer.domElement);
 
       this.mainControls.addEventListener('unlock', () => {
-        if (!this.isDrone) {
+        if (!this.isDrone && !this.isGameOver) {
           this.directionStore = this.camera.getWorldDirection(this.direction);
           this.togglePause(true);
         }
@@ -267,14 +280,12 @@ export default {
       this.ammo.init(this);
 
       // Raycasters
-      /* eslint-disable max-len */
       this.raycasterUp = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 1, 0), 0, 100);
       this.raycasterDown = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, -1, 0), 0, 100);
       this.raycasterForward = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, -1), 0, 10);
       this.raycasterBackward = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, 1), 0, 10);
       this.raycasterLeft = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(-1, 0, 0), 0, 10);
       this.raycasterRight = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(-1, 0, 0), 0, 10);
-      /* eslint-enable max-len */
 
       // Listeners
       window.addEventListener('resize', this.onWindowResize, false);
@@ -334,7 +345,6 @@ export default {
     },
 
     onKeyDown(event) {
-      // eslint-disable-next-line default-case
       switch (event.keyCode) {
         case 38: // Up
         case 87: // W
@@ -369,7 +379,6 @@ export default {
     },
 
     onKeyUp(event) {
-      // eslint-disable-next-line default-case
       switch (event.keyCode) {
         case 38: // Up
         case 87: // W
@@ -424,10 +433,9 @@ export default {
     animate() {
       requestAnimationFrame(this.animate);
 
-      this.time = performance.now();
-      this.delta = (this.time - this.prevTime) / 1000;
+      this.delta = this.clock.getDelta();
 
-      if (!this.isPause && !this.isDrone) {
+      if (!this.isPause && !this.isDrone && !this.isGameOver) {
         // Зависнуть над сценой
         // this.controls.getObject().position.y = 1000;
 
@@ -460,8 +468,6 @@ export default {
       } else {
         this.hero.stopDrone(this);
       }
-
-      this.prevTime = this.time;
 
       if (!this.isPause) this.render();
 
@@ -512,6 +518,10 @@ export default {
         this.controls.getObject().position.y = this.height + this.onObjectHeight;
         this.controls.lock();
       }
+    },
+
+    isGameOver(value) {
+      if (value) this.controls.unlock();
     },
   },
 };

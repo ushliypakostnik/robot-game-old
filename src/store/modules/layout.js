@@ -1,10 +1,10 @@
-/* eslint-disable import/no-cycle, no-shadow */
 import storage from '@/utils/storage';
 
 const initialState = {
   language: null,
   isPause: true,
   isDrone: false,
+  isGameOver: false,
 };
 
 const state = initialState;
@@ -13,6 +13,7 @@ const getters = {
   language: state => state.language,
   isPause: state => state.isPause,
   isDrone: state => state.isDrone,
+  isGameOver: state => state.isGameOver,
 };
 
 const actions = {
@@ -28,6 +29,10 @@ const actions = {
   toggleDrone: ({ commit }, isDrone) => {
     commit('toggleDrone', isDrone);
   },
+
+  setGameOver: ({ commit }, isGameOver) => {
+    commit('setGameOver', isGameOver);
+  },
 };
 
 const mutations = {
@@ -41,6 +46,10 @@ const mutations = {
 
   toggleDrone: (state, isDrone) => {
     state.isDrone = isDrone;
+  },
+
+  setGameOver: (state, isGameOver) => {
+    state.isGameOver = isGameOver;
   },
 };
 

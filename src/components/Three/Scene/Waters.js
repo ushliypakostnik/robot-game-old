@@ -11,7 +11,7 @@ import {
 } from '@/utils/utilities';
 
 function Waters(scope) {
-  let waters = [];
+  const waters = [];
 
   let pseudoOcean;
   let pseudoLake;
@@ -43,14 +43,14 @@ function Waters(scope) {
       {
         textureWidth: 512,
         textureHeight: 512,
-        waterNormals: waterNormals,
+        waterNormals,
         alpha: 0,
         sunDirection: new Three.Vector3(),
         sunColor: 0xf9d71c,
         waterColor: 0x00ffff,
         distortionScale: 3.7,
-        fog: scene.fog !== undefined
-      }
+        fog: scene.fog !== undefined,
+      },
     );
     water.rotation.x = -Math.PI / 2;
 
@@ -59,11 +59,11 @@ function Waters(scope) {
 
   const isInLake = (x, z, r) => {
     const result = OBJECTS.LAKES.position.filter(lake => (distance2D(lake[0], lake[1], x, z) + r) < (lake[2] + r) * 0.9);
-    return result.length > 0 ? true : false;
+    return result.length > 0;
   };
-  const fakeMaterial = new Three.MeshLambertMaterial( { color: 0xff0000 } );
+  const fakeMaterial = new Three.MeshLambertMaterial({ color: 0xff0000 });
 
-  this.init = function() {
+  this.init = function () {
     // Ocean
     geometry = new Three.CircleBufferGeometry(OBJECTS.OCEAN.position[2], 32);
     water = initWater(scope.scene, geometry);
@@ -188,9 +188,9 @@ function Waters(scope) {
 
   this.animate = function () {
     waters.forEach((water) => {
-      water.material.uniforms['time'].value += 1.0 / 60.0;
+      water.material.uniforms.time.value += 1.0 / 60.0;
     });
-  }
+  };
 }
 
 export default Waters;

@@ -11,3 +11,10 @@
 //  will-change: transform, opacity;
 //  @include animations("left #{$animation-duration}", "fade #{$animation-duration}");
 //}
+
+.hit {
+  $animation-duration: $transition-duration * 3;
+
+  will-change: opacity;
+  animation: hit $animation-duration infinite;
+}

@@ -25,7 +25,7 @@ function Atmosphere() {
   const geometry = new Three.SphereBufferGeometry(1, 1, 1);
   const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
 
-  this.init = function(scope) {
+  this.init = function (scope) {
     const sun = new Three.Vector3();
     const sky = new Sky();
     sky.scale.setScalar(450000);
@@ -56,7 +56,6 @@ function Atmosphere() {
     sun.y = Math.sin(phi) * Math.sin(theta);
     sun.z = Math.sin(phi) * Math.cos(theta);
 
-    // eslint-disable-next-line dot-notation
     uniforms['sunPosition'].value.copy(sun);
 
     scope.renderer.outputEncoding = Three.sRGBEncoding;
@@ -104,7 +103,7 @@ function Atmosphere() {
 
     ocean = new Three.Mesh(geometry, material);
 
-    audioLoader.load( './audio/ocean.mp3', (buffer) => {
+    audioLoader.load('./audio/ocean.mp3', (buffer) => {
       audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(oceanVolume);
@@ -122,7 +121,7 @@ function Atmosphere() {
 
     wind = new Three.Mesh(geometry, material);
 
-    audioLoader.load( './audio/wind.mp3', (buffer) => {
+    audioLoader.load('./audio/wind.mp3', (buffer) => {
       audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.wind);
@@ -141,7 +140,7 @@ function Atmosphere() {
     if (wind && wind.children[0] && wind.children[0].isPlaying) wind.children[0].stop();
   };
 
-  this.animate = function(scope) {
+  this.animate = function (scope) {
     if (!scope.isPause && !scope.isDrone) {
       newX = scope.controls.getObject().position.x;
       newZ = scope.controls.getObject().position.z;

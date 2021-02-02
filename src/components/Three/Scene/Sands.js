@@ -7,7 +7,7 @@ function Sands() {
   let geometry;
   let sand;
 
-  this.init = function(scope) {
+  this.init = function (scope) {
     const mapBeach = new Three.TextureLoader().load('./images/textures/sand.jpg', (texture) => {
       scope.render();
       loaderDispatchHelper(scope.$store, 'isSandLoaded1');
@@ -26,13 +26,10 @@ function Sands() {
     beach.rotation.x = -Math.PI / 2;
     beach.position.set(0, OBJECTS.BEACH.positionY, 0);
     beach.material.map.repeat.set(512, 512);
-    // eslint-disable-next-line no-multi-assign
     beach.material.map.wrapS = beach.material.map.wrapT = Three.RepeatWrapping;
     beach.material.map.encoding = Three.sRGBEncoding;
 
     beach.name = OBJECTS.BEACH.name;
-
-    // ground.receiveShadow = true;
 
     beach.updateMatrix();
     beach.matrixAutoUpdate = true;
@@ -41,14 +38,12 @@ function Sands() {
     scope.objectsGround.push(beach);
 
     // Sands
-    // eslint-disable-next-line no-plusplus
     for (let i = 0; i < OBJECTS.SANDS.position.length; i++) {
       geometry = new Three.CircleBufferGeometry(OBJECTS.SANDS.position[i][2], 32);
 
       sand = new Three.Mesh(geometry, materialSand);
       sand.rotation.x = -Math.PI / 2;
       sand.material.map.repeat.set(24, 24);
-      // eslint-disable-next-line no-multi-assign
       sand.material.map.wrapS = sand.material.map.wrapT = Three.RepeatWrapping;
       sand.material.map.encoding = Three.sRGBEncoding;
 
