@@ -15,6 +15,7 @@ const initialState = {
   isCrocusLoaded: false,
   isDaffodilLoaded: false,
   isTulipLoaded: false,
+  isHorseLoaded: false,
 
   isMashaComplete: false,
   isStepComplete: false,
@@ -27,6 +28,7 @@ const initialState = {
   isDropComplete: false,
   isOceanComplete: false,
   isWindComplete: false,
+  isDamageComplete: false,
 
   isAmmoBuilt: false,
   isGrassBuilt: false,
@@ -34,10 +36,11 @@ const initialState = {
   isSandsBuilt: false,
   isWatersBuilt: false,
   isTressBuilt: false,
-  isAnemoneBuilt: false,
-  isCrocusBuilt: false,
-  isDaffodilBuilt: false,
-  isTulipBuilt: false,
+  isAnemonesBuilt: false,
+  isCrocusesBuilt: false,
+  isDaffodilsBuilt: false,
+  isTulipsBuilt: false,
+  isBottlesBuilt: false,
 };
 const state = initialState;
 

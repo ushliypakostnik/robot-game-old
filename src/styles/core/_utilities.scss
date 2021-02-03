@@ -13,8 +13,11 @@
 //}
 
 .hit {
-  $animation-duration: $transition-duration * 3;
+  will-change: opacity;
+  animation: hit $animation-duration 1;
+}
 
+.damage {
   will-change: opacity;
   animation: hit $animation-duration infinite;
 }

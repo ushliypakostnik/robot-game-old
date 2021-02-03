@@ -129,14 +129,9 @@ function Waters(scope) {
 
         // Не рядом с 0, 0, 0
         counter = 0;
-        while ((randomX < radius * 1.25) && (randomX > -1.25 * radius)) {
+        while (distance2D(0, 0, randomX, randomZ) < radius * 1.25) {
           counter++;
           randomX += radius * yesOrNo() * 1.25;
-          if (counter > 50) break;
-        }
-        counter = 0;
-        while ((randomZ < radius * 1.25) && (randomZ > -1.25 * radius)) {
-          counter++;
           randomZ += radius * yesOrNo() * 1.25;
           if (counter > 50) break;
         }

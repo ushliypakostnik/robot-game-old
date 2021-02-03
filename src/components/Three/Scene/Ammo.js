@@ -4,27 +4,29 @@ import { DESIGN, OBJECTS } from '@/utils/constants';
 
 import { loaderDispatchHelper } from '@/utils/utilities';
 
-
-
 function Ammo() {
   let audio;
   const audioLoader = new Three.AudioLoader();
   const listener = new Three.AudioListener();
 
+  const ammos = [];
+  let ammoIndex = 0;
   let ammo;
   let fakeAmmo;
 
+  const AMMO_GRAVITY = 5;
+  const AMMO_RADIUS = 0.5;
   const STOP_DISTANCE = 1;
 
   this.init = function (scope) {
-    const ammoGeometry = new Three.SphereBufferGeometry(DESIGN.AMMO_RADIUS, 32, 32);
+    const ammoGeometry = new Three.SphereBufferGeometry(AMMO_RADIUS, 32, 32);
     const ammoMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.primary0x, roughness: 0.8, metalness: 0.5 });
     const fakeAmmoMaterial = new Three.MeshStandardMaterial({ color: 0xff0000 });
 
     audioLoader.load('./audio/drop.mp3', (buffer) => {
       loaderDispatchHelper(scope.$store, 'isDropComplete');
 
-      for (let i = 0; i < DESIGN.NUM_AMMO; i++) {
+      for (let i = 0; i < DESIGN.HERO.scales.ammo.magazine; i++) {
         ammo = new Three.Mesh(ammoGeometry, ammoMaterial);
         fakeAmmo = new Three.Mesh(ammoGeometry, fakeAmmoMaterial);
 
@@ -40,10 +42,10 @@ function Ammo() {
         fakeAmmo.visible = false;
         fakeAmmo.matrixAutoUpdate = false;
 
-        scope.ammos.push({
+        ammos.push({
           mesh: ammo,
           fakeMesh: fakeAmmo,
-          collider: new Three.Sphere(new Three.Vector3(0, 0, 0), DESIGN.AMMO_RADIUS),
+          collider: new Three.Sphere(new Three.Vector3(0, 0, 0), AMMO_RADIUS),
           velocity: new Three.Vector3(),
           onFly: false,
           onWall: false,
@@ -60,21 +62,20 @@ function Ammo() {
   };
 
   const shot = (scope) => {
-    if (!scope.isDrone) {
-      if (scope.controls.isLocked) {
-        ammo = scope.ammos[scope.ammoIdx];
-        ammo.onFly = true;
+    if (!scope.isDrone && scope.controls.isLocked && scope.ammo > 0) {
+      ammo = ammos[ammoIndex];
+      ammo.onFly = true;
 
-        scope.scene.add(ammo.mesh);
-        scope.scene.add(ammo.fakeMesh);
-        scope.camera.getWorldDirection(scope.direction);
+      scope.scene.add(ammo.mesh);
+      scope.scene.add(ammo.fakeMesh);
+      scope.camera.getWorldDirection(scope.direction);
 
-        ammo.collider.center.copy(scope.controls.getObject().position);
-        ammo.collider.center.y -= 0.5;
-        ammo.velocity.copy(scope.direction).multiplyScalar(25);
+      ammo.collider.center.copy(scope.controls.getObject().position);
+      ammo.collider.center.y -= 0.5;
+      ammo.velocity.copy(scope.direction).multiplyScalar(25);
 
-        scope.ammoIdx = (scope.ammoIdx + 1) % scope.ammos.length;
-      }
+      ammoIndex = (ammoIndex + 1) % ammos.length;
+      scope.setScale({ field: DESIGN.HERO.scales.ammo.name, value: -1 });
     }
   };
 
@@ -104,7 +105,7 @@ function Ammo() {
   };
 
   this.animate = function (scope) {
-    scope.ammos.forEach((ammo) => {
+    ammos.forEach((ammo) => {
       // Летит
       if (ammo.onFly) {
         if (!ammo.onWall) {
@@ -160,7 +161,7 @@ function Ammo() {
       // Летит или упало, но не попало на камень
       if ((ammo.onFly || ammo.onGround) && !ammo.onWall) {
         ammo.collider.center.addScaledVector(ammo.velocity, scope.delta * 5);
-        ammo.velocity.y -= DESIGN.AMMO_GRAVITY * scope.delta;
+        ammo.velocity.y -= AMMO_GRAVITY * scope.delta;
         ammo.velocity.addScaledVector(ammo.velocity, damping(scope.delta));
 
         ammo.mesh.position.copy(ammo.collider.center);

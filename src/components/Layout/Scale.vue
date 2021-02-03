@@ -1,5 +1,8 @@
 <template>
-  <div class="scale">
+  <div
+    class="scale"
+    :class="lock && 'scale--lock'"
+  >
     <div
       class="scale__progress"
       :class="`scale__progress--${face}`"
@@ -23,6 +26,11 @@ export default {
       default: null,
       required: true,
     },
+    lock: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
   }
 };
 </script>
@@ -38,6 +46,10 @@ export default {
 
   &:not(:last-child) {
     margin-bottom: $gutter / 4;
+  }
+
+  &--lock {
+    opacity: 0.5;
   }
 
   &__progress {

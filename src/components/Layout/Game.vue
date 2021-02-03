@@ -3,7 +3,7 @@
     <div
       class="game__overlay"
       :class="[
-        heroOnWater && !isGameOver && `game__overlay--hit hit`,
+        isHeroOnWater && !isGameOver && `game__overlay--damage damage`,
         isGameOver && `game__overlay--gameover`,
       ]"
     >
@@ -26,17 +26,23 @@
       <Scale
         face="endurance"
         :progress="endurance"
+        :lock="isHeroTired"
       />
       <Scale
         face="power"
         :progress="power"
       />
     </div>
+    <div class="game__ammo">
+      {{ ammo }}/{{ ammoMagazine }}
+    </div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+
+import { DESIGN } from '@/utils/constants';
 
 import Scale from '@/components/Layout/Scale.vue';
 
@@ -52,14 +58,24 @@ export default {
       health: 'hero/health',
       endurance: 'hero/endurance',
       power: 'hero/power',
-      heroOnWater: 'hero/heroOnWater',
+      ammo: 'hero/ammo',
+      isHeroOnWater: 'hero/isHeroOnWater',
+      isHeroTired: 'hero/isHeroTired',
 
       isGameOver: 'layout/isGameOver',
     }),
+
+    ammoMagazine() {
+      const magazine = Math.floor((this.ammo - 1) / DESIGN.HERO.scales.ammo.magazine) + 1;
+      return magazine < 10 ? '0' + magazine : magazine;
+    },
   },
 
   methods: {
     ...mapActions({
+      setHeroTired: 'hero/setHeroTired',
+      setScale: 'hero/setScale',
+
       setGameOver: 'layout/setGameOver',
     }),
 
@@ -72,6 +88,14 @@ export default {
   watch: {
     health(value) {
       if (value < 0) this.setGameOver(true);
+    },
+
+    endurance(value) {
+      if (value < 0) this.setHeroTired(true);
+    },
+
+    ammo(value) {
+
     },
   }
 };
@@ -90,7 +114,7 @@ export default {
     right: 0;
     @include size(100%, 100%);
 
-    &--hit {
+    &--damage {
       background: $colors__primary-light--transparent;
     }
 
@@ -118,6 +142,14 @@ export default {
     bottom: $gutter / 2;
     left: $gutter / 2;
     width: $gutter * 8;
+  }
+
+  &__ammo {
+    position: absolute;
+    bottom: $gutter / 2;
+    right: $gutter / 2;
+    color: $colors__white;
+    @include text($font-size--large);
   }
 }
 </style>

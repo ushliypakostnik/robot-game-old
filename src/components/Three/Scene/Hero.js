@@ -20,15 +20,22 @@ function Hero() {
   let waterjump;
   let jump;
   let spit;
+  let damage;
 
   const STOP_DISTANCE = 5;
-  const WATER_DAMAGE = 1;
   let onFly = true;
   let onFloor = 0;
   let shot = 0;
 
+  let delta;
+
   let damageClock;
   let damageTime = 0;
+  let damageSoundTime = 0;
+
+  let enduranceClock;
+  let enduranceTime = 0;
+  let isEnduranceRecoveryStart = false;
 
   const geometry = new Three.SphereBufferGeometry(1, 1, 1);
   const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
@@ -37,7 +44,7 @@ function Hero() {
     loader.load('./images/models/Hero.fbx', (hero) => {
       loaderDispatchHelper(scope.$store, 'isHeroLoaded');
 
-      hero.scale.set(OBJECTS.HERO.scale, OBJECTS.HERO.scale, OBJECTS.HERO.scale);
+      hero.scale.set(DESIGN.HERO.scale, DESIGN.HERO.scale, DESIGN.HERO.scale);
       hero.visible = false;
 
       mixer = new Three.AnimationMixer(hero);
@@ -166,11 +173,26 @@ function Hero() {
       loaderDispatchHelper(scope.$store, 'isSpitComplete');
     });
 
+    damage = new Three.Mesh(geometry, material);
+
+    audioLoader.load('./audio/damage.mp3', (buffer) => {
+      audio = new Three.Audio(listener);
+      audio.setBuffer(buffer);
+      audio.setVolume(DESIGN.VOLUME.normal);
+
+      damage.add(audio);
+      damage.visible = false;
+
+      scope.scene.add(damage);
+      loaderDispatchHelper(scope.$store, 'isDamageComplete');
+    });
+
     damageClock = new Three.Clock(false);
+    enduranceClock = new Three.Clock(false);
   };
 
   const jumps = (scope) => {
-    if (scope.onWater) {
+    if (scope.heroOnWater) {
       if (waterjump && waterjump.children[0]) {
         this.stop();
         waterjump.children[0].play();
@@ -233,8 +255,8 @@ function Hero() {
             || scope.layersNew.includes(OBJECTS.LAKES.name)
             || scope.layersNew.includes(OBJECTS.PUDDLES.name))
             && !scope.layersNew.includes(OBJECTS.SANDS.name)) {
-            scope.onWater = true;
-          } else scope.onWater = false;
+            scope.heroOnWater = true;
+          } else scope.heroOnWater = false;
 
           // На большой воде
           if (
@@ -258,17 +280,62 @@ function Hero() {
       }
 
       // Урон от воды
-      if (scope.onWater && scope.canJump) {
-        if (!damageClock.running) damageClock.start();
+      if (scope.heroOnWater && scope.canJump) {
+        if (!damageClock.running) {
+          damageClock.start();
 
-        damageTime += damageClock.getDelta();
+          if (damage && damage.children[0]) {
+            damage.children[0].play();
+          }
+        }
+
+        delta = damageClock.getDelta();
+        damageTime += delta;
+        damageSoundTime += delta;
+
         if (damageTime > 0.075) {
-          scope.setDamage(WATER_DAMAGE);
+          scope.setScale({ field: DESIGN.HERO.scales.health.name, value: -1 });
           damageTime = 0;
+        }
+
+        if (damageSoundTime > 0.5) {
+          damageSoundTime = 0;
+
+          if (damage && damage.children[0]) {
+            damage.children[0].play();
+          }
         }
       } else {
         if (damageClock.running) damageClock.stop();
         damageTime = 0;
+        damageSoundTime = 0;
+      }
+
+      // Усталость и ее восстановление
+      if (scope.moveRun ||
+          scope.isHeroTired ||
+          (!scope.moveRun && !scope.isHeroTired && scope.endurance < 100)) {
+        if (scope.moveRun && !enduranceClock.running) enduranceClock.start();
+        if (!isEnduranceRecoveryStart && scope.endurance < 100 && !scope.moveRun) {
+          isEnduranceRecoveryStart = true;
+          enduranceClock.start();
+        } else if (isEnduranceRecoveryStart && scope.moveRun) {
+          isEnduranceRecoveryStart = false;
+        }
+
+        enduranceTime += enduranceClock.getDelta();
+
+        if (enduranceTime > 0.025) {
+          scope.setScale({
+            field: DESIGN.HERO.scales.endurance.name,
+            value: !isEnduranceRecoveryStart ? -1 : 1,
+          });
+          enduranceTime = 0;
+        }
+      } else {
+        if (enduranceClock.running) enduranceClock.stop();
+        if (isEnduranceRecoveryStart) isEnduranceRecoveryStart = false;
+        enduranceTime = 0;
       }
 
       // Up
@@ -298,18 +365,18 @@ function Hero() {
       scope.direction.normalize(); // this ensures consistent movements in all directions
 
       // eslint-disable-next-line max-len
-      if (scope.moveForward || scope.moveBackward) scope.velocity.z -= scope.direction.z * DESIGN.HERO_SPEED * scope.delta;
+      if (scope.moveForward || scope.moveBackward) scope.velocity.z -= scope.direction.z * DESIGN.HERO.speed * scope.delta;
       // eslint-disable-next-line max-len
-      if (scope.moveLeft || scope.moveRight) scope.velocity.x -= scope.direction.x * DESIGN.HERO_SPEED * scope.delta;
+      if (scope.moveLeft || scope.moveRight) scope.velocity.x -= scope.direction.x * DESIGN.HERO.speed * scope.delta;
 
       // Скорость движения в зависимости от режима
       if (scope.moveHidden) {
         scope.moveSpeed = 0.25;
       } else if (scope.moveRun) {
-        if (scope.onWater) {
+        if (scope.heroOnWater) {
           scope.moveSpeed = 1.75;
         } else scope.moveSpeed = 2.5;
-      } else if (scope.onWater) {
+      } else if (scope.heroOnWater) {
         scope.moveSpeed = 0.7;
       } else scope.moveSpeed = 1;
 
@@ -339,13 +406,13 @@ function Hero() {
         scope.controls.moveForward(-scope.velocity.z * scope.delta * scope.moveSpeed);
       }
 
-      scope.velocity.y -= 9.8 * DESIGN.HERO_MASS * scope.delta;
+      scope.velocity.y -= 9.8 * DESIGN.HERO.mass * scope.delta;
 
       scope.controls.getObject().position.y += (scope.velocity.y * scope.delta);
 
       if (scope.moveHidden || scope.onLargeWater) {
-        scope.height = DESIGN.UNDER_FLOOR / 2;
-      } else scope.height = DESIGN.UNDER_FLOOR;
+        scope.height = DESIGN.HERO.height / 2;
+      } else scope.height = DESIGN.HERO.height;
 
       if (scope.controls.getObject().position.y < scope.height + scope.onObjectHeight) {
         scope.velocity.y = 0;
@@ -366,7 +433,7 @@ function Hero() {
         onFloor = scope.onObjectHeight;
       } else if (scope.moveForward || scope.moveBackward || scope.moveLeft || scope.moveRight) {
         if (scope.moveRun) {
-          if (scope.onWater) {
+          if (scope.heroOnWater) {
             if (waterrun && waterrun.children[0]) {
               this.stop('waterrun');
               waterrun.children[0].play();
@@ -378,7 +445,7 @@ function Hero() {
         }
 
         if (!scope.moveRun) {
-          if (scope.onWater) {
+          if (scope.heroOnWater) {
             if (watersteps && watersteps.children[0]) {
               this.stop('watersteps');
               if (scope.moveHidden) {

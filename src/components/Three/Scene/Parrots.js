@@ -1,39 +1,61 @@
 import * as Three from 'three';
 
-import { DESIGN, OBJECTS } from '@/utils/constants';
-import { randomInteger } from '@/utils/utilities';
-
 import { GLTFLoader } from '@/components/Three/Modules/Utils/GLTFLoader';
 
+import { DESIGN, OBJECTS } from '@/utils/constants';
+import {
+  fixEnemyPosition,
+  randomInteger,
+  yesOrNo,
+  distance2D
+} from '@/utils/utilities';
+
 function Parrots() {
+  const loader = new GLTFLoader();
+
   const parrots = [];
-  let raycaster;
-  const direction = new Three.Vector3();
+  let parrot;
+  let X;
+  let Z;
+  let y;
+  let rotate;
+  let bend;
+  let accelerationVelocity;
+  let accelerationBend;
+  let velocityVertical;
+
+  let mixer;
+  let decision;
+
+  const PARROTS_RADIUS = DESIGN.GROUND_SIZE * 0.6;
 
   this.init = function (scope) {
-    const loader = new GLTFLoader();
     loader.load('./images/models/Parrot.glb', (gltf) => {
       for (let i = 0; i < OBJECTS.PARROTS.quantity; i++) {
-        const parrot = gltf.scene.clone(true).children[0];
-        parrot.scale.set(0.4, 0.4, 0.4);
+        parrot = gltf.scene.clone(true).children[0];
+        parrot.scale.set(OBJECTS.PARROTS.scale, OBJECTS.PARROTS.scale, OBJECTS.PARROTS.scale);
 
-        const x = randomInteger(-1 * DESIGN.GROUND_SIZE / 2, DESIGN.GROUND_SIZE / 2);
-        const y = randomInteger(5, 10);
-        const z = randomInteger(-1 * DESIGN.GROUND_SIZE / 2, DESIGN.GROUND_SIZE / 2);
+        X = randomInteger(-1 * DESIGN.GROUND_SIZE / 2, DESIGN.GROUND_SIZE / 2);
+        y = randomInteger(OBJECTS.PARROTS.minHeight, OBJECTS.PARROTS.maxHeight);
+        Z = randomInteger(-1 * DESIGN.GROUND_SIZE / 2, DESIGN.GROUND_SIZE / 2);
+
+        const [x, z] = fixEnemyPosition(
+          PARROTS_RADIUS,
+          scope.objectsStoneData,
+          scope.objectsTreesData, X, Z);
 
         parrot.position.set(x, y, z);
 
-        const rotate = randomInteger(-180, 180);
-        const bend = randomInteger(-1, 1);
+        rotate = randomInteger(-180, 180);
+        bend = yesOrNo();
         parrot.rotateY(rotate);
 
-        const accelerationVelocity = Math.random();
-        const accelerationBend = Math.random();
+        accelerationBend = Math.random();
+        accelerationVelocity = Math.random() + 0.5;
+        velocityVertical = Math.random() + 2.5;
 
-        const mixer = new Three.AnimationMixer(parrot);
+        mixer = new Three.AnimationMixer(parrot);
         mixer.clipAction(gltf.animations[0]).setDuration(1).play();
-
-        raycaster = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, 0), 0, 10);
 
         parrots.push({
           mesh: parrot,
@@ -41,50 +63,59 @@ function Parrots() {
           bend,
           accelerationVelocity,
           accelerationBend,
+          velocityVertical,
           beforeObject: false,
           side: null,
         });
         scope.scene.add(parrot);
-        scope.objects.push(parrot);
       }
     });
   };
 
-  this.animate = function (delta, objects) {
+  this.animate = function (scope) {
     parrots.forEach((parrot) => {
       // Raycast
-      const directionForward = parrot.mesh.getWorldDirection(direction);
-      raycaster.set(parrot.mesh.position, directionForward);
-      const intersections = raycaster.intersectObjects(objects);
-      const beforeObject = intersections.length > 0;
+      scope.directionForward = parrot.mesh.getWorldDirection(scope.direction);
+      scope.raycasterForward.set(parrot.mesh.position, scope.directionForward);
+      scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical);
+      scope.onForward = scope.intersections.length > 0;
 
-      if (beforeObject) {
+      if (scope.onForward) {
         parrot.beforeObject = true;
-        while (parrot.side === 0 || parrot.side === null) {
-          parrot.side = randomInteger(-1, 1);
-        }
+        parrot.side = yesOrNo();
 
-        parrot.mesh.position.add(parrot.mesh.getWorldDirection(direction).negate().multiplyScalar((OBJECTS.PARROTS.velocity * parrot.accelerationVelocity) * delta));
+        parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar((OBJECTS.PARROTS.velocity * parrot.accelerationVelocity) * scope.delta));
         parrot.mesh.rotateY(parrot.side * 45);
       } else {
         parrot.beforeObject = false;
         parrot.side = null;
 
-        const decisionBend = randomInteger(1, 50) === 1;
-        if (decisionBend) parrot.bend = randomInteger(-1, 1);
+        decision = randomInteger(1, 50) === 1;
+        if (decision) parrot.bend = yesOrNo();
 
-        const decisionAccelerationBend = randomInteger(1, 100) === 1;
-        if (decisionAccelerationBend) parrot.accelerationBend = Math.random();
+        decision = randomInteger(1, 50) === 1;
+        if (decision) parrot.accelerationBend = Math.random();
 
-        parrot.mesh.rotateY((parrot.bend + parrot.accelerationBend) * delta);
+        parrot.mesh.rotateY((parrot.bend + parrot.accelerationBend) * scope.delta);
 
-        const decisionAccelerationVelocity = randomInteger(1, 150) === 1;
-        if (decisionAccelerationVelocity) parrot.accelerationVelocity = Math.random() + 0.5;
+        decision = randomInteger(1, 50) === 1;
+        if (decision) parrot.accelerationVelocity = Math.random() + 0.5;
 
-        parrot.mesh.position.add(parrot.mesh.getWorldDirection(direction).multiplyScalar((OBJECTS.PARROTS.velocity * parrot.accelerationVelocity) * delta));
+        decision = randomInteger(1, 50) === 1;
+        if (decision) parrot.velocityVertical = (Math.random() + 2.5) * yesOrNo();
+
+        if (parrot.mesh.position.y < OBJECTS.PARROTS.minHeight ||
+            parrot.mesh.position.y > OBJECTS.PARROTS.maxHeight) parrot.velocityVertical *= -1;
+
+        if (distance2D(0, 0, parrot.mesh.position.x, parrot.mesh.position.z) > PARROTS_RADIUS) {
+          parrot.mesh.rotateY(parrot.side * 45);
+        }
+
+        parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).multiplyScalar((OBJECTS.PARROTS.velocity * parrot.accelerationVelocity) * scope.delta));
+        parrot.mesh.position.y += parrot.velocityVertical * scope.delta;
       }
 
-      if (parrot.mixer) parrot.mixer.update(delta);
+      if (parrot.mixer) parrot.mixer.update(scope.delta);
     });
   };
 }

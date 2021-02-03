@@ -1,34 +1,60 @@
 import * as Three from 'three';
 
-import { OBJECTS } from '@/utils/constants';
-import { randomInteger } from '@/utils/utilities';
-
 import { GLTFLoader } from '@/components/Three/Modules/Utils/GLTFLoader';
 
+import { DESIGN, OBJECTS } from '@/utils/constants';
+import {
+  fixEnemyPosition,
+  randomInteger,
+  loaderDispatchHelper,
+  yesOrNo,
+  distance2D,
+} from '@/utils/utilities';
+
 function Horses() {
+  const loader = new GLTFLoader();
+
   const horses = [];
-  let raycaster;
-  const direction = new Three.Vector3();
+  let horse;
+  let X;
+  let Z;
+  let rotate;
+  let bend;
+  let accelerationVelocity;
+  let accelerationBend;
+
+  let mixer;
+  let decision;
+
+  const HORSES_RADIUS = DESIGN.GROUND_SIZE * 0.55;
 
   this.init = function (scope) {
-    const loader = new GLTFLoader();
     loader.load('./images/models/Horse.glb', (gltf) => {
-      for (let i = 0; i < OBJECTS.HORSES.start.length; i++) {
-        const horse = gltf.scene.clone(true).children[0];
-        horse.scale.set(OBJECTS.HORSES.size, OBJECTS.HORSES.size, OBJECTS.HORSES.size);
-        horse.position.set(OBJECTS.HORSES.start[i][0], 0, OBJECTS.HORSES.start[i][1]);
+      loaderDispatchHelper(scope.$store, 'isHorseLoaded');
 
-        const rotate = randomInteger(-180, 180);
-        const bend = randomInteger(-1, 1);
+      for (let i = 0; i < OBJECTS.HORSES.quantity; i++) {
+        horse = gltf.scene.clone(true).children[0];
+        horse.scale.set(OBJECTS.HORSES.scale, OBJECTS.HORSES.scale, OBJECTS.HORSES.scale);
+
+        X = randomInteger(-1 * DESIGN.GROUND_SIZE / 2, DESIGN.GROUND_SIZE / 2);
+        Z = randomInteger(-1 * DESIGN.GROUND_SIZE / 2, DESIGN.GROUND_SIZE / 2);
+
+        const [x, z] = fixEnemyPosition(
+          HORSES_RADIUS,
+          scope.objectsStoneData,
+          scope.objectsTreesData, X, Z);
+
+        horse.position.set(x, 0, z);
+
+        rotate = randomInteger(-180, 180);
+        bend = yesOrNo();
         horse.rotateY(rotate);
 
-        const accelerationVelocity = Math.random();
-        const accelerationBend = Math.random();
+        accelerationVelocity = Math.random();
+        accelerationBend = Math.random();
 
-        const mixer = new Three.AnimationMixer(horse);
+        mixer = new Three.AnimationMixer(horse);
         mixer.clipAction(gltf.animations[0]).setDuration(1).play();
-
-        raycaster = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 0, 0), 0, 10);
 
         horses.push({
           mesh: horse,
@@ -36,49 +62,50 @@ function Horses() {
           bend,
           accelerationVelocity,
           accelerationBend,
-          beforeObject: false,
+          onForward: false,
           side: null,
         });
         scope.scene.add(horse);
-        scope.objects.push(horse);
       }
     });
   };
 
-  this.animate = function (delta, objects) {
+  this.animate = function (scope) {
     horses.forEach((horse) => {
       // Raycast
-      const directionForward = horse.mesh.getWorldDirection(direction);
-      raycaster.set(horse.mesh.position, directionForward);
-      const intersections = raycaster.intersectObjects(objects);
-      const beforeObject = intersections.length > 0;
+      scope.directionForward = horse.mesh.getWorldDirection(scope.direction);
+      scope.raycasterForward.set(horse.mesh.position, scope.directionForward);
+      scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical);
+      scope.onForward = scope.intersections.length > 0;
 
-      if (beforeObject) {
-        horse.beforeObject = true;
-        while (horse.side === 0 || horse.side === null) {
-          horse.side = randomInteger(-1, 1);
-        }
-        horse.mesh.position.add(horse.mesh.getWorldDirection(direction).negate().multiplyScalar((OBJECTS.HORSES.velocity * horse.accelerationVelocity) * delta));
+      if (scope.onForward) {
+        horse.onForward = true;
+        horse.side = yesOrNo();
+        horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).negate().multiplyScalar((OBJECTS.HORSES.velocity * horse.accelerationVelocity) * scope.delta));
         horse.mesh.rotateY(horse.side * 45);
       } else {
-        horse.beforeObject = false;
+        horse.onForward = false;
         horse.side = null;
 
-        const decisionBend = randomInteger(1, 50) === 1;
-        if (decisionBend) horse.bend = randomInteger(-1, 1);
+        decision = randomInteger(1, 50) === 1;
+        if (decision) horse.bend = yesOrNo();
 
-        const decisionAccelerationBend = randomInteger(1, 100) === 1;
-        if (decisionAccelerationBend) horse.accelerationBend = Math.random();
+        decision = randomInteger(1, 50) === 1;
+        if (decision) horse.accelerationBend = Math.random();
 
-        horse.mesh.rotateY((horse.bend + horse.accelerationBend) * delta);
+        horse.mesh.rotateY((horse.bend + horse.accelerationBend) * scope.delta);
 
-        const decisionAccelerationVelocity = randomInteger(1, 150) === 1;
-        if (decisionAccelerationVelocity) horse.accelerationVelocity = Math.random() + 0.5;
+        decision = randomInteger(1, 50) === 1;
+        if (decision) horse.accelerationVelocity = Math.random() + 0.5;
 
-        horse.mesh.position.add(horse.mesh.getWorldDirection(direction).multiplyScalar((OBJECTS.HORSES.velocity * horse.accelerationVelocity) * delta));
+        if (distance2D(0, 0, horse.mesh.position.x, horse.mesh.position.z) > HORSES_RADIUS) {
+          horse.mesh.rotateY(horse.side * 45);
+        }
+
+        horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).multiplyScalar((OBJECTS.HORSES.velocity * horse.accelerationVelocity) * scope.delta));
       }
 
-      if (horse.mixer) horse.mixer.update(delta);
+      if (horse.mixer) horse.mixer.update(scope.delta);
     });
   };
 }

@@ -6,7 +6,7 @@
     <Preloader>
       <Scene />
 
-      <Game />
+      <Game v-if="!isDrone" />
 
       <div
         v-if="isPause"

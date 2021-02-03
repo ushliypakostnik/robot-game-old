@@ -29,12 +29,13 @@ import Grass from './Grass';
 import Waters from './Waters';
 import Sands from './Sands';
 import Stones from './Stones';
-import Plants from './Plants';
+import Trees from './Trees';
+import Things from './Things';
 import Hero from './Hero';
 import Ammo from './Ammo';
+import Horses from './Horses';
+import Parrots from './Parrots';
 // import Boxes from './Boxes';
-// import Horses from './Horses';
-// import Parrots from './Parrots';
 
 export default {
   name: 'Scene',
@@ -97,7 +98,7 @@ export default {
       layersNew: [],
       object: null,
       collision: null,
-      height: DESIGN.UNDER_FLOOR,
+      height: DESIGN.HERO.height,
       onObjectHeight: 0,
 
       onUp: null,
@@ -112,20 +113,20 @@ export default {
       objectsPuddles: [], // все лужи
       objectsStoneData: [], // все камни и горы - данные - [x, z, r]
       objectsWaterData: [], // все озера и лужи - данные - [x, z, r]
+      objectsTreesData: [], // все деревья - данные - [x, z]
 
       atmosphere: null,
       grass: null,
-      plants: null,
+      trees: null,
+      things: null,
       waters: null,
       sands: null,
       stones: null,
       hero: null,
       robot: null,
-      // horses: null,
-      // parrots: null,
-
-      ammos: [],
-      ammoIdx: 0,
+      weapon: null,
+      horses: null,
+      parrots: null,
     };
   },
 
@@ -167,12 +168,15 @@ export default {
       isDrone: 'layout/isDrone',
       isGameOver: 'layout/isGameOver',
 
-      heroOnWater: 'hero/heroOnWater',
+      endurance: 'hero/endurance',
+      ammo: 'hero/ammo',
+      isHeroOnWater: 'hero/isHeroOnWater',
+      isHeroTired: 'hero/isHeroTired',
     }),
 
-    onWater: {
+    heroOnWater: {
       get() {
-        return this.heroOnWater;
+        return this.isHeroOnWater;
       },
       set(value) {
         this.setHeroOnWater(value);
@@ -186,7 +190,7 @@ export default {
       toggleDrone: 'layout/toggleDrone',
 
       setHeroOnWater: 'hero/setHeroOnWater',
-      setDamage: 'hero/setDamage',
+      setScale: 'hero/setScale',
 
       preloaderReload: 'preloader/preloaderReload',
       layoutReload: 'layout/layoutReload',
@@ -247,13 +251,13 @@ export default {
       this.atmosphere = new Atmosphere();
       this.atmosphere.init(this);
 
-      // Сharacters
+      // Hero
       this.hero = new Hero();
       this.hero.init(this);
 
-      // Hero
-      this.ammo = new Ammo();
-      this.ammo.init(this);
+      // Weapon
+      this.weapon = new Ammo();
+      this.weapon.init(this);
 
       // Built random world
       this.build();
@@ -308,19 +312,21 @@ export default {
       this.stones = new Stones();
       this.stones.init(this);
 
-      // Plants
-      this.plants = new Plants();
-      this.plants.init(this);
+      // Trees
+      this.trees = new Trees();
+      this.trees.init(this);
 
-      /*
-      // Horses
+      // Things
+      this.things = new Things();
+      this.things.init(this);
+
+      // Enemies
+
       this.horses = new Horses();
       this.horses.init(this);
 
-      // Parrots
       this.parrots = new Parrots();
       this.parrots.init(this);
-      */
     },
 
     reload() {
@@ -394,7 +400,7 @@ export default {
           break;
 
         case 16: // Shift
-          if (!this.moveHidden && this.moveForward) this.moveRun = true;
+          if (!this.moveHidden && this.moveForward && !this.isHeroTired) this.moveRun = true;
           break;
 
         case 9: // TAB
@@ -428,7 +434,7 @@ export default {
           break;
 
         case 16: // Shift
-          if (this.moveRun) this.moveRun = false;
+          if (this.moveRun && this.moveRun) this.moveRun = false;
           break;
 
         case 67: // C
@@ -439,7 +445,7 @@ export default {
 
         case 32: // Space
           if (!this.moveHidden && this.canJump) {
-            this.velocity.y += DESIGN.HERO_JUMP_SPEED;
+            this.velocity.y += DESIGN.HERO.jumpspeed;
             this.canJump = false;
           }
           break;
@@ -479,12 +485,12 @@ export default {
         this.atmosphere.animate(this);
 
         // Ammo
-        this.ammo.animate(this);
+        this.weapon.animate(this);
 
-        /*
-        this.horses.animate(delta, this.objects);
-        this.parrots.animate(delta, this.objects);
-        */
+        // Enemies
+        this.horses.animate(this);
+
+        this.parrots.animate(this);
       } else {
         this.atmosphere.stop();
         this.hero.stop();
@@ -515,6 +521,10 @@ export default {
   },
 
   watch: {
+    isHeroTired(value) {
+      if (value && this.moveRun) this.moveRun = false;
+    },
+
     isDrone(value) {
       if (value) {
         // Переключаем на дрон

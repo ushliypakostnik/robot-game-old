@@ -26,19 +26,38 @@ export const DESIGN = {
     primary0x: 0x621211,
   },
   GROUND_SIZE: 2000,
-  HERO_SPEED: 400,
-  HERO_JUMP_SPEED: 250,
-  HERO_JUMP_HEIGHT: 33,
-  HERO_MASS: 100,
-  UNDER_FLOOR: 3, // средний рост челевеческой особи, мужики 1.7, бабы 1.6 - наш робот чуть выше
-  AMMO_GRAVITY: 5,
-  NUM_AMMO: 40,
-  AMMO_RADIUS: 0.5,
   VOLUME: {
     normal: 0.5,
     max: 1,
     masha: 0.75,
     wind: 0.25,
+  },
+  HERO: {
+    scale: 0.02,
+    mass: 100,
+    height: 3, // средний рост челевеческой особи, мужики 1.7, бабы 1.6 - наш робот сильно выше
+    speed: 400,
+    jumpspeed: 250,
+    jumpheight: 33,
+    scales: {
+      health: {
+        name: 'health',
+        start: 100,
+      },
+      endurance: {
+        name: 'endurance',
+        start: 100,
+      },
+      power: {
+        name: 'power',
+        start: 2,
+      },
+      ammo: {
+        name: 'ammo',
+        start: 500,
+        magazine: 50,
+      },
+    },
   },
 };
 
@@ -47,16 +66,14 @@ const size = (size) => {
 };
 
 export const OBJECTS = {
-  HERO: {
-    scale: 0.02,
-  },
   DRONE: {
     startY: 75,
   },
   HORSES: {
-    size: 0.0125,
+    scale: 0.02,
     start: [
       // x, y
+      /*
       [130, 150],
       [200, -230],
       [-160, 220],
@@ -67,12 +84,17 @@ export const OBJECTS = {
       [500, 750],
       [-400, -500],
       [-500, -800],
+      */
     ],
-    velocity: 10,
+    quantity: 10,
+    velocity: 20,
   },
   PARROTS: {
+    scale: 0.09,
     quantity: 10,
-    velocity: 100,
+    velocity: 25,
+    minHeight: 2,
+    maxHeight: 22,
   },
   /*
   BOXES: {
@@ -138,8 +160,8 @@ export const OBJECTS = {
     name: 'stone',
     quantityMin: 5,
     quantityMax: 15,
-    largeMin: DESIGN.HERO_JUMP_HEIGHT / 4,
-    largeMax: DESIGN.HERO_JUMP_HEIGHT,
+    largeMin: DESIGN.HERO.jumpheight / 4,
+    largeMax: DESIGN.HERO.jumpheight,
     smallMin: size(0.0025),
     smallMax: size(0.01),
     position: [
@@ -204,35 +226,40 @@ export const OBJECTS = {
     tree1: {
       quantity: 16,
       positionY: -1.5,
-      heightMin: size(0.033),
-      heightMax: size(0.035),
+      heightMin: 50,
+      heightMax: 70,
     },
     tree2: {
       quantity: 16,
       positionY: -0.5,
-      heightMin: size(0.031),
-      heightMax: size(0.035),
+      heightMin: 50,
+      heightMax: 70,
     },
   },
   FLOWERS: {
-    positionY: 0,
+    positionY: -0.3,
     anemone: {
       quantity: 30,
-      scale: 0.08,
+      scale: 0.11,
     },
     crocus: {
       quantity: 30,
-      scale: 0.055,
+      scale: 0.07,
     },
     daffodil: {
       quantity: 30,
-      scale: 0.295,
+      scale: 0.335,
     },
     tulip: {
       quantity: 30,
-      scale: 0.15,
+      scale: 0.175,
     },
   },
+  BOTTLES: {
+    positionY: -0.3,
+    quantity: 30,
+    scale: 0.05,
+  }
 };
 
 export const LOCALES = {
@@ -245,8 +272,9 @@ export const LOCALES = {
       text4: 'Run: Shift + W',
       text5: 'Hidden movement: C or Alt',
       text6: 'Look: MOUSE',
-      text7: 'Launch drone: TAB',
-      text8: 'Pause: P',
+      text7: 'Take a thing: E',
+      text8: 'Launch drone: TAB',
+      text9: 'Pause: P',
       music: 'Music: ',
       musiclink: 'Kafedra',
       startbutton: 'Play',
@@ -268,8 +296,9 @@ export const LOCALES = {
       text4: 'Бежать: Shift + W',
       text5: 'Cкрытное передвижение: C или Alt',
       text6: 'Осмотреться: Мышь',
-      text7: 'Запустить дрон: TAB',
-      text8: 'Pause: P',
+      text7: 'Взять предмет: Е',
+      text8: 'Запустить дрон: TAB',
+      text9: 'Pause: P',
       music: 'Музыка: ',
       musiclink: 'Kafedra',
       startbutton: 'Играть',

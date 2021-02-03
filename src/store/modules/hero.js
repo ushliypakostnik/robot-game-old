@@ -1,8 +1,14 @@
+import { DESIGN } from '@/utils/constants';
+
 const initialState = {
-  health: 100,
-  endurance: 100,
-  power: 2,
-  heroOnWater: false,
+  // scales
+  health: DESIGN.HERO.scales.health.start,
+  endurance: DESIGN.HERO.scales.endurance.start,
+  power: DESIGN.HERO.scales.power.start,
+  ammo: DESIGN.HERO.scales.ammo.start,
+
+  isHeroOnWater: false,
+  isHeroTired: false,
 };
 
 const state = Object.assign({}, initialState);
@@ -11,16 +17,23 @@ const getters = {
   health: state => state.health,
   endurance: state => state.endurance,
   power: state => state.power,
-  heroOnWater: state => state.heroOnWater,
+  ammo: state => state.ammo,
+
+  isHeroOnWater: state => state.isHeroOnWater,
+  isHeroTired: state => state.isHeroTired,
 };
 
 const actions = {
-  setHeroOnWater: ({ commit }, heroOnWater) => {
-    commit('setHeroOnWater', heroOnWater);
+  setHeroOnWater: ({ commit }, isHeroOnWater) => {
+    commit('setHeroOnWater', isHeroOnWater);
   },
 
-  setDamage: ({ commit }, damage) => {
-    commit('setDamage', damage);
+  setHeroTired: ({ commit }, isHeroTired) => {
+    commit('setHeroTired', isHeroTired);
+  },
+
+  setScale: ({ commit }, payload) => {
+    commit('setScale', payload);
   },
 
   heroReload: ({ commit }) => {
@@ -29,12 +42,21 @@ const actions = {
 };
 
 const mutations = {
-  setHeroOnWater: (state, heroOnWater) => {
-    state.heroOnWater = heroOnWater;
+  setHeroOnWater: (state, isHeroOnWater) => {
+    state.isHeroOnWater = isHeroOnWater;
   },
 
-  setDamage: (state, damage) => {
-    state.health = state.health - damage;
+  setHeroTired: (state, isHeroTired) => {
+    state.isHeroTired = isHeroTired;
+  },
+
+  setScale: (state, payload) => {
+    state[payload.field] = state[payload.field] + payload.value;
+
+    if (payload.field === DESIGN.HERO.scales.endurance.name && state[payload.field] > 99) {
+      state[payload.field] = 100;
+      state.isHeroTired = false;
+    }
   },
 
   heroReload: (state) => {
