@@ -262,7 +262,10 @@ function Hero() {
         if (!damageClock.running) damageClock.start();
 
         damageTime += damageClock.getDelta();
-        if (damageTime > 0.5) scope.setDamage(WATER_DAMAGE);
+        if (damageTime > 0.075) {
+          scope.setDamage(WATER_DAMAGE);
+          damageTime = 0;
+        }
       } else {
         if (damageClock.running) damageClock.stop();
         damageTime = 0;
