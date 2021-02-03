@@ -26,6 +26,8 @@ function Hero() {
   let onFly = true;
   let onFloor = 0;
   let shot = 0;
+
+  let damageClock;
   let damageTime = 0;
 
   const geometry = new Three.SphereBufferGeometry(1, 1, 1);
@@ -163,6 +165,8 @@ function Hero() {
       scope.scene.add(spit);
       loaderDispatchHelper(scope.$store, 'isSpitComplete');
     });
+
+    damageClock = new Three.Clock(false);
   };
 
   const jumps = (scope) => {
@@ -255,13 +259,14 @@ function Hero() {
 
       // Урон от воды
       if (scope.onWater && scope.canJump) {
-        console.log('Delta', scope.delta);
-        damageTime += scope.delta;
-        if (damageTime > 0.1) {
-          scope.setDamage(WATER_DAMAGE);
-          damageTime = 0;
-        }
-      } else damageTime = 0;
+        if (!damageClock.running) damageClock.start();
+
+        damageTime += damageClock.getDelta();
+        if (damageTime > 0.5) scope.setDamage(WATER_DAMAGE);
+      } else {
+        if (damageClock.running) damageClock.stop();
+        damageTime = 0;
+      }
 
       // Up
       scope.directionUp = scope.directionDown.negate();

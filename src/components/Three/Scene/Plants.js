@@ -29,21 +29,24 @@ function Plants() {
   const FLOWER_RADIUS = DESIGN.GROUND_SIZE * 0.53;
 
   const fixTreePosition = (x, z) => {
+    let newX = x;
+    let newZ = z;
+
     if (distance2D(0, 0, x, z) > DESIGN.GROUND_SIZE * 0.6) {
-      x = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
-      z = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
+      newX = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
+      newZ = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
     }
 
-    if (distance2D(0, 0, x, z) < 15) {
+    if (distance2D(0, 0, newX, newZ) < 15) {
       let counter = 0;
-      while (distance2D(0, 0, x, z) < 15) {
+      while (distance2D(0, 0, newX, newZ) < 15) {
         counter++;
-        x *= 1.25;
-        z *= 1.25;
+        newX *= 1.25;
+        newZ *= 1.25;
         if (counter > 50) break;
       }
     }
-    return [x, z];
+    return [newX, newZ];
   };
 
   const isInTress = (x, z) => {
@@ -63,16 +66,18 @@ function Plants() {
 
   const fixFlowersPosition = (stones, waters, x, z) => {
     let counter = 0;
-    while (isInTress(x, z) ||
-          isInStones(stones, x, z) ||
-          isInWater(waters, z, z) ||
-          (distance2D(0, 0, x, z) > FLOWER_RADIUS)) {
+    let newX = x;
+    let newZ = z;
+    while (isInTress(newX, newZ) ||
+          isInStones(stones, newX, newZ) ||
+          isInWater(waters, newX, newZ) ||
+          (distance2D(0, 0, newX, newZ) > FLOWER_RADIUS)) {
       counter++;
-      x = randomInteger(FLOWER_RADIUS * -1, FLOWER_RADIUS);
-      z = randomInteger(FLOWER_RADIUS * -1, FLOWER_RADIUS);
+      newX = randomInteger(FLOWER_RADIUS * -1, FLOWER_RADIUS);
+      newZ = randomInteger(FLOWER_RADIUS * -1, FLOWER_RADIUS);
       if (counter > 50) break;
     }
-    return [x, z];
+    return [newX, newZ];
   };
 
   const buitRandomTrees = (scope, plant, mode, quantity, heightMin, heightMax, positionY) => {
