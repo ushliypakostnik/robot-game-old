@@ -61,6 +61,7 @@ export default {
 
       velocity: null,
       direction: null,
+      startDirection: null,
       directionStore: null,
       position: null,
 
@@ -131,7 +132,8 @@ export default {
   mounted() {
     this.velocity = new Three.Vector3();
     this.direction = new Three.Vector3();
-    this.directionStore = new Three.Vector3(-0.7071067758832469, 0, -0.7071067864898483);
+    this.startDirection = new Three.Vector3(-0.7071067758832469, 0, -0.7071067864898483);
+    this.directionStore = this.startDirection;
     this.position = new Three.Vector3();
     this.x = new Three.Vector3(1, 0, 0);
     this.y = new Three.Vector3(0, -1, 0);
@@ -146,6 +148,7 @@ export default {
 
   created() {
     this.$eventHub.$on('lock', this.lock);
+    this.$eventHub.$on('reload', this.reload);
   },
 
   beforeDestroy() {
@@ -155,6 +158,7 @@ export default {
     // document.removeEventListener('mousemove', this.onMouseMove, false);
 
     if (this.$eventHub._events.lock) this.$eventHub.$off('lock');
+    if (this.$eventHub._events.lock) this.$eventHub.$off('reload');
   },
 
   computed: {
@@ -183,6 +187,10 @@ export default {
 
       setHeroOnWater: 'hero/setHeroOnWater',
       setDamage: 'hero/setDamage',
+
+      preloaderReload: 'preloader/preloaderReload',
+      layoutReload: 'layout/layoutReload',
+      heroReload: 'hero/heroReload',
     }),
 
     init() {
@@ -239,45 +247,16 @@ export default {
       this.atmosphere = new Atmosphere();
       this.atmosphere.init(this);
 
-      // Objects
-
-      // Waters
-      this.waters = new Waters(this);
-      this.waters.init(this);
-
-      // Sands
-      this.sands = new Sands();
-      this.sands.init(this);
-
-      // Ground
-      this.grass = new Grass();
-      this.grass.init(this);
-
-      // Stones
-      this.stones = new Stones();
-      this.stones.init(this);
-
-      // Plants
-      this.plants = new Plants();
-      this.plants.init(this);
-
       // Сharacters
       this.hero = new Hero();
       this.hero.init(this);
 
-      /*
-      // Horses
-      this.horses = new Horses();
-      this.horses.init(this);
-
-      // Parrots
-      this.parrots = new Parrots();
-      this.parrots.init(this);
-      */
-
-      // Ammo
+      // Hero
       this.ammo = new Ammo();
       this.ammo.init(this);
+
+      // Built random world
+      this.build();
 
       // Raycasters
       this.raycasterUp = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 1, 0), 0, 100);
@@ -308,6 +287,54 @@ export default {
 
       // First render
       this.render();
+    },
+
+    build() {
+      // Objects
+
+      // Waters
+      this.waters = new Waters(this);
+      this.waters.init(this);
+
+      // Sands
+      this.sands = new Sands();
+      this.sands.init(this);
+
+      // Ground
+      this.grass = new Grass();
+      this.grass.init(this);
+
+      // Stones
+      this.stones = new Stones();
+      this.stones.init(this);
+
+      // Plants
+      this.plants = new Plants();
+      this.plants.init(this);
+
+      /*
+      // Horses
+      this.horses = new Horses();
+      this.horses.init(this);
+
+      // Parrots
+      this.parrots = new Parrots();
+      this.parrots.init(this);
+      */
+    },
+
+    reload() {
+      this.preloaderReload();
+      this.layoutReload();
+      this.heroReload();
+
+      this.build();
+
+      this.directionStore.copy(this.startDirection);
+      this.controls.getObject().position.x = 0;
+      this.controls.getObject().position.z = 0;
+
+      this.setInFirstPersonControls();
     },
 
     setInFirstPersonControls() {

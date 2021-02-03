@@ -1,6 +1,6 @@
 import * as Three from 'three';
 
-import { LOCALSTORAGE, DESIGN, OBJECTS } from '@/utils/constants';
+import { DESIGN, OBJECTS } from '@/utils/constants';
 import {
   yesOrNo,
   loaderDispatchHelper,
@@ -36,7 +36,6 @@ function Grass() {
     // Vertex displacement
     const vertex = new Three.Vector3();
 
-    // let geometry = new Three.CircleBufferGeometry(DESIGN.GROUND_SIZE / 2, 128);
     let geometry = new Three.PlaneBufferGeometry(DESIGN.GROUND_SIZE * 0.9875, DESIGN.GROUND_SIZE * 0.9875, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE / 10);
 
     const { position } = geometry.attributes;

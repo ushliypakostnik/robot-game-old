@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as Three from 'three';
 
 import { FBXLoader } from '@/components/Three/Modules/Utils/FBXLoader.js';
@@ -27,28 +26,28 @@ function Plants() {
   let flower;
   let s;
 
-  const FLOWER_RADIUS = DESIGN.GROUND_SIZE * 0.45;
+  const FLOWER_RADIUS = DESIGN.GROUND_SIZE * 0.53;
 
   const fixTreePosition = (x, z) => {
-    if (distance2D(0, 0, x, z) < 20) {
+    if (distance2D(0, 0, x, z) > DESIGN.GROUND_SIZE * 0.6) {
+      x = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
+      z = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
+    }
+
+    if (distance2D(0, 0, x, z) < 15) {
       let counter = 0;
-      while (distance2D(0, 0, x, z) < 20) {
+      while (distance2D(0, 0, x, z) < 15) {
         counter++;
         x *= 1.25;
         z *= 1.25;
         if (counter > 50) break;
       }
     }
-
-    if (distance2D(0, 0, x, z) > DESIGN.GROUND_SIZE * 0.6) {
-      x = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
-      z = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
-    }
     return [x, z];
   };
 
   const isInTress = (x, z) => {
-    const result = tress.filter(tree => distance2D(tree[0], tree[1], x, z) < 1);
+    const result = tress.filter(tree => distance2D(tree[0], tree[1], x, z) < 2);
     return result.length > 0 ? true : false;
   };
 
@@ -57,9 +56,17 @@ function Plants() {
     return result.length > 0 ? true : false;
   };
 
-  const fixFlowersPosition = (stones, x, z) => {
+  const isInWater = (waters, x, z) => {
+    const result = waters.filter(water => distance2D(water[0], water[1], x, z) < water[2] * 1.25);
+    return result.length > 0 ? true : false;
+  };
+
+  const fixFlowersPosition = (stones, waters, x, z) => {
     let counter = 0;
-    while (isInTress(x, z) ||  isInStones(stones) || (distance2D(0, 0, x, z) > FLOWER_RADIUS)) {
+    while (isInTress(x, z) ||
+          isInStones(stones, x, z) ||
+          isInWater(waters, z, z) ||
+          (distance2D(0, 0, x, z) > FLOWER_RADIUS)) {
       counter++;
       x = randomInteger(FLOWER_RADIUS * -1, FLOWER_RADIUS);
       z = randomInteger(FLOWER_RADIUS * -1, FLOWER_RADIUS);
@@ -131,7 +138,7 @@ function Plants() {
       flower.rotateZ(degreesToRadians(randomInteger(-1, 360)));
 
       const [X, Z] = randomPointInCircle(FLOWER_RADIUS, 0, 0);
-      const [x, z] = fixFlowersPosition(scope.objectsStoneData, X, Z);
+      const [x, z] = fixFlowersPosition(scope.objectsStoneData, scope.objectsWaterData, X, Z);
       flower.position.set(x, 0, z);
 
       flower.updateMatrix();

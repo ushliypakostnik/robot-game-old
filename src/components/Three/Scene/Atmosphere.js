@@ -104,6 +104,8 @@ function Atmosphere() {
     ocean = new Three.Mesh(geometry, material);
 
     audioLoader.load('./audio/ocean.mp3', (buffer) => {
+      loaderDispatchHelper(scope.$store, 'isOceanComplete');
+
       audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(oceanVolume);
@@ -113,7 +115,6 @@ function Atmosphere() {
       ocean.visible = false;
 
       scope.scene.add(ocean);
-      loaderDispatchHelper(scope.$store, 'isOceanComplete');
     });
 
     x = scope.controls.getObject().position.x;
@@ -122,6 +123,8 @@ function Atmosphere() {
     wind = new Three.Mesh(geometry, material);
 
     audioLoader.load('./audio/wind.mp3', (buffer) => {
+      loaderDispatchHelper(scope.$store, 'isWindComplete');
+
       audio = new Three.Audio(listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.wind);
@@ -131,7 +134,6 @@ function Atmosphere() {
       wind.visible = false;
 
       scope.scene.add(wind);
-      loaderDispatchHelper(scope.$store, 'isWindComplete');
     });
   };
 

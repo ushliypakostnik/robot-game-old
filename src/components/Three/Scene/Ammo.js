@@ -5,6 +5,7 @@ import { DESIGN, OBJECTS } from '@/utils/constants';
 import { loaderDispatchHelper } from '@/utils/utilities';
 
 
+
 function Ammo() {
   let audio;
   const audioLoader = new Three.AudioLoader();
@@ -21,6 +22,8 @@ function Ammo() {
     const fakeAmmoMaterial = new Three.MeshStandardMaterial({ color: 0xff0000 });
 
     audioLoader.load('./audio/drop.mp3', (buffer) => {
+      loaderDispatchHelper(scope.$store, 'isDropComplete');
+
       for (let i = 0; i < DESIGN.NUM_AMMO; i++) {
         ammo = new Three.Mesh(ammoGeometry, ammoMaterial);
         fakeAmmo = new Three.Mesh(ammoGeometry, fakeAmmoMaterial);
@@ -50,7 +53,7 @@ function Ammo() {
           isPlay: false,
         });
       }
-      loaderDispatchHelper(scope.$store, 'isDropComplete');
+      loaderDispatchHelper(scope.$store, 'isAmmoBuilt');
 
       document.addEventListener('click', () => shot(scope), false);
     });

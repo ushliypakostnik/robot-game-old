@@ -33,6 +33,10 @@ const actions = {
   setGameOver: ({ commit }, isGameOver) => {
     commit('setGameOver', isGameOver);
   },
+
+  layoutReload: ({ commit }) => {
+    commit('layoutReload');
+  },
 };
 
 const mutations = {
@@ -50,6 +54,12 @@ const mutations = {
 
   setGameOver: (state, isGameOver) => {
     state.isGameOver = isGameOver;
+  },
+
+  layoutReload: (state) => {
+    state.isPause = true;
+    state.isDrone = false;
+    state.isGameOver = false;
   },
 };
 

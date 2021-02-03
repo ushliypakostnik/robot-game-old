@@ -64,7 +64,8 @@ export default {
     }),
 
     reload() {
-      window.location.reload();
+      // window.location.reload();
+      this.$eventHub.$emit('reload');
     },
   },
 
@@ -116,7 +117,7 @@ export default {
     position: absolute;
     bottom: $gutter / 2;
     left: $gutter / 2;
-    width: $gutter * 10;
+    width: $gutter * 8;
   }
 }
 </style>

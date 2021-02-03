@@ -103,7 +103,7 @@ function Waters(scope) {
       scope.scene.add(water);
       scope.scene.add(pseudoLake);
       scope.objectsGround.push(pseudoLake);
-      scope.objectsWaterData.push(pseudoLake.position.x, pseudoLake.position.z, OBJECTS.LAKES.position[i][2]);
+      scope.objectsWaterData.push([pseudoLake.position.x, pseudoLake.position.z, OBJECTS.LAKES.position[i][2]]);
       waters.push(water);
     }
 
@@ -179,7 +179,7 @@ function Waters(scope) {
         scope.scene.add(pseudoPuddle);
         scope.objectsGround.push(pseudoPuddle);
         scope.objectsPuddles.push(pseudoPuddle);
-        scope.objectsWaterData.push(pseudoPuddle.rotation.x, pseudoPuddle.rotation.z, radius);
+        scope.objectsWaterData.push([randomX, randomZ, radius]);
         waters.push(water);
       }
     }

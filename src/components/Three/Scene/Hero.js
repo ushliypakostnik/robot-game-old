@@ -26,12 +26,15 @@ function Hero() {
   let onFly = true;
   let onFloor = 0;
   let shot = 0;
+  let damageTime = 0;
 
   const geometry = new Three.SphereBufferGeometry(1, 1, 1);
   const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
 
   this.init = function (scope) {
     loader.load('./images/models/Hero.fbx', (hero) => {
+      loaderDispatchHelper(scope.$store, 'isHeroLoaded');
+
       hero.scale.set(OBJECTS.HERO.scale, OBJECTS.HERO.scale, OBJECTS.HERO.scale);
       hero.visible = false;
 
@@ -57,7 +60,6 @@ function Hero() {
         scope.scene.add(hero);
         loaderDispatchHelper(scope.$store, 'isMashaComplete');
       });
-      loaderDispatchHelper(scope.$store, 'isHeroLoaded');
     });
 
     steps = new Three.Mesh(geometry, material);
@@ -102,7 +104,7 @@ function Hero() {
       watersteps.visible = false;
 
       scope.scene.add(watersteps);
-      loaderDispatchHelper(scope.$store, 'isWaterStepsComplete');
+      loaderDispatchHelper(scope.$store, 'isWaterStepComplete');
     });
 
     waterrun = new Three.Mesh(geometry, material);
@@ -252,7 +254,14 @@ function Hero() {
       }
 
       // Урон от воды
-      if (scope.onWater && scope.canJump) scope.setDamage(WATER_DAMAGE);
+      if (scope.onWater && scope.canJump) {
+        console.log('Delta', scope.delta);
+        damageTime += scope.delta;
+        if (damageTime > 0.1) {
+          scope.setDamage(WATER_DAMAGE);
+          damageTime = 0;
+        }
+      } else damageTime = 0;
 
       // Up
       scope.directionUp = scope.directionDown.negate();

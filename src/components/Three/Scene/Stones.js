@@ -21,7 +21,7 @@ function Stones() {
   this.init = function (scope) {
     const loader = new DDSLoader();
 
-    const map = loader.load('./images/textures/stone.dds', () => {
+    const map = loader.load('./images/textures/stone.dds', (texture) => {
       scope.render();
       loaderDispatchHelper(scope.$store, 'isStoneLoaded');
     });
