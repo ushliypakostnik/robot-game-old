@@ -1,7 +1,7 @@
 {
-  "name": "test-game",
-  "version": "2.0.0",
-  "description": "Browser Game on Three and Vue",
+  "name": "robot-game",
+  "version": "0.0.1",
+  "description": "Browser 3D Game on Three and Vue",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

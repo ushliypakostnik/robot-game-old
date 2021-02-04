@@ -22,6 +22,7 @@
           <h4>{{ $t('layout.text6') }}</h4>
           <h4>{{ $t('layout.text7') }}</h4>
           <h4>{{ $t('layout.text8') }}</h4>
+          <h4>{{ $t('layout.text9') }}</h4>
           <button
             class="button"
             type="button"

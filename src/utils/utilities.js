@@ -1,3 +1,7 @@
+import * as Three from 'three';
+
+import { DESIGN } from '@/utils/constants';
+
 export const randomInteger = (min, max) => {
   const rand = min + Math.random() * (max + 1 - min);
   return Math.floor(rand);
@@ -59,3 +63,39 @@ export const fixEnemyPosition = (raduis, stones, trees, x, z) => {
   }
   return [newX, newZ];
 };
+
+export const addImmediateAudioToObjects = (scope, objects, buffer) => {
+  let audio;
+  objects.forEach((object) => {
+    audio = new Three.PositionalAudio(scope.listener);
+
+    audio.setBuffer(buffer);
+    audio.setVolume(0);
+    audio.setRefDistance(DESIGN.VOLUME.horses.ref);
+    audio.setMaxDistance(DESIGN.VOLUME.horses.max);
+    audio.setLoop(true);
+    audio.setRolloffFactor(1) ;
+    // audio.setDistanceModel('exponential');
+
+    object.mesh.add(audio);
+  });
+};
+
+export const addAudioToPseudoObjects = (scope, objects, field, buffer, volume) => {
+  let audio;
+  objects.forEach((object) => {
+    audio = new Three.PositionalAudio(scope.listener);
+
+    audio.setBuffer(buffer);
+    audio.setVolume(volume);
+    audio.setRefDistance(DESIGN.VOLUME.horses.ref);
+    audio.setMaxDistance(DESIGN.VOLUME.horses.max);
+    audio.setLoop(false);
+    audio.setRolloffFactor(1) ;
+    // audio.setDistanceModel('exponential');
+
+    if (field === 'pseudoHorse') object.pseudoHorse.add(audio);
+    else if (field === 'pseudoParrot') object.pseudoParrot.add(audio);
+  });
+};
+

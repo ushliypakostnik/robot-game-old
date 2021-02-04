@@ -7,7 +7,6 @@ import { loaderDispatchHelper } from '@/utils/utilities';
 function Ammo() {
   let audio;
   const audioLoader = new Three.AudioLoader();
-  const listener = new Three.AudioListener();
   let spit;
 
   const ammos = [];
@@ -25,12 +24,15 @@ function Ammo() {
     spit = new Three.Mesh(geometry, material);
 
     audioLoader.load('./audio/spit.mp3', (buffer) => {
-      audio = new Three.Audio(listener);
+      audio = new Three.Audio(scope.listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
 
       spit.add(audio);
       spit.visible = false;
+
+      spit.updateMatrix();
+      spit.matrixAutoUpdate = false;
 
       scope.scene.add(spit);
       loaderDispatchHelper(scope.$store, 'isSpitComplete');
@@ -50,13 +52,15 @@ function Ammo() {
         ammo.scale.set(1, 1, 1);
         ammo.position.y = scope.height - 0.2;
 
-        audio = new Three.PositionalAudio(listener);
+        audio = new Three.Audio(scope.listener);
         audio.setBuffer(buffer);
         audio.setVolume(DESIGN.VOLUME.normal);
         audio.setLoop(false);
 
         fakeAmmo.add(audio);
         fakeAmmo.visible = false;
+
+        fakeAmmo.updateMatrix();
         fakeAmmo.matrixAutoUpdate = false;
 
         ammos.push({
@@ -93,9 +97,7 @@ function Ammo() {
 
       ammoIndex = (ammoIndex + 1) % ammos.length;
 
-      if (spit && spit.children[0]) {
-        spit.children[0].play();
-      }
+      if (spit && spit.children[0]) spit.children[0].play();
 
       scope.setScale({ field: DESIGN.HERO.scales.ammo.name, value: -1 });
     }
@@ -108,7 +110,8 @@ function Ammo() {
   const play = (scope, ammo) => {
     if (!scope.isPause && !scope.isDrone && !ammo.isPlay) {
       ammo.fakeMesh.position.set(ammo.mesh.position.x, ammo.mesh.position.y, ammo.mesh.position.z);
-      ammo.fakeMesh.children[0].play();
+      if (ammo.fakeMesh.children[0]) ammo.fakeMesh.children[0].play();
+      console.log(ammo.fakeMesh.position, ammo.fakeMesh.children[0]);
       ammo.isPlay = true;
     }
   };

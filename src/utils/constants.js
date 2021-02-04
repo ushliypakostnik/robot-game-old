@@ -22,15 +22,30 @@ export const DESIGN = {
     desktop: 1025,
   },
   COLORS: {
-    primary: '#621211',
     primary0x: 0x621211,
+    anemone0x: 0xffffff,
+    crocus0x: 0x8267bf,
+    daffodil0x: 0xf0cf08,
+    tulip0x: 0xcf3326,
   },
   GROUND_SIZE: 2000,
   VOLUME: {
     normal: 0.5,
     max: 1,
     masha: 0.75,
-    wind: 0.25,
+    wind: 0.35,
+    horses: {
+      volume: 1,
+      fr: 0.75,
+      ref: 50,
+      max: 2000,
+    },
+    parrots: {
+      volume: 0.8,
+      cry: 1,
+      ref: 35,
+      max: 2000,
+    },
   },
   HERO: {
     scale: 0.02,
@@ -70,31 +85,16 @@ export const OBJECTS = {
     startY: 75,
   },
   HORSES: {
-    scale: 0.02,
-    start: [
-      // x, y
-      /*
-      [130, 150],
-      [200, -230],
-      [-160, 220],
-      [150, -200],
-      [-100, 220],
-      [-300, 320],
-      [300, 350],
-      [500, 750],
-      [-400, -500],
-      [-500, -800],
-      */
-    ],
-    quantity: 10,
+    scale: 0.03,
+    quantity: 7,
     velocity: 20,
   },
   PARROTS: {
     scale: 0.09,
-    quantity: 10,
+    quantity: 7,
     velocity: 25,
     minHeight: 2,
-    maxHeight: 22,
+    maxHeight: 30,
   },
   /*
   BOXES: {
@@ -226,13 +226,13 @@ export const OBJECTS = {
     tree1: {
       quantity: 16,
       positionY: -1.5,
-      heightMin: 50,
+      heightMin: 15,
       heightMax: 70,
     },
     tree2: {
       quantity: 16,
       positionY: -0.5,
-      heightMin: 50,
+      heightMin: 20,
       heightMax: 70,
     },
   },
@@ -240,15 +240,15 @@ export const OBJECTS = {
     positionY: -0.3,
     anemone: {
       quantity: 30,
-      scale: 0.11,
+      scale: 0.1,
     },
     crocus: {
       quantity: 30,
-      scale: 0.07,
+      scale: 0.075,
     },
     daffodil: {
       quantity: 30,
-      scale: 0.335,
+      scale: 0.35,
     },
     tulip: {
       quantity: 30,
@@ -259,7 +259,7 @@ export const OBJECTS = {
     positionY: -0.3,
     quantity: 30,
     scale: 0.05,
-  }
+  },
 };
 
 export const LOCALES = {

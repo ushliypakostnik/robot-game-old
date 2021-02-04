@@ -10,7 +10,6 @@ function Hero() {
 
   const loader = new FBXLoader();
   const audioLoader = new Three.AudioLoader();
-  const listener = new Three.AudioListener();
   let audio;
 
   let steps;
@@ -21,7 +20,7 @@ function Hero() {
   let jump;
   let damage;
 
-  const STOP_DISTANCE = 5;
+  let stopDistance;
   let onFly = true;
   let onFloor = 0;
 
@@ -49,15 +48,9 @@ function Hero() {
       mixer.clipAction(hero.animations[0]).setDuration(1).play();
 
       audioLoader.load('./audio/masha.mp3', (buffer) => {
-        audio = new Three.Audio(listener);
+        audio = new Three.Audio(scope.listener);
         audio.setBuffer(buffer);
         audio.setVolume(DESIGN.VOLUME.masha);
-
-        // For positioned audio
-        // audio.setRefDistance(15);
-        // audio.setMaxDistance(500);
-        // audio.setRolloffFactor(1) ;
-        // audio.setDistanceModel('exponential');
 
         audio.setLoop(true);
 
@@ -72,13 +65,16 @@ function Hero() {
     steps = new Three.Mesh(geometry, material);
 
     audioLoader.load('./audio/steps.mp3', (buffer) => {
-      audio = new Three.Audio(listener);
+      audio = new Three.Audio(scope.listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
       audio.setLoop(true);
 
       steps.add(audio);
       steps.visible = false;
+
+      steps.updateMatrix();
+      steps.matrixAutoUpdate = false;
 
       scope.scene.add(steps);
       loaderDispatchHelper(scope.$store, 'isStepComplete');
@@ -87,13 +83,16 @@ function Hero() {
     run = new Three.Mesh(geometry, material);
 
     audioLoader.load('./audio/run.mp3', (buffer) => {
-      audio = new Three.Audio(listener);
+      audio = new Three.Audio(scope.listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
       audio.setLoop(true);
 
       run.add(audio);
       run.visible = false;
+
+      run.updateMatrix();
+      run.matrixAutoUpdate = false;
 
       scope.scene.add(run);
       loaderDispatchHelper(scope.$store, 'isRunComplete');
@@ -102,13 +101,16 @@ function Hero() {
     watersteps = new Three.Mesh(geometry, material);
 
     audioLoader.load('./audio/waterstep.mp3', (buffer) => {
-      audio = new Three.Audio(listener);
+      audio = new Three.Audio(scope.listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
       audio.setLoop(true);
 
       watersteps.add(audio);
       watersteps.visible = false;
+
+      watersteps.updateMatrix();
+      watersteps.matrixAutoUpdate = false;
 
       scope.scene.add(watersteps);
       loaderDispatchHelper(scope.$store, 'isWaterStepComplete');
@@ -117,13 +119,16 @@ function Hero() {
     waterrun = new Three.Mesh(geometry, material);
 
     audioLoader.load('./audio/waterrun.mp3', (buffer) => {
-      audio = new Three.Audio(listener);
+      audio = new Three.Audio(scope.listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
       audio.setLoop(true);
 
       waterrun.add(audio);
       waterrun.visible = false;
+
+      waterrun.updateMatrix();
+      waterrun.matrixAutoUpdate = false;
 
       scope.scene.add(waterrun);
       loaderDispatchHelper(scope.$store, 'isWaterRunComplete');
@@ -132,12 +137,15 @@ function Hero() {
     jump = new Three.Mesh(geometry, material);
 
     audioLoader.load('./audio/jump.mp3', (buffer) => {
-      audio = new Three.Audio(listener);
+      audio = new Three.Audio(scope.listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
 
       jump.add(audio);
       jump.visible = false;
+
+      jump.updateMatrix();
+      jump.matrixAutoUpdate = false;
 
       scope.scene.add(jump);
       loaderDispatchHelper(scope.$store, 'isJumpComplete');
@@ -146,12 +154,15 @@ function Hero() {
     waterjump = new Three.Mesh(geometry, material);
 
     audioLoader.load('./audio/waterjump.mp3', (buffer) => {
-      audio = new Three.Audio(listener);
+      audio = new Three.Audio(scope.listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
 
       waterjump.add(audio);
       waterjump.visible = false;
+
+      waterjump.updateMatrix();
+      waterjump.matrixAutoUpdate = false;
 
       scope.scene.add(waterjump);
       loaderDispatchHelper(scope.$store, 'isWaterJumpComplete');
@@ -160,12 +171,15 @@ function Hero() {
     damage = new Three.Mesh(geometry, material);
 
     audioLoader.load('./audio/damage.mp3', (buffer) => {
-      audio = new Three.Audio(listener);
+      audio = new Three.Audio(scope.listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.normal);
 
       damage.add(audio);
       damage.visible = false;
+
+      damage.updateMatrix();
+      damage.matrixAutoUpdate = false;
 
       scope.scene.add(damage);
       loaderDispatchHelper(scope.$store, 'isDamageComplete');
@@ -190,33 +204,34 @@ function Hero() {
   this.animate = function (scope) {
     if (!scope.isPause && !scope.isDrone) {
       // Check objects
+      stopDistance = scope.moveRun ? 10 : 5;
 
       // Forward
       scope.directionForward = scope.camera.getWorldDirection(scope.direction);
       scope.raycasterForward.set(scope.camera.getWorldPosition(scope.position), scope.directionForward);
       scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical);
-      scope.onForward = scope.intersections.length > 0 ? scope.intersections[0].distance < STOP_DISTANCE : false;
+      scope.onForward = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
       if (scope.onForward) scope.object = scope.intersections[0].object;
 
       // Backward
       scope.directionBackward = scope.directionForward.negate();
       scope.raycasterBackward.set(scope.camera.getWorldPosition(scope.position), scope.directionBackward);
       scope.intersections = scope.raycasterBackward.intersectObjects(scope.objectsVertical);
-      scope.onBackward = scope.intersections.length > 0 ? scope.intersections[0].distance < STOP_DISTANCE : false;
+      scope.onBackward = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
       if (scope.onBackward) scope.object = scope.intersections[0].object;
 
       // Right
       scope.directionRight = new Three.Vector3(0, 0, 0).crossVectors(scope.directionForward, scope.y);
       scope.raycasterRight.set(scope.camera.getWorldPosition(scope.position), scope.directionRight);
       scope.intersections = scope.raycasterRight.intersectObjects(scope.objectsVertical);
-      scope.onRight = scope.intersections.length > 0 ? scope.intersections[0].distance < STOP_DISTANCE : false;
+      scope.onRight = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
       if (scope.onRight) scope.object = scope.intersections[0].object;
 
       // Left
       scope.directionLeft = scope.directionRight.negate();
       scope.raycasterLeft.set(scope.camera.getWorldPosition(scope.position), scope.directionLeft);
       scope.intersections = scope.raycasterLeft.intersectObjects(scope.objectsVertical);
-      scope.onLeft = scope.intersections.length > 0 ? scope.intersections[0].distance < STOP_DISTANCE : false;
+      scope.onLeft = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
       if (scope.onLeft) scope.object = scope.intersections[0].object;
 
       scope.collision = scope.onForward || scope.onBackward || scope.onLeft || scope.onRight;
@@ -233,15 +248,6 @@ function Hero() {
         });
         if (scope.layersNew.length !== scope.layers.length) {
           // console.log(scope.layers, scope.layersNew);
-          //  На любой воде
-          if (((scope.layersNew.includes(OBJECTS.OCEAN.name)
-            && !scope.layersNew.includes(OBJECTS.BEACH.name))
-            || scope.layersNew.includes(OBJECTS.LAKES.name)
-            || scope.layersNew.includes(OBJECTS.PUDDLES.name))
-            && !scope.layersNew.includes(OBJECTS.SANDS.name)) {
-            scope.heroOnWater = true;
-          } else scope.heroOnWater = false;
-
           // На большой воде
           if (
             ((scope.layersNew.includes(OBJECTS.OCEAN.name)
@@ -258,6 +264,16 @@ function Hero() {
             scope.object = scope.intersections.filter(object => object.object.name === OBJECTS.STONES.name)[0].object;
             scope.onObjectHeight = scope.object.position.y + scope.object.geometry.parameters.radius + scope.height;
           } else scope.onObjectHeight = 0;
+
+          //  На любой воде
+          if (((scope.layersNew.includes(OBJECTS.OCEAN.name)
+            && !scope.layersNew.includes(OBJECTS.BEACH.name))
+            || scope.layersNew.includes(OBJECTS.LAKES.name)
+            || scope.layersNew.includes(OBJECTS.PUDDLES.name))
+            && !scope.layersNew.includes(OBJECTS.SANDS.name)) {
+            if (scope.canJump && scope.onObjectHeight === 0) scope.heroOnWater = true;
+            else scope.heroOnWater = false;
+          } else scope.heroOnWater = false;
 
           scope.layers = scope.layersNew;
         }

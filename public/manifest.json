@@ -1,18 +1,6 @@
 {
-  "name": "vue-test",
-  "short_name": "vue-test",
-  "icons": [
-    {
-      "src": "./images/icons/android-chrome-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "./images/icons/android-chrome-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
+  "name": "robot-game",
+  "short_name": "robot-gamet",
   "start_url": "/?utm_source=homescreen",
   "display": "standalone",
   "background_color": "#000000",

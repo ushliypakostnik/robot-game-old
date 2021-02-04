@@ -58,6 +58,8 @@ export default {
       clock: null,
       delta: null,
 
+      listener: null,
+
       stats: null,
 
       velocity: null,
@@ -110,6 +112,7 @@ export default {
 
       objectsGround: [], // все объекты для вертикального рейкастинга
       objectsVertical: [], // все объекты с которыми сталкивается горизонтально
+      objectsThings: [], // все объекты с которыми сталкивается горизонтально
       objectsPuddles: [], // все лужи
       objectsStoneData: [], // все камни и горы - данные - [x, z, r]
       objectsWaterData: [], // все озера и лужи - данные - [x, z, r]
@@ -140,6 +143,8 @@ export default {
     this.y = new Three.Vector3(0, -1, 0);
     this.z = new Three.Vector3(0, 0, 1);
     // this.mouse = new Three.Vector2();
+
+    this.listener = new Three.AudioListener();
 
     this.clock = new Three.Clock();
 
@@ -219,6 +224,9 @@ export default {
 
       this.camera = new Three.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 1, DESIGN.GROUND_SIZE);
       this.cameraDrone = this.camera.clone();
+
+      // Audio listener
+      this.camera.add(this.listener);
 
       // Controls
 
@@ -321,7 +329,6 @@ export default {
       this.things.init(this);
 
       // Enemies
-
       this.horses = new Horses();
       this.horses.init(this);
 
@@ -494,6 +501,8 @@ export default {
       } else {
         this.atmosphere.stop();
         this.hero.stop();
+        this.horses.stop();
+        this.parrots.stop();
       }
 
       if (!this.isPause && this.isDrone) {
@@ -505,6 +514,12 @@ export default {
       if (!this.isPause) this.render();
 
       this.stats.update();
+    },
+
+    toggleThingVisible(isVisible) {
+      this.objectsThings.forEach((thing) => {
+        thing.visible = isVisible;
+      });
     },
 
     onWindowResize() {
@@ -531,7 +546,7 @@ export default {
 
         this.robot.position.copy(this.controls.getObject().position);
 
-        // Down Through
+        // Ставим робота точно на камни по высоте
         this.directionDown = new Three.Vector3(0, 0, 0).crossVectors(this.x, this.z);
         this.raycasterDown.set(this.camera.getWorldPosition(this.position), this.directionDown);
         this.intersections = this.raycasterDown.intersectObjects(this.objectsGround);
@@ -541,6 +556,8 @@ export default {
 
         this.robot.visible = true;
 
+        this.toggleThingVisible(true);
+
         // Controls
         this.setWithDroneControl();
 
@@ -549,6 +566,8 @@ export default {
         // Переключаем на вид от первого лица
 
         this.robot.visible = false;
+
+        this.toggleThingVisible(false);
 
         // Controls
         this.setInFirstPersonControls();

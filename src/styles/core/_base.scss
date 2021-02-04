@@ -25,6 +25,8 @@ body {
 
   backface-visibility: hidden;
 
+  user-select: none;
+
   // Normal text
   @include text($font-size--small);
 }

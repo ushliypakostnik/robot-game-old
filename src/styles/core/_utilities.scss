@@ -12,6 +12,11 @@
 //  @include animations("left #{$animation-duration}", "fade #{$animation-duration}");
 //}
 
+.spin {
+  will-change: transform;
+  animation: spin linear $animation-duration infinite;
+}
+
 .hit {
   will-change: opacity;
   animation: hit $animation-duration 1;

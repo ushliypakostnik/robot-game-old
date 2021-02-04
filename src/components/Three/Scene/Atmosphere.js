@@ -7,7 +7,6 @@ import { loaderDispatchHelper, distance2D } from '@/utils/utilities';
 
 function Atmosphere() {
   const audioLoader = new Three.AudioLoader();
-  const listener = new Three.AudioListener();
   let audio;
 
   let ocean;
@@ -106,13 +105,16 @@ function Atmosphere() {
     audioLoader.load('./audio/ocean.mp3', (buffer) => {
       loaderDispatchHelper(scope.$store, 'isOceanComplete');
 
-      audio = new Three.Audio(listener);
+      audio = new Three.Audio(scope.listener);
       audio.setBuffer(buffer);
       audio.setVolume(oceanVolume);
       audio.setLoop(true);
 
       ocean.add(audio);
       ocean.visible = false;
+
+      ocean.updateMatrix();
+      ocean.matrixAutoUpdate = false;
 
       scope.scene.add(ocean);
     });
@@ -125,13 +127,16 @@ function Atmosphere() {
     audioLoader.load('./audio/wind.mp3', (buffer) => {
       loaderDispatchHelper(scope.$store, 'isWindComplete');
 
-      audio = new Three.Audio(listener);
+      audio = new Three.Audio(scope.listener);
       audio.setBuffer(buffer);
       audio.setVolume(DESIGN.VOLUME.wind);
       audio.setLoop(true);
 
       wind.add(audio);
       wind.visible = false;
+
+      wind.updateMatrix();
+      wind.matrixAutoUpdate = false;
 
       scope.scene.add(wind);
     });

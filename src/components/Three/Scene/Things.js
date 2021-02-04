@@ -16,8 +16,12 @@ import {
 
 function Things() {
   let thing;
-  let s;
   let y;
+
+  const pseudoGeometry = new Three.SphereBufferGeometry(3, 32, 32);
+  let material;
+  let pseudoThing;
+  let isBottles;
 
   const FLOWER_RADIUS = DESIGN.GROUND_SIZE * 0.53;
   const BOTTLES_RADIUS = DESIGN.GROUND_SIZE * 0.57;
@@ -38,14 +42,14 @@ function Things() {
     return [newX, newZ];
   };
 
-  const buitRandomThings = (scope, object, quantity, scale, isBottles) => {
+  const buitRandomThings = (scope, object, quantity, scale, name) => {
     for (let i = 0; i < quantity; i++) {
       thing = object.clone();
-      s = isBottles ? scale : (Math.random() + 1.2) * 0.525 * scale;
-      thing.scale.set(s, s, s);
+      thing.scale.set(scale, scale, scale);
       thing.rotateX(-Math.PI / 2);
       thing.rotateZ(degreesToRadians(randomInteger(-1, 360)));
 
+      isBottles = name === 'bottles';
       if (isBottles) thing.rotateY(degreesToRadians(randomInteger(-45, 45)));
 
       const [X, Z] = randomPointInCircle(isBottles ? BOTTLES_RADIUS : FLOWER_RADIUS, 0, 0);
@@ -61,7 +65,38 @@ function Things() {
       thing.updateMatrix();
       thing.matrixAutoUpdate = false;
 
+      switch (name) {
+        case 'anemones':
+          material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.anemone0x });
+          break;
+        case 'crocuses':
+          material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.crocus0x });
+          break;
+        case 'daffodils':
+          material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.daffodil0x });
+          break;
+        case 'tulips':
+          material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.tulip0x });
+          break;
+        case 'bottles':
+        default:
+          material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.primary0x });
+          break;
+      }
+      material.blending = Three.NoBlending;
+
+      pseudoThing = new Three.Mesh(pseudoGeometry, material);
+
+      pseudoThing.position.set(x, y, z);
+      pseudoThing.name = name;
+      pseudoThing.visible = false;
+
+      pseudoThing.updateMatrix();
+      pseudoThing.matrixAutoUpdate = false;
+
       scope.scene.add(thing);
+      scope.scene.add(pseudoThing);
+      scope.objectsThings.push(pseudoThing);
     }
   };
 
@@ -81,7 +116,7 @@ function Things() {
           plant,
           OBJECTS.FLOWERS.anemone.quantity,
           OBJECTS.FLOWERS.anemone.scale,
-          false,
+          'anemones',
         );
         loaderDispatchHelper(scope.$store, 'isAnemonesBuilt');
       });
@@ -102,7 +137,7 @@ function Things() {
           plant,
           OBJECTS.FLOWERS.crocus.quantity,
           OBJECTS.FLOWERS.crocus.scale,
-          false,
+          'crocuses',
         );
         loaderDispatchHelper(scope.$store, 'isCrocusesBuilt');
       });
@@ -123,7 +158,7 @@ function Things() {
           plant,
           OBJECTS.FLOWERS.daffodil.quantity,
           OBJECTS.FLOWERS.daffodil.scale,
-          false,
+          'daffodils',
         );
         loaderDispatchHelper(scope.$store, 'isDaffodilsBuilt');
       });
@@ -144,7 +179,7 @@ function Things() {
           plant,
           OBJECTS.FLOWERS.tulip.quantity,
           OBJECTS.FLOWERS.tulip.scale,
-          false,
+          'tulips',
         );
         loaderDispatchHelper(scope.$store, 'isTulipsBuilt');
       });
@@ -165,7 +200,7 @@ function Things() {
           bottle,
           OBJECTS.BOTTLES.quantity,
           OBJECTS.BOTTLES.scale,
-          true,
+          'bottles',
         );
         loaderDispatchHelper(scope.$store, 'isBottlesBuilt');
       });

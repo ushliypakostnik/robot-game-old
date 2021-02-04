@@ -146,7 +146,7 @@ export default {
 
   &__ammo {
     position: absolute;
-    bottom: $gutter / 2;
+    bottom: 0;
     right: $gutter / 2;
     color: $colors__white;
     @include text($font-size--large);
