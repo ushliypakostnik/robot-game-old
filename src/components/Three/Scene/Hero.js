@@ -19,13 +19,11 @@ function Hero() {
   let waterrun;
   let waterjump;
   let jump;
-  let spit;
   let damage;
 
   const STOP_DISTANCE = 5;
   let onFly = true;
   let onFloor = 0;
-  let shot = 0;
 
   let delta;
 
@@ -157,20 +155,6 @@ function Hero() {
 
       scope.scene.add(waterjump);
       loaderDispatchHelper(scope.$store, 'isWaterJumpComplete');
-    });
-
-    spit = new Three.Mesh(geometry, material);
-
-    audioLoader.load('./audio/spit.mp3', (buffer) => {
-      audio = new Three.Audio(listener);
-      audio.setBuffer(buffer);
-      audio.setVolume(DESIGN.VOLUME.normal);
-
-      spit.add(audio);
-      spit.visible = false;
-
-      scope.scene.add(spit);
-      loaderDispatchHelper(scope.$store, 'isSpitComplete');
     });
 
     damage = new Three.Mesh(geometry, material);
@@ -420,12 +404,7 @@ function Hero() {
         scope.canJump = true;
       }
 
-      if (scope.ammoIdx !== shot) {
-        if (spit && spit.children[0]) {
-          spit.children[0].play();
-        }
-        shot = scope.ammoIdx;
-      } else if (scope.canJump !== onFly) {
+      if (scope.canJump !== onFly) {
         if (!onFly) jumps(scope);
         onFly = scope.canJump;
       } else if (scope.onObjectHeight !== onFloor) {

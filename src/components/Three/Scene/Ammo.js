@@ -8,6 +8,7 @@ function Ammo() {
   let audio;
   const audioLoader = new Three.AudioLoader();
   const listener = new Three.AudioListener();
+  let spit;
 
   const ammos = [];
   let ammoIndex = 0;
@@ -19,6 +20,22 @@ function Ammo() {
   const STOP_DISTANCE = 1;
 
   this.init = function (scope) {
+    const geometry = new Three.SphereBufferGeometry(1, 1, 1);
+    const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
+    spit = new Three.Mesh(geometry, material);
+
+    audioLoader.load('./audio/spit.mp3', (buffer) => {
+      audio = new Three.Audio(listener);
+      audio.setBuffer(buffer);
+      audio.setVolume(DESIGN.VOLUME.normal);
+
+      spit.add(audio);
+      spit.visible = false;
+
+      scope.scene.add(spit);
+      loaderDispatchHelper(scope.$store, 'isSpitComplete');
+    });
+
     const ammoGeometry = new Three.SphereBufferGeometry(AMMO_RADIUS, 32, 32);
     const ammoMaterial = new Three.MeshStandardMaterial({ color: DESIGN.COLORS.primary0x, roughness: 0.8, metalness: 0.5 });
     const fakeAmmoMaterial = new Three.MeshStandardMaterial({ color: 0xff0000 });
@@ -75,6 +92,11 @@ function Ammo() {
       ammo.velocity.copy(scope.direction).multiplyScalar(25);
 
       ammoIndex = (ammoIndex + 1) % ammos.length;
+
+      if (spit && spit.children[0]) {
+        spit.children[0].play();
+      }
+
       scope.setScale({ field: DESIGN.HERO.scales.ammo.name, value: -1 });
     }
   };
