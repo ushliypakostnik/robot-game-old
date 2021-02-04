@@ -88,7 +88,7 @@ function Things() {
       pseudoThing = new Three.Mesh(pseudoGeometry, material);
 
       pseudoThing.position.set(x, y, z);
-      pseudoThing.name = name;
+      pseudoThing.name = `thing ${name}`;
       pseudoThing.visible = false;
 
       pseudoThing.updateMatrix();

@@ -71,7 +71,7 @@ function Trees() {
         tree.updateMatrix();
         tree.matrixAutoUpdate = false;
 
-        radius = plantType === 1 ? scale * 30 : scale * 13;
+        radius = plantType === 1 ? scale * 26 : scale * 13;
         height = plantType === 1 ? scale * 500 : scale * 350;
         pseudoGeometry = new Three.CylinderGeometry(radius, radius, height, 8, 4);
         pseudoTree = new Three.Mesh(pseudoGeometry, fakeMaterial);
