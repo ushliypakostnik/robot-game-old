@@ -1,7 +1,7 @@
-Vue cli based frontend boilerplate
-==================================
+Driinking Robot
+===============
 
-Vue cli based frontend PWA example with localization and themezation
+Browser 3D Game on Three and Vue
 
 Deploy
 ------

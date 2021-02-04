@@ -14,7 +14,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ushliypakostnik/vue-scss-i18next-three"
+    "url": "https://github.com/ushliypakostnik/robot-game"
   },
   "dependencies": {
     "@panter/vue-i18next": "^0.15.1",
