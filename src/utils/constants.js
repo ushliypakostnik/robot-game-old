@@ -30,6 +30,7 @@ export const DESIGN = {
   },
   GROUND_SIZE: 2000,
   VOLUME: {
+    small: 0.35,
     normal: 0.5,
     max: 1,
     masha: 0.75,
@@ -41,7 +42,7 @@ export const DESIGN = {
       max: 2000,
     },
     parrots: {
-      volume: 0.8,
+      volume: 0.7,
       cry: 1,
       ref: 35,
       max: 2000,
@@ -74,6 +75,29 @@ export const DESIGN = {
       },
     },
   },
+  MESSAGES_TIMEOUT: 3500,
+  EFFECTS: {
+    time: {
+      health: 10,
+      endurance: 10,
+    },
+    anemone: {
+      health: 20,
+    },
+    crocus: {
+      health: 10,
+      power: 2,
+    },
+    daffodil: {
+      health: 5,
+    },
+    tulip: {
+      health: 30,
+    },
+    bottle: {
+      ammo: 50,
+    },
+  },
 };
 
 const size = (size) => {
@@ -94,7 +118,7 @@ export const OBJECTS = {
     quantity: 7,
     velocity: 25,
     minHeight: 2,
-    maxHeight: 30,
+    maxHeight: 20,
   },
   /*
   BOXES: {
@@ -239,23 +263,28 @@ export const OBJECTS = {
   FLOWERS: {
     positionY: -0.3,
     anemone: {
+      name: 'anemone',
       quantity: 30,
       scale: 0.1,
     },
     crocus: {
+      name: 'crocus',
       quantity: 30,
       scale: 0.075,
     },
     daffodil: {
+      name: 'daffodil',
       quantity: 30,
       scale: 0.35,
     },
     tulip: {
+      name: 'tulip',
       quantity: 30,
       scale: 0.175,
     },
   },
   BOTTLES: {
+    name: 'bottle',
     positionY: -0.3,
     quantity: 30,
     scale: 0.05,
@@ -281,10 +310,39 @@ export const LOCALES = {
       attention: 'Attention!!! It is recommended to play on computers with a powerful video card.',
       gadgetsgate: 'You need a PC keyboard to play',
       chromegate: 'In order to play, open in the Google Chrome (or Yandex) browser',
-    },
-    gameplay: {
       gameover: 'GAME OVER',
       gameovebutton: 'Replay',
+    },
+    messages: {
+      message1: 'Pick up:',
+      message2: {
+        startNoDamaged: `The robot is invulnerable for ${DESIGN.EFFECTS.time.health} seconds!`,
+        startNoTired: `The robot will not get tired of running ${DESIGN.EFFECTS.time.endurance} seconds!`,
+        endNoDamaged: 'The invulnerability effect is over.',
+        endNoTired: 'The robot gets tired of running again.',
+      },
+    },
+    things: {
+      anemone: {
+        name: 'Anemone',
+        text: `: gives ${DESIGN.EFFECTS.anemone.health}% health and ${DESIGN.EFFECTS.time.endurance} seconds the robot does not get tired of running`,
+      },
+      crocus: {
+        name: 'Crocus',
+        text: `: grants ${DESIGN.EFFECTS.crocus.health}% health and ${DESIGN.EFFECTS.crocus.power}% damage power`,
+      },
+      daffodil: {
+        name: 'Daffodil',
+        text: `: gives ${DESIGN.EFFECTS.daffodil.health}% health and ${DESIGN.EFFECTS.time.health} seconds time the robot is invulnerable`,
+      },
+      tulip: {
+        name: 'Tulip',
+        text: `: grants ${DESIGN.EFFECTS.tulip.health}% health`,
+      },
+      bottle: {
+        name: 'A bottle of wine',
+        text: `: contains ${DESIGN.EFFECTS.bottle.ammo} drops`,
+      },
     },
   },
   [LANGUAGES[1].name]: {
@@ -305,10 +363,39 @@ export const LOCALES = {
       attention: 'Внимание!!! Рекомендуется играть на компьютерах с производительной видеокартой.',
       gadgetstext: 'Для того чтобы играть нужна клавиатура персонального компьютера',
       chromegate: 'Для того чтобы играть откройте в браузере Google Chrome (или Яндекс)',
-    },
-    gameplay: {
       gameover: 'КОНЕЦ ИГРЫ',
       gameovebutton: 'Играть заново',
+    },
+    messages: {
+      message1: 'Подобрать: ',
+      message2: {
+        startNoDamaged: `Робот получил неуязвимость на ${DESIGN.EFFECTS.time.health} секунд!`,
+        startNoTired: `Робот не будет уставать от бега ${DESIGN.EFFECTS.time.endurance} секунд!`,
+        endNoDamaged: 'Эффект неуязвимости закончился.',
+        endNoTired: 'Робот снова устает от бега.',
+      },
+    },
+    things: {
+      anemone: {
+        name: 'Анемон',
+        text: `: дает ${DESIGN.EFFECTS.anemone.health}% здоровья и ${DESIGN.EFFECTS.time.endurance} секунд робот не устает от бега`,
+      },
+      crocus: {
+        name: 'Крокус',
+        text: `: дает ${DESIGN.EFFECTS.crocus.health}% здоровья и ${DESIGN.EFFECTS.crocus.power}% к силе урона`,
+      },
+      daffodil: {
+        name: 'Нарцисс',
+        text: `: дает ${DESIGN.EFFECTS.daffodil.health}% здоровья и ${DESIGN.EFFECTS.time.health} cекунд робот неуязвим`,
+      },
+      tulip: {
+        name: 'Тюльпан',
+        text: `: дает ${DESIGN.EFFECTS.tulip.health}% здоровья`,
+      },
+      bottle: {
+        name: 'Бутылка вина',
+        text: `: cодержит ${DESIGN.EFFECTS.bottle.ammo} капель`,
+      },
     },
   },
 };

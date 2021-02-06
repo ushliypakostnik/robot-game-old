@@ -24,7 +24,7 @@ function Atmosphere() {
   const geometry = new Three.SphereBufferGeometry(1, 1, 1);
   const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
 
-  this.init = function (scope) {
+  this.init = function(scope) {
     const sun = new Three.Vector3();
     const sky = new Sky();
     sky.scale.setScalar(450000);
@@ -147,7 +147,7 @@ function Atmosphere() {
     if (wind && wind.children[0] && wind.children[0].isPlaying) wind.children[0].stop();
   };
 
-  this.animate = function (scope) {
+  this.animate = function(scope) {
     if (!scope.isPause && !scope.isDrone) {
       newX = scope.controls.getObject().position.x;
       newZ = scope.controls.getObject().position.z;

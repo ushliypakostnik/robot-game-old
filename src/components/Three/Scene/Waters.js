@@ -181,7 +181,7 @@ function Waters(scope) {
     loaderDispatchHelper(scope.$store, 'isWatersBuilt');
   };
 
-  this.animate = function () {
+  this.animate = function() {
     waters.forEach((water) => {
       water.material.uniforms.time.value += 1.0 / 60.0;
     });

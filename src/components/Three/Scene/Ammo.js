@@ -18,7 +18,7 @@ function Ammo() {
   const AMMO_RADIUS = 0.5;
   const STOP_DISTANCE = 1;
 
-  this.init = function (scope) {
+  this.init = function(scope) {
     const geometry = new Three.SphereBufferGeometry(1, 1, 1);
     const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
     spit = new Three.Mesh(geometry, material);
@@ -26,7 +26,7 @@ function Ammo() {
     audioLoader.load('./audio/spit.mp3', (buffer) => {
       audio = new Three.Audio(scope.listener);
       audio.setBuffer(buffer);
-      audio.setVolume(DESIGN.VOLUME.normal);
+      audio.setVolume(DESIGN.VOLUME.small);
 
       spit.add(audio);
       spit.visible = false;
@@ -129,7 +129,7 @@ function Ammo() {
     return ammo;
   };
 
-  this.animate = function (scope) {
+  this.animate = function(scope) {
     ammos.forEach((ammo) => {
       // Летит
       if (ammo.onFly) {

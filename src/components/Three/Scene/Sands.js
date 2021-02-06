@@ -7,7 +7,7 @@ function Sands() {
   let geometry;
   let sand;
 
-  this.init = function (scope) {
+  this.init = function(scope) {
     const mapBeach = new Three.TextureLoader().load('./images/textures/sand.jpg', (texture) => {
       scope.render();
       loaderDispatchHelper(scope.$store, 'isSandLoaded1');

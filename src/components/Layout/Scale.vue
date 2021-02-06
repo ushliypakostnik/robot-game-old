@@ -1,7 +1,10 @@
 <template>
   <div
     class="scale"
-    :class="lock && 'scale--lock'"
+    :class="[
+      lock && 'scale--lock',
+      not && 'not',
+    ]"
   >
     <div
       class="scale__progress"
@@ -27,6 +30,11 @@ export default {
       required: true,
     },
     lock: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
+    not: {
       type: Boolean,
       default: false,
       required: false,

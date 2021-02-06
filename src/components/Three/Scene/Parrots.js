@@ -45,7 +45,7 @@ function Parrots() {
 
   const PARROTS_RADIUS = DESIGN.GROUND_SIZE * 0.6;
 
-  this.init = function (scope) {
+  this.init = function(scope) {
     managerAudio1.onLoad = () => {
       audioLoader2.load('./audio/parrotcry.mp3', (buffer) => {
         addAudioToPseudoObjects(scope, parrots, 'pseudoParrot', buffer, DESIGN.VOLUME.parrots.cry);
@@ -63,7 +63,7 @@ function Parrots() {
     };
 
     loader.load('./images/models/Parrot.glb', (gltf) => {
-      loaderDispatchHelper(scope.$store, 0, 'isParrotLoaded');
+      loaderDispatchHelper(scope.$store, 'isParrotLoaded');
 
       for (let i = 0; i < OBJECTS.PARROTS.quantity; i++) {
         parrot = gltf.scene.clone(true).children[0];
@@ -115,7 +115,7 @@ function Parrots() {
     audioClock = new Three.Clock(false);
   };
 
-  this.animate = function (scope) {
+  this.animate = function(scope) {
     parrots.forEach((parrot) => {
       // Raycast
       scope.directionForward = parrot.mesh.getWorldDirection(scope.direction);
@@ -183,7 +183,7 @@ function Parrots() {
         if (parrot.mesh.children[0] && parrot.mesh.children[0].isPlaying)
           parrot.mesh.children[0].setPlaybackRate(parrot.accelerationVelocity / 1.2);
 
-        decision = randomInteger(1, 100) === 1;
+        decision = randomInteger(1, 175) === 1;
         if (decision) if (parrot.pseudoParrot.children[0] && !parrot.pseudoParrot.children[0].isPlaying) parrot.pseudoParrot.children[0].play();
       }
 

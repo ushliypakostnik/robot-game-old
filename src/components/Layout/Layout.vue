@@ -8,6 +8,8 @@
 
       <Game v-if="!isDrone" />
 
+      <Drone v-else />
+
       <div
         v-if="isPause"
         class="layout__blocker"
@@ -61,6 +63,7 @@ import Preloader from '@/components/Layout/Preloader.vue';
 import Scene from '@/components/Three/Scene/Scene.vue';
 import LangSwitch from '@/components/Layout/LangSwitch.vue';
 import Game from '@/components/Layout/Game.vue';
+import Drone from '@/components/Layout/Drone.vue';
 
 export default {
   name: 'Layout',
@@ -71,6 +74,7 @@ export default {
     Scene,
     LangSwitch,
     Game,
+    Drone,
   },
 
   data() {

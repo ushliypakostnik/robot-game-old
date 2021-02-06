@@ -44,3 +44,17 @@
     opacity: 0;
   }
 }
+
+@keyframes scaleNot {
+  from {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 0.5;
+  }
+}

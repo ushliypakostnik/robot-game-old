@@ -66,6 +66,7 @@ export default {
       direction: null,
       startDirection: null,
       directionStore: null,
+      isDroneStart: false,
       position: null,
 
       x: null,
@@ -99,6 +100,7 @@ export default {
       layers: [],
       layersNew: [],
       object: null,
+      thing: null,
       collision: null,
       height: DESIGN.HERO.height,
       onObjectHeight: 0,
@@ -112,7 +114,7 @@ export default {
 
       objectsGround: [], // все объекты для вертикального рейкастинга
       objectsVertical: [], // все объекты с которыми сталкивается горизонтально
-      objectsThings: [], // все объекты с которыми сталкивается горизонтально
+      objectsThings: [], // все псевдовещи
       objectsPuddles: [], // все лужи
       objectsStoneData: [], // все камни и горы - данные - [x, z, r]
       objectsWaterData: [], // все озера и лужи - данные - [x, z, r]
@@ -171,12 +173,16 @@ export default {
     ...mapGetters({
       isPause: 'layout/isPause',
       isDrone: 'layout/isDrone',
+      messages: 'layout/messages',
+      message: 'layout/message',
       isGameOver: 'layout/isGameOver',
 
       endurance: 'hero/endurance',
       ammo: 'hero/ammo',
       isHeroOnWater: 'hero/isHeroOnWater',
       isHeroTired: 'hero/isHeroTired',
+      isNotDamaged: 'hero/isNotDamaged',
+      isNotTired: 'hero/isNotTired',
     }),
 
     heroOnWater: {
@@ -187,15 +193,23 @@ export default {
         this.setHeroOnWater(value);
       }
     },
+
+    isKeysLock() {
+      return this.isPause || this.isDrone;
+    },
   },
 
   methods: {
     ...mapActions({
       togglePause: 'layout/togglePause',
       toggleDrone: 'layout/toggleDrone',
+      showMessage: 'layout/showMessage',
+      hideMessageByView: 'layout/hideMessageByView',
 
       setHeroOnWater: 'hero/setHeroOnWater',
       setScale: 'hero/setScale',
+      setNotDamaged: 'hero/setNotDamaged',
+      setNotTired: 'hero/setNotTired',
 
       preloaderReload: 'preloader/preloaderReload',
       layoutReload: 'layout/layoutReload',
@@ -252,8 +266,9 @@ export default {
 
       this.setInFirstPersonControls();
 
+      this.scene.add(this.controls.getObject());
+
       this.scene.add(this.camera);
-      // console.log(this.camera.position.x, this.camera.position.y, this.camera.position.z);
 
       // Atmosphere
       this.atmosphere = new Atmosphere();
@@ -357,11 +372,9 @@ export default {
       // Переместиться в точку
       // this.controls.getObject().position.x = -1200;
       // this.controls.getObject().position.z = -300;
-      this.controls.getObject().position.y = this.height;
+      this.controls.getObject().position.y = this.height + this.onObjectHeight;
 
       this.camera.lookAt(this.directionStore.multiplyScalar(1000));
-
-      this.scene.add(this.controls.getObject());
     },
 
     setWithDroneControl() {
@@ -369,7 +382,11 @@ export default {
 
       this.controls = this.droneControls;
       this.controls.target.set(this.robot.position.x, this.robot.position.y, this.robot.position.z);
-      this.cameraDrone.position.y = OBJECTS.DRONE.startY;
+      if (!this.isDroneStart) {
+        this.cameraDrone.position.y = OBJECTS.DRONE.startY;
+        this.isDroneStart = true;
+      }
+
       this.controls.update();
     },
 
@@ -388,26 +405,30 @@ export default {
       switch (event.keyCode) {
         case 38: // Up
         case 87: // W
-          if (!this.moveForward) this.moveForward = true;
+          if (!this.isKeysLock && !this.moveForward) this.moveForward = true;
           break;
 
         case 37: // Left
         case 65: // A
-          if (!this.moveLeft) this.moveLeft = true;
+          if (!this.isKeysLock && !this.moveLeft) this.moveLeft = true;
           break;
 
         case 40: // Down
         case 83: // S
-          if (!this.moveBackward) this.moveBackward = true;
+          if (!this.isKeysLock && !this.moveBackward) this.moveBackward = true;
           break;
 
         case 39: // Right
         case 68: // D
-          if (!this.moveRight) this.moveRight = true;
+          if (!this.isKeysLock && !this.moveRight) this.moveRight = true;
           break;
 
         case 16: // Shift
-          if (!this.moveHidden && this.moveForward && !this.isHeroTired) this.moveRun = true;
+          if (!this.isKeysLock && !this.moveHidden && this.moveForward && !this.isHeroTired) this.moveRun = true;
+          break;
+
+        case 69: // E
+          if (!this.isKeysLock && this.thing) this.things.pick(this, this.thing);
           break;
 
         case 9: // TAB
@@ -422,42 +443,43 @@ export default {
       switch (event.keyCode) {
         case 38: // Up
         case 87: // W
-          if (this.moveForward) this.moveForward = false;
+          if (!this.isKeysLock && this.moveForward) this.moveForward = false;
           break;
 
         case 37: // Left
         case 65: // A
-          if (this.moveLeft) this.moveLeft = false;
+          if (!this.isKeysLock && this.moveLeft) this.moveLeft = false;
           break;
 
         case 40: // Down
         case 83: // S
-          if (this.moveBackward) this.moveBackward = false;
+          if (!this.isKeysLock && this.moveBackward) this.moveBackward = false;
           break;
 
         case 39: // Right
         case 68: // D
-          if (this.moveRight) this.moveRight = false;
+          if (!this.isKeysLock && this.moveRight) this.moveRight = false;
           break;
 
         case 16: // Shift
-          if (this.moveRun && this.moveRun) this.moveRun = false;
+          if (!this.isKeysLock && this.moveRun && this.moveRun) this.moveRun = false;
           break;
 
         case 67: // C
         case 18: // Alt
-          this.moveHidden = !this.moveHidden;
-          if (this.moveRun) this.moveRun = false;
+          if (!this.isKeysLock) {
+            this.moveHidden = !this.moveHidden;
+            if (this.moveRun) this.moveRun = false;
+          }
           break;
 
         case 32: // Space
-          if (!this.moveHidden && this.canJump) {
+          if (!this.isKeysLock && !this.moveHidden && this.canJump) {
             this.velocity.y += DESIGN.HERO.jumpspeed;
             this.canJump = false;
           }
           break;
 
-        // case 27: // Esc
         case 80: // P
           if (!this.isDrone) {
             if (this.isPause) {
@@ -467,6 +489,10 @@ export default {
             this.togglePause(!this.isPause);
           }
           break;
+
+        case 27: // Ecs
+          if (this.isDrone) this.togglePause(!this.isPause);
+          break;
       }
     },
 
@@ -475,7 +501,7 @@ export default {
 
       this.delta = this.clock.getDelta();
 
-      if (!this.isPause && !this.isDrone && !this.isGameOver) {
+      if (!this.isKeysLock && !this.isGameOver) {
         // Зависнуть над сценой
         // this.controls.getObject().position.y = 1000;
 
@@ -516,12 +542,6 @@ export default {
       this.stats.update();
     },
 
-    toggleThingVisible(isVisible) {
-      this.objectsThings.forEach((thing) => {
-        thing.visible = isVisible;
-      });
-    },
-
     onWindowResize() {
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
@@ -556,7 +576,7 @@ export default {
 
         this.robot.visible = true;
 
-        this.toggleThingVisible(true);
+        this.things.toggle(this);
 
         // Controls
         this.setWithDroneControl();
@@ -567,11 +587,11 @@ export default {
 
         this.robot.visible = false;
 
-        this.toggleThingVisible(false);
+        this.things.toggle(this);
 
         // Controls
         this.setInFirstPersonControls();
-        this.controls.getObject().position.y = this.height + this.onObjectHeight;
+
         this.controls.lock();
       }
     },

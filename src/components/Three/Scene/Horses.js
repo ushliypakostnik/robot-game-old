@@ -42,9 +42,9 @@ function Horses() {
   let mixer;
   let decision;
 
-  const HORSES_RADIUS = DESIGN.GROUND_SIZE * 0.55;
+  const HORSES_RADIUS = DESIGN.GROUND_SIZE * 0.51;
 
-  this.init = function (scope) {
+  this.init = function(scope) {
     managerAudio2.onLoad = () => {
       audioLoader3.load('./audio/horsefr.mp3', (buffer) => {
         addAudioToPseudoObjects(scope, horses, 'pseudoHorse', buffer, DESIGN.VOLUME.horses.fr);
@@ -122,7 +122,7 @@ function Horses() {
     audioClock = new Three.Clock(false);
   };
 
-  this.animate = function (scope) {
+  this.animate = function(scope) {
     horses.forEach((horse, index) => {
       // Raycast
       scope.directionForward = horse.mesh.getWorldDirection(scope.direction);

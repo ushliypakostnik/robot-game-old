@@ -3,7 +3,7 @@ import * as Three from 'three';
 import { FBXLoader } from '@/components/Three/Modules/Utils/FBXLoader.js';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
-import { loaderDispatchHelper } from '@/utils/utilities';
+import { loaderDispatchHelper, messagesDispatchHelper } from '@/utils/utilities';
 
 function Hero() {
   let mixer;
@@ -34,10 +34,18 @@ function Hero() {
   let enduranceTime = 0;
   let isEnduranceRecoveryStart = false;
 
+  let notDamageClock;
+  let notDamageTime = 0;
+
+  let notTiredClock;
+  let notTiredTime = 0;
+
   const geometry = new Three.SphereBufferGeometry(1, 1, 1);
   const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
 
-  this.init = function (scope) {
+  let fixFirstThingsRaycast = false;
+
+  this.init = function(scope) {
     loader.load('./images/models/Hero.fbx', (hero) => {
       loaderDispatchHelper(scope.$store, 'isHeroLoaded');
 
@@ -187,6 +195,8 @@ function Hero() {
 
     damageClock = new Three.Clock(false);
     enduranceClock = new Three.Clock(false);
+    notDamageClock = new Three.Clock(false);
+    notTiredClock = new Three.Clock(false);
   };
 
   const jumps = (scope) => {
@@ -201,7 +211,7 @@ function Hero() {
     }
   };
 
-  this.animate = function (scope) {
+  this.animate = function(scope) {
     if (!scope.isPause && !scope.isDrone) {
       // Check objects
       stopDistance = scope.moveRun ? 10 : 5;
@@ -212,6 +222,19 @@ function Hero() {
       scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical);
       scope.onForward = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
       if (scope.onForward) scope.object = scope.intersections[0].object;
+
+      // Things
+      scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsThings);
+      if (scope.intersections.length > 0 && scope.intersections[0].distance < DESIGN.HERO.height * 2) {
+        if (!fixFirstThingsRaycast) fixFirstThingsRaycast = true;
+        else {
+          scope.thing = scope.intersections[0].object;
+          if (!scope.messages.some(message => message[1] === 1)) scope.showMessage({ id: null, view: 1, name: scope.intersections[0].object.name });
+        }
+      } else {
+        scope.thing = null;
+        scope.hideMessageByView(1);
+      }
 
       // Backward
       scope.directionBackward = scope.directionForward.negate();
@@ -279,63 +302,93 @@ function Hero() {
         }
       }
 
-      // Урон от воды
-      if (scope.heroOnWater && scope.canJump) {
-        if (!damageClock.running) {
-          damageClock.start();
+      // Урон персонажу
+      if (!scope.isNotDamaged) {
+        // Урон от воды
+        if (scope.heroOnWater && scope.canJump) {
+          if (!damageClock.running) {
+            damageClock.start();
 
-          if (damage && damage.children[0]) {
-            damage.children[0].play();
+            if (damage && damage.children[0]) {
+              damage.children[0].play();
+            }
           }
-        }
 
-        delta = damageClock.getDelta();
-        damageTime += delta;
-        damageSoundTime += delta;
+          delta = damageClock.getDelta();
+          damageTime += delta;
+          damageSoundTime += delta;
 
-        if (damageTime > 0.075) {
-          scope.setScale({ field: DESIGN.HERO.scales.health.name, value: -1 });
+          if (damageTime > 0.075) {
+            scope.setScale({
+              field: DESIGN.HERO.scales.health.name,
+              value: -1
+            });
+            damageTime = 0;
+          }
+
+          if (damageSoundTime > 0.5) {
+            damageSoundTime = 0;
+
+            if (damage && damage.children[0]) {
+              damage.children[0].play();
+            }
+          }
+        } else {
+          if (damageClock.running) damageClock.stop();
           damageTime = 0;
-        }
-
-        if (damageSoundTime > 0.5) {
           damageSoundTime = 0;
-
-          if (damage && damage.children[0]) {
-            damage.children[0].play();
-          }
         }
       } else {
-        if (damageClock.running) damageClock.stop();
-        damageTime = 0;
-        damageSoundTime = 0;
+        if (!notDamageClock.running) notDamageClock.start();
+
+        if (!scope.isPause && !scope.isDrone) notDamageTime += notDamageClock.getDelta();
+
+        if (notDamageTime > DESIGN.EFFECTS.time.health) {
+          notDamageClock.stop();
+          notDamageTime = 0;
+          scope.setNotDamaged(false);
+          messagesDispatchHelper(scope, 'endNoDamaged');
+        }
       }
 
       // Усталость и ее восстановление
-      if (scope.moveRun ||
+      if (!scope.isNotTired) {
+        if (scope.moveRun ||
           scope.isHeroTired ||
           (!scope.moveRun && !scope.isHeroTired && scope.endurance < 100)) {
-        if (scope.moveRun && !enduranceClock.running) enduranceClock.start();
-        if (!isEnduranceRecoveryStart && scope.endurance < 100 && !scope.moveRun) {
-          isEnduranceRecoveryStart = true;
-          enduranceClock.start();
-        } else if (isEnduranceRecoveryStart && scope.moveRun) {
-          isEnduranceRecoveryStart = false;
-        }
+          if (scope.moveRun && !enduranceClock.running) enduranceClock.start();
+          if (!isEnduranceRecoveryStart && scope.endurance < 100 && !scope.moveRun) {
+            isEnduranceRecoveryStart = true;
+            enduranceClock.start();
+          } else if (isEnduranceRecoveryStart && scope.moveRun) {
+            isEnduranceRecoveryStart = false;
+          }
 
-        enduranceTime += enduranceClock.getDelta();
+          enduranceTime += enduranceClock.getDelta();
 
-        if (enduranceTime > 0.025) {
-          scope.setScale({
-            field: DESIGN.HERO.scales.endurance.name,
-            value: !isEnduranceRecoveryStart ? -1 : 1,
-          });
+          if (enduranceTime > 0.025) {
+            scope.setScale({
+              field: DESIGN.HERO.scales.endurance.name,
+              value: !isEnduranceRecoveryStart ? -1 : 1,
+            });
+            enduranceTime = 0;
+          }
+        } else {
+          if (enduranceClock.running) enduranceClock.stop();
+          if (isEnduranceRecoveryStart) isEnduranceRecoveryStart = false;
           enduranceTime = 0;
         }
       } else {
-        if (enduranceClock.running) enduranceClock.stop();
-        if (isEnduranceRecoveryStart) isEnduranceRecoveryStart = false;
-        enduranceTime = 0;
+        if (!notTiredClock.running) notTiredClock.start();
+
+        if (!scope.isPause && !scope.isDrone) notTiredTime += notTiredClock.getDelta();
+
+        if (notTiredTime > DESIGN.EFFECTS.time.endurance) {
+          notTiredClock.stop();
+          notTiredTime = 0;
+          scope.setNotTired(false);
+          messagesDispatchHelper(scope, 'endNoTired');
+        }
       }
 
       // Up
@@ -471,7 +524,7 @@ function Hero() {
     if (play !== 'waterrun' && waterrun && waterrun.children[0] && waterrun.children[0].isPlaying) waterrun.children[0].stop();
   };
 
-  this.animateDrone = function (scope) {
+  this.animateDrone = function(scope) {
     if (!scope.isPause) {
       if (mixer) mixer.update(scope.delta / 20);
 
@@ -481,7 +534,7 @@ function Hero() {
     }
   };
 
-  this.stopDrone = function (scope) {
+  this.stopDrone = function(scope) {
     if (scope.robot && scope.robot.children[3] && scope.robot.children[3].isPlaying) scope.robot.children[3].pause();
   };
 }

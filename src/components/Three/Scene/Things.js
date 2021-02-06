@@ -12,13 +12,18 @@ import {
   randomPointInCircle,
   isInPointObjectsWithDistance,
   isInRoundObjectsWithCoefficient,
+  messagesDispatchHelper,
 } from '@/utils/utilities';
 
 function Things() {
+  let audio;
+  const audioLoader = new Three.AudioLoader();
+  let pick;
+  let things = [];
   let thing;
   let y;
 
-  const pseudoGeometry = new Three.SphereBufferGeometry(3, 32, 32);
+  const pseudoGeometry = new Three.SphereBufferGeometry(DESIGN.HERO.height / 2, 32, 32);
   let material;
   let pseudoThing;
   let isBottles;
@@ -43,6 +48,7 @@ function Things() {
   };
 
   const buitRandomThings = (scope, object, quantity, scale, name) => {
+    let T = [];
     for (let i = 0; i < quantity; i++) {
       thing = object.clone();
       thing.scale.set(scale, scale, scale);
@@ -66,19 +72,19 @@ function Things() {
       thing.matrixAutoUpdate = false;
 
       switch (name) {
-        case 'anemones':
+        case OBJECTS.FLOWERS.anemone.name:
           material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.anemone0x });
           break;
-        case 'crocuses':
+        case OBJECTS.FLOWERS.crocus.name:
           material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.crocus0x });
           break;
-        case 'daffodils':
+        case OBJECTS.FLOWERS.daffodil.name:
           material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.daffodil0x });
           break;
-        case 'tulips':
+        case OBJECTS.FLOWERS.tulip.name:
           material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.tulip0x });
           break;
-        case 'bottles':
+        case OBJECTS.BOTTLES.name:
         default:
           material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.primary0x });
           break;
@@ -87,8 +93,8 @@ function Things() {
 
       pseudoThing = new Three.Mesh(pseudoGeometry, material);
 
-      pseudoThing.position.set(x, y, z);
-      pseudoThing.name = `thing ${name}`;
+      pseudoThing.position.set(x, y + 1.5, z);
+      pseudoThing.name = name;
       pseudoThing.visible = false;
 
       pseudoThing.updateMatrix();
@@ -97,10 +103,35 @@ function Things() {
       scope.scene.add(thing);
       scope.scene.add(pseudoThing);
       scope.objectsThings.push(pseudoThing);
+      T.push({
+        mesh: thing,
+        pseudoThing,
+      });
     }
+    return T;
   };
 
   this.init = function(scope) {
+    const geometry = new Three.SphereBufferGeometry(1, 1, 1);
+    const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
+    pick = new Three.Mesh(geometry, material);
+
+    audioLoader.load('./audio/pick.mp3', (buffer) => {
+      audio = new Three.Audio(scope.listener);
+      audio.setBuffer(buffer);
+      audio.setVolume(DESIGN.VOLUME.normal);
+      audio.setLoop(false);
+
+      pick.add(audio);
+      pick.visible = false;
+
+      pick.updateMatrix();
+      pick.matrixAutoUpdate = false;
+
+      scope.scene.add(pick);
+      loaderDispatchHelper(scope.$store, 'isPickComplete');
+    });
+
     // Anemone
     const MTLLoader1 = new Three.MTLLoader();
     const OBJLoader1 = new Three.OBJLoader();
@@ -111,13 +142,14 @@ function Things() {
       OBJLoader1.load('./images/models/Anemone/12973_anemone_flower_v1_l2.obj', (plant) => {
         loaderDispatchHelper(scope.$store, 'isAnemoneLoaded');
 
-        buitRandomThings(
+        things.push(...buitRandomThings(
           scope,
           plant,
           OBJECTS.FLOWERS.anemone.quantity,
           OBJECTS.FLOWERS.anemone.scale,
-          'anemones',
-        );
+          OBJECTS.FLOWERS.anemone.name,
+        ));
+
         loaderDispatchHelper(scope.$store, 'isAnemonesBuilt');
       });
     });
@@ -132,13 +164,14 @@ function Things() {
       OBJLoader2.load('./images/models/Crocus/12974_crocus_flower_v1_l3.obj', (plant) => {
         loaderDispatchHelper(scope.$store, 'isCrocusLoaded');
 
-        buitRandomThings(
+        things.push(...buitRandomThings(
           scope,
           plant,
           OBJECTS.FLOWERS.crocus.quantity,
           OBJECTS.FLOWERS.crocus.scale,
-          'crocuses',
-        );
+          OBJECTS.FLOWERS.crocus.name,
+        ));
+
         loaderDispatchHelper(scope.$store, 'isCrocusesBuilt');
       });
     });
@@ -153,13 +186,14 @@ function Things() {
       OBJLoader3.load('./images/models/Daffodil/12977_Daffodil_flower_v1_l2.obj', (plant) => {
         loaderDispatchHelper(scope.$store, 'isDaffodilLoaded');
 
-        buitRandomThings(
+        things.push(...buitRandomThings(
           scope,
           plant,
           OBJECTS.FLOWERS.daffodil.quantity,
           OBJECTS.FLOWERS.daffodil.scale,
-          'daffodils',
-        );
+          OBJECTS.FLOWERS.daffodil.name,
+        ));
+
         loaderDispatchHelper(scope.$store, 'isDaffodilsBuilt');
       });
     });
@@ -174,13 +208,14 @@ function Things() {
       OBJLoader4.load('./images/models/Tulip/12978_tulip_flower_l3.obj', (plant) => {
         loaderDispatchHelper(scope.$store, 'isTulipLoaded');
 
-        buitRandomThings(
+        things.push(...buitRandomThings(
           scope,
           plant,
           OBJECTS.FLOWERS.tulip.quantity,
           OBJECTS.FLOWERS.tulip.scale,
-          'tulips',
-        );
+          OBJECTS.FLOWERS.tulip.name,
+        ));
+
         loaderDispatchHelper(scope.$store, 'isTulipsBuilt');
       });
     });
@@ -195,15 +230,65 @@ function Things() {
       OBJLoader5.load('./images/models/Bottle/14042_750_mL_Wine_Bottle_r_v2_L3.obj', (bottle) => {
         loaderDispatchHelper(scope.$store, 'isBottleLoaded');
 
-        buitRandomThings(
+        things.push(...buitRandomThings(
           scope,
           bottle,
           OBJECTS.BOTTLES.quantity,
           OBJECTS.BOTTLES.scale,
-          'bottles',
-        );
+          OBJECTS.BOTTLES.name,
+        ));
+
         loaderDispatchHelper(scope.$store, 'isBottlesBuilt');
       });
+    });
+  };
+
+  this.pick = function(scope) {
+    thing = things.find(item => item.pseudoThing.id === scope.thing.id);
+    const { mesh, pseudoThing } = thing;
+    scope.scene.remove(mesh);
+    scope.scene.remove(pseudoThing);
+    scope.objectsThings.splice(scope.objectsThings.indexOf(pseudoThing), 1);
+
+    switch (pseudoThing.name) {
+      case OBJECTS.FLOWERS.anemone.name:
+        scope.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.anemone.health });
+        scope.setNotTired(true);
+        messagesDispatchHelper(scope, 'startNoTired');
+        break;
+      case OBJECTS.FLOWERS.crocus.name:
+        scope.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.crocus.health });
+        scope.setScale({ field: DESIGN.HERO.scales.power.name, value: DESIGN.EFFECTS.crocus.power });
+        break;
+      case OBJECTS.FLOWERS.daffodil.name:
+        scope.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.daffodil.health });
+        scope.setNotDamaged(true);
+        messagesDispatchHelper(scope, 'startNoDamaged');
+        break;
+      case OBJECTS.FLOWERS.tulip.name:
+        scope.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.tulip.health });
+        break;
+      case OBJECTS.BOTTLES.name:
+        scope.setScale({ field: DESIGN.HERO.scales.ammo.name, value: DESIGN.EFFECTS.bottle.ammo });
+        break;
+    }
+
+    // Sound
+    if (pick && pick.children[0]) pick.children[0].play();
+  };
+
+  this.toggle = function(scope) {
+    scope.objectsThings.forEach((thing) => {
+      if (scope.isDrone) {
+        thing.scale.set(2, 2, 2);
+        thing.position.y += 0.5;
+        thing.visible = scope.isDrone;
+      } else {
+        thing.visible = scope.isDrone;
+        thing.scale.set(1, 1, 1);
+        thing.position.y -= 0.5;
+      }
+      thing.updateMatrix();
     });
   };
 }

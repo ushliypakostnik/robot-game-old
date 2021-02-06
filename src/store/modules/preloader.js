@@ -15,8 +15,8 @@ const initialState = {
   isCrocusLoaded: false,
   isDaffodilLoaded: false,
   isTulipLoaded: false,
-  // isHorseLoaded: false,
-  // isParrotLoaded: false,
+  isHorseLoaded: false,
+  isParrotLoaded: false,
 
   isMashaComplete: false,
   isStepComplete: false,
@@ -30,6 +30,7 @@ const initialState = {
   isOceanComplete: false,
   isWindComplete: false,
   isDamageComplete: false,
+  isPickComplete: false,
 
   isAmmoBuilt: false,
   isGrassBuilt: false,

@@ -6,7 +6,7 @@ import { OBJECTS } from '@/utils/constants';
 import { loaderDispatchHelper } from '@/utils/utilities';
 
 function Boxes() {
-  this.init = function (scope) {
+  this.init = function(scope) {
     const loader = new TGALoader();
     const geometry = new Three.BoxBufferGeometry(OBJECTS.BOXES.size, OBJECTS.BOXES.size, OBJECTS.BOXES.size).toNonIndexed();
     const texture = loader.load('./images/textures/box.tga', () => {

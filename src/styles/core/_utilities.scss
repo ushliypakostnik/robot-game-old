@@ -26,3 +26,8 @@
   will-change: opacity;
   animation: hit $animation-duration infinite;
 }
+
+.not {
+  will-change: opacity;
+  animation: scaleNot $animation-duration infinite;
+}

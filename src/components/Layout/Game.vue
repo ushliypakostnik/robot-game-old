@@ -3,30 +3,33 @@
     <div
       class="game__overlay"
       :class="[
-        isHeroOnWater && !isGameOver && `game__overlay--damage damage`,
+        isHeroOnWater && !isNotDamaged && !isGameOver && `game__overlay--damage damage`,
         isGameOver && `game__overlay--gameover`,
       ]"
     >
       <h1
         v-if="isGameOver"
         class="game__gameover"
-      >{{ $t('gameplay.gameover') }}</h1>
+      >{{ $t('layout.gameover') }}</h1>
       <button
         class="button"
         type="button"
         v-if="isGameOver"
         @click.prevent.stop="reload()"
-      >{{ $t('gameplay.gameovebutton') }}</button>
+      >{{ $t('layout.gameovebutton') }}</button>
     </div>
+
     <div class="game__scales">
       <Scale
         face="health"
         :progress="health"
+        :not="isNotDamaged"
       />
       <Scale
         face="endurance"
         :progress="endurance"
         :lock="isHeroTired"
+        :not="isNotTired"
       />
       <Scale
         face="power"
@@ -35,6 +38,23 @@
     </div>
     <div class="game__ammo">
       {{ ammo }}/{{ ammoMagazine }}
+    </div>
+
+    <div class="game__messages">
+      <div
+        class="game__message"
+        v-for="message in messages"
+        v-bind:key="message"
+      >
+        <div
+          v-if="message[1] === 1"
+          class="game__message"
+        >{{ $t(`messages.message${message[1]}`) }}{{ $t(`things.${message[2]}.name`) }}</div>
+        <div
+          v-if="message[1] === 2"
+          class="game__message game__message--small"
+        >{{ $t(`messages.message2.${message[2]}`) }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -61,7 +81,10 @@ export default {
       ammo: 'hero/ammo',
       isHeroOnWater: 'hero/isHeroOnWater',
       isHeroTired: 'hero/isHeroTired',
+      isNotDamaged: 'hero/isNotDamaged',
+      isNotTired: 'hero/isNotTired',
 
+      messages: 'layout/messages',
       isGameOver: 'layout/isGameOver',
     }),
 
@@ -76,11 +99,11 @@ export default {
       setHeroTired: 'hero/setHeroTired',
       setScale: 'hero/setScale',
 
+      messages: 'layout/messages',
       setGameOver: 'layout/setGameOver',
     }),
 
     reload() {
-      // window.location.reload();
       this.$eventHub.$emit('reload');
     },
   },
@@ -92,10 +115,6 @@ export default {
 
     endurance(value) {
       if (value < 0) this.setHeroTired(true);
-    },
-
-    ammo(value) {
-
     },
   }
 };
@@ -150,6 +169,23 @@ export default {
     right: $gutter / 2;
     color: $colors__white;
     @include text($font-size--large);
+  }
+
+  &__messages {
+    position: absolute;
+    top: $gutter / 2;
+    right: $gutter / 2;
+    text-align: right;
+  }
+
+  &__message {
+    color: $colors__white;
+    text-shadow: 2px 2px 5px $colors__shadows;
+    @include text($font-size--normal);
+
+    &--small {
+      @include text($font-size--small);
+    }
   }
 }
 </style>

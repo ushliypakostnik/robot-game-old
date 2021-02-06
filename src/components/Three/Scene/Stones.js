@@ -18,7 +18,7 @@ function Stones() {
   let geometry;
   let stone;
 
-  this.init = function (scope) {
+  this.init = function(scope) {
     const loader = new DDSLoader();
 
     const map = loader.load('./images/textures/stone.dds', (texture) => {
