@@ -270,7 +270,7 @@ function Hero() {
           if (!scope.layersNew.includes(intersection.object.name)) scope.layersNew.push(intersection.object.name);
         });
         if (scope.layersNew.length !== scope.layers.length) {
-          // console.log(scope.layers, scope.layersNew);
+          console.log(scope.layers, scope.layersNew, scope.heroOnWater);
           // На большой воде
           if (
             ((scope.layersNew.includes(OBJECTS.OCEAN.name)
@@ -287,16 +287,6 @@ function Hero() {
             scope.object = scope.intersections.filter(object => object.object.name === OBJECTS.STONES.name)[0].object;
             scope.onObjectHeight = scope.object.position.y + scope.object.geometry.parameters.radius + scope.height;
           } else scope.onObjectHeight = 0;
-
-          //  На любой воде
-          if (((scope.layersNew.includes(OBJECTS.OCEAN.name)
-            && !scope.layersNew.includes(OBJECTS.BEACH.name))
-            || scope.layersNew.includes(OBJECTS.LAKES.name)
-            || scope.layersNew.includes(OBJECTS.PUDDLES.name))
-            && !scope.layersNew.includes(OBJECTS.SANDS.name)) {
-            if (scope.canJump && scope.onObjectHeight === 0) scope.heroOnWater = true;
-            else scope.heroOnWater = false;
-          } else scope.heroOnWater = false;
 
           scope.layers = scope.layersNew;
         }
@@ -472,6 +462,16 @@ function Hero() {
         scope.velocity.y = 0;
         scope.controls.getObject().position.y = scope.height + scope.onObjectHeight;
         scope.canJump = true;
+
+        //  Сейчас можем проверить урон на любой воде
+        if (((scope.layersNew.includes(OBJECTS.OCEAN.name)
+          && !scope.layersNew.includes(OBJECTS.BEACH.name))
+          || scope.layersNew.includes(OBJECTS.LAKES.name)
+          || scope.layersNew.includes(OBJECTS.PUDDLES.name))
+          && !scope.layersNew.includes(OBJECTS.SANDS.name)) {
+          if (scope.canJump && scope.onObjectHeight === 0) scope.heroOnWater = true;
+          else scope.heroOnWater = false;
+        } else scope.heroOnWater = false;
       }
 
       if (scope.canJump !== onFly) {

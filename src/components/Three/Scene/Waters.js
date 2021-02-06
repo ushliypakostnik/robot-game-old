@@ -88,11 +88,13 @@ function Waters(scope) {
 
     // Lakes
     for (let i = 0; i < OBJECTS.LAKES.position.length; i++) {
-      geometry = new Three.CircleBufferGeometry(OBJECTS.LAKES.position[i][2], 32);
+      radius = lightRandomRaduis(OBJECTS.LAKES.position[i][2]);
+      geometry = new Three.CircleBufferGeometry(radius, 32);
       water = initWater(scope.scene, geometry);
-      water.position.set(OBJECTS.LAKES.position[i][0], OBJECTS.LAKES.positionY, lightRandomRaduis(OBJECTS.LAKES.position[i][1]));
 
-      pseudoGeometry = new Three.CircleBufferGeometry(OBJECTS.LAKES.position[i][2], 32);
+      water.position.set(OBJECTS.LAKES.position[i][0], OBJECTS.LAKES.positionY, OBJECTS.LAKES.position[i][1]);
+
+      pseudoGeometry = new Three.CircleBufferGeometry(radius, 32);
       pseudoLake = new Three.Mesh(pseudoGeometry, fakeMaterial);
       pseudoLake.position.set(OBJECTS.LAKES.position[i][0], OBJECTS.LAKES.positionY, OBJECTS.LAKES.position[i][1]);
       pseudoLake.rotation.x = -Math.PI / 2;

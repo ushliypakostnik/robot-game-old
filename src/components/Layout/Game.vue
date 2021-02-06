@@ -99,7 +99,6 @@ export default {
       setHeroTired: 'hero/setHeroTired',
       setScale: 'hero/setScale',
 
-      messages: 'layout/messages',
       setGameOver: 'layout/setGameOver',
     }),
 
