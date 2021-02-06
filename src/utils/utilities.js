@@ -15,6 +15,10 @@ export const yesOrNo = () => {
   return result;
 };
 
+export const lightRandomRaduis = (raduis) => {
+  return raduis * (1 + ((Math.random() + 0.01) / 5) * yesOrNo());
+};
+
 export const loaderDispatchHelper = (store, field) => {
   store.dispatch('preloader/preloadOrBuilt', field).then(() => {
     store.dispatch('preloader/isAllLoadedAndBuilt');

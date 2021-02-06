@@ -459,6 +459,7 @@ function Hero() {
         scope.controls.moveForward(-scope.velocity.z * scope.delta * scope.moveSpeed);
       }
 
+      // Притяжение
       scope.velocity.y -= 9.8 * DESIGN.HERO.mass * scope.delta;
 
       scope.controls.getObject().position.y += (scope.velocity.y * scope.delta);

@@ -6,6 +6,7 @@ import { DESIGN, OBJECTS } from '@/utils/constants';
 import {
   randomInteger,
   yesOrNo,
+  lightRandomRaduis,
   loaderDispatchHelper,
   distance2D,
 } from '@/utils/utilities';
@@ -57,10 +58,11 @@ function Waters(scope) {
     return water;
   };
 
-  const isInLake = (x, z, r) => {
-    const result = OBJECTS.LAKES.position.filter(lake => (distance2D(lake[0], lake[1], x, z) + r) < (lake[2] + r) * 0.9);
+  const isInLakeOrPuddle = (waters, x, z, r) => {
+    const result = waters.filter(water => (distance2D(water[0], water[1], x, z) + r) < (water[2] + r) * 1.5);
     return result.length > 0;
   };
+
   const fakeMaterial = new Three.MeshLambertMaterial({ color: 0xff0000 });
 
   this.init = function () {
@@ -88,7 +90,7 @@ function Waters(scope) {
     for (let i = 0; i < OBJECTS.LAKES.position.length; i++) {
       geometry = new Three.CircleBufferGeometry(OBJECTS.LAKES.position[i][2], 32);
       water = initWater(scope.scene, geometry);
-      water.position.set(OBJECTS.LAKES.position[i][0], OBJECTS.LAKES.positionY, OBJECTS.LAKES.position[i][1]);
+      water.position.set(OBJECTS.LAKES.position[i][0], OBJECTS.LAKES.positionY, lightRandomRaduis(OBJECTS.LAKES.position[i][1]));
 
       pseudoGeometry = new Three.CircleBufferGeometry(OBJECTS.LAKES.position[i][2], 32);
       pseudoLake = new Three.Mesh(pseudoGeometry, fakeMaterial);
@@ -117,14 +119,12 @@ function Waters(scope) {
         randomZ = (z * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2);
 
         // Не внутри другого озера
-        if (isInLake(randomX, randomZ, radius)) {
-          counter = 0;
-          while (isInLake(randomX, randomZ, radius)) {
-            counter++;
-            randomX *= 1.25 * yesOrNo();
-            randomZ *= 1.25 * yesOrNo();
-            if (counter > 50) break;
-          }
+        counter = 0;
+        while (isInLakeOrPuddle(scope.objectsWaterData, randomX, randomZ, radius)) {
+          counter++;
+          randomX *= 1.25 * yesOrNo();
+          randomZ *= 1.25 * yesOrNo();
+          if (counter > 50) break;
         }
 
         // Не рядом с 0, 0, 0
@@ -137,25 +137,12 @@ function Waters(scope) {
         }
 
         // Не слишком далеко
-        if (distance2D(0, 0, randomX, randomZ) - OBJECTS.BEACH.size > radius / 2) {
-          counter = 0;
-          while (distance2D(0, 0, randomX, randomZ) - OBJECTS.BEACH.size > radius / 2) {
-            counter++;
-            randomX *= 0.9;
-            randomZ *= 0.9;
-            if (counter > 50) break;
-          }
-        }
-
-        // Не внутри другого озера 2
-        if (isInLake(randomX, randomZ, radius)) {
-          counter = 0;
-          while (isInLake(randomX, randomZ, radius)) {
-            counter++;
-            randomX *= 0.9;
-            randomZ *= 0.9;
-            if (counter > 50) break;
-          }
+        counter = 0;
+        while (distance2D(0, 0, randomX, randomZ) - OBJECTS.BEACH.size > radius / 2) {
+          counter++;
+          randomX *= 0.9;
+          randomZ *= 0.9;
+          if (counter > 50) break;
         }
 
         water.position.set(randomX, OBJECTS.PUDDLES.positionY, randomZ);

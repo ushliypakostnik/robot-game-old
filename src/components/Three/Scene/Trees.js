@@ -22,9 +22,9 @@ function Trees() {
   let scale;
   let randomX;
   let randomZ;
-  let randomY;
   let y;
   let point;
+  let counter;
 
   const fixTreePosition = (x, z) => {
     let newX = x;
@@ -35,14 +35,12 @@ function Trees() {
       newZ = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
     }
 
-    if (distance2D(0, 0, newX, newZ) < 25) {
-      let counter = 0;
-      while (distance2D(0, 0, newX, newZ) < 25) {
-        counter++;
-        newX *= 1.25;
-        newZ *= 1.25;
-        if (counter > 50) break;
-      }
+    counter = 0;
+    while (distance2D(0, 0, newX, newZ) < 25) {
+      counter++;
+      newX *= 1.25;
+      newZ *= 1.25;
+      if (counter > 50) break;
     }
     return [newX, newZ];
   };

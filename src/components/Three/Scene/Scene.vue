@@ -232,7 +232,7 @@ export default {
 
       this.scene = new Three.Scene();
       this.scene.background = new Three.Color(0x4542a0);
-      this.scene.fog = new Three.Fog(0x615ebc, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE / 2);
+      this.scene.fog = new Three.Fog(0x615ebc, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE);
 
       // Cameras
 
@@ -301,7 +301,7 @@ export default {
 
       // Postprocessing
       const renderModel = new RenderPass(this.scene, this.cameraDrone);
-      const effectFilm = new FilmPass(0.35, 0.75, 2048, false);
+      const effectFilm = new FilmPass(1, 2, 1024, false);
 
       this.composer = new EffectComposer(this.renderer);
 
@@ -502,7 +502,7 @@ export default {
       this.delta = this.clock.getDelta();
 
       if (!this.isKeysLock && !this.isGameOver) {
-        // Зависнуть над сценой
+        // Зависнуть над сценой (+ отключи Притяжение в Hero.js)
         // this.controls.getObject().position.y = 1000;
 
         // console.log(this.renderer.info);

@@ -1,7 +1,7 @@
 import * as Three from 'three';
 
 import { OBJECTS } from '@/utils/constants';
-import { loaderDispatchHelper } from '@/utils/utilities';
+import { loaderDispatchHelper, lightRandomRaduis } from '@/utils/utilities';
 
 function Sands() {
   let geometry;
@@ -39,7 +39,7 @@ function Sands() {
 
     // Sands
     for (let i = 0; i < OBJECTS.SANDS.position.length; i++) {
-      geometry = new Three.CircleBufferGeometry(OBJECTS.SANDS.position[i][2], 32);
+      geometry = new Three.CircleBufferGeometry(lightRandomRaduis(OBJECTS.SANDS.position[i][2]), 32);
 
       sand = new Three.Mesh(geometry, materialSand);
       sand.rotation.x = -Math.PI / 2;

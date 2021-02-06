@@ -110,24 +110,16 @@ export const OBJECTS = {
   },
   HORSES: {
     scale: 0.03,
-    quantity: 7,
+    quantity: 0,
     velocity: 20,
   },
   PARROTS: {
     scale: 0.09,
-    quantity: 7,
+    quantity: 0,
     velocity: 25,
     minHeight: 2,
     maxHeight: 20,
   },
-  /*
-  BOXES: {
-    size: 2,
-    position: [
-      // x, y, z, r
-    ],
-  },
-  */
   OCEAN: {
     name: 'ocean',
     // x, z, radius, y
@@ -146,19 +138,27 @@ export const OBJECTS = {
     positionY: 0,
     // x, z, radius
     position: [
-      [size(0.35), size(-0.35), size(0.08)],
-      [size(-0.3085), size(-0.3665), size(0.15)],
-      [size(-0.15), size(-0.3), size(0.06)],
-      [size(-0.125), size(-0.225), size(0.085)],
-      [size(0.1), size(0.15), size(0.075)],
+      // Отдельный залив 1
+      [size(0.3), size(-0.25), size(0.125)],
+
+      // Отдельный залив 2
+      [size(-0.45), size(0.15), size(0.12)],
+
+      // Большой залив из 3ех озер - от большего и у берега к меньшему ближе к центру
+      [size(-0.3085), size(-0.375), size(0.13)], // 1
+      [size(-0.15), size(-0.3), size(0.09)], // 2
+      [size(-0.1), size(-0.2), size(0.07)], // 3
+
+      // Рядом с центром
+      [size(0.15), size(0.2), size(0.095)],
     ],
   },
   PUDDLES: {
     name: 'puddle',
     // x, z
-    quantity: 49, // лучше квадратное число
-    min: size(0.015),
-    max: size(0.03),
+    quantity: 9, // лучше квадратное число
+    min: size(0.04),
+    max: size(0.08),
     positionY: 0.3,
   },
   SANDS: {
@@ -166,30 +166,39 @@ export const OBJECTS = {
     // x, z, radius
     positionY: 0.15,
     position: [
-      [size(-0.27), size(-0.36), size(0.06)],
-      [size(-0.52), size(-0.3), size(0.08)],
-      [size(-0.67), size(-0.23), size(0.05)],
-      [size(-0.63), size(-0.13), size(0.027)],
+      // В 1
+      [size(-0.31), size(-0.375), size(0.08)],
 
-      [size(0.085), size(0.125), size(0.03)],
+      // В море рядом с 1
+      [size(-0.5), size(-0.33), size(0.09)], // соединенный с сушей
+      [size(-0.67), size(-0.23), size(0.05)], // дальше в море больший
+      [size(-0.63), size(-0.13), size(0.027)], // ближе к берегу меньший
 
-      [size(-0.4), size(0.4), size(0.09)],
-      [size(-0.32), size(0.52), size(0.03)],
+      // В озере рядом с центром
+      [size(0.15), size(0.19), size(0.04)],
 
-      [size(0.35), size(-0.43), size(0.065)],
-      [size(0.12), size(-0.68), size(0.055)],
+      // Рядом с отдельным заливом 2
+      [size(-0.55), size(0.35), size(0.07)], // больший
+      [size(-0.325), size(0.525), size(0.04)],  // дальше, меньший
+
+      // Рядом с отдельным заливом 1
+      [size(0.45), size(-0.45), size(0.05)],
+
+      // В море между предыдущим и заливом
+      [size(0.225), size(-0.625), size(0.065)],
     ],
   },
   STONES: {
     name: 'stone',
     quantityMin: 5,
-    quantityMax: 15,
+    quantityMax: 10,
     largeMin: DESIGN.HERO.jumpheight / 4,
     largeMax: DESIGN.HERO.jumpheight,
     smallMin: size(0.0025),
     smallMax: size(0.01),
     position: [
       // x, y
+      /*
       [size(0.375), size(0.415)],
       [size(0.3), size(0.0625)],
       [size(0.421), size(0.0905)],
@@ -207,6 +216,7 @@ export const OBJECTS = {
       [size(-0.220), size(0)],
       [size(-0.290), size(0.15)],
       [size(-0.340), size(0.035)],
+      */
     ],
   },
   MOUNTAINS: {
@@ -217,6 +227,7 @@ export const OBJECTS = {
     positionY: -0.1,
     position: [
       // x, z, height
+      /*
       [size(-0.48), size(-0.47), size(0.06)],
       [size(-0.475), size(-0.5), size(0.1)],
       [size(-0.525), size(-0.545), size(0.075)],
@@ -230,6 +241,7 @@ export const OBJECTS = {
       [size(-0.335), size(-0.66), size(0.16)],
       [size(-0.375), size(-0.65), size(0.2)],
 
+      // В озере
       [size(-0.14), size(-0.23), size(0.135)],
 
       // Не в море
@@ -244,17 +256,18 @@ export const OBJECTS = {
       [size(0.25), size(-0.275), size(0.046)],
 
       [size(-0.25), size(0.34), size(0.051)],
+       */
     ],
   },
   TREES: {
     tree1: {
-      quantity: 16,
+      quantity: 0, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
       positionY: -1.5,
       heightMin: 15,
       heightMax: 70,
     },
     tree2: {
-      quantity: 16,
+      quantity: 0, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
       positionY: -0.5,
       heightMin: 20,
       heightMax: 70,
@@ -264,29 +277,29 @@ export const OBJECTS = {
     positionY: -0.3,
     anemone: {
       name: 'anemone',
-      quantity: 30,
+      quantity: 0,
       scale: 0.1,
     },
     crocus: {
       name: 'crocus',
-      quantity: 30,
+      quantity: 0,
       scale: 0.075,
     },
     daffodil: {
       name: 'daffodil',
-      quantity: 30,
+      quantity: 0,
       scale: 0.35,
     },
     tulip: {
       name: 'tulip',
-      quantity: 30,
+      quantity: 0,
       scale: 0.175,
     },
   },
   BOTTLES: {
     name: 'bottle',
     positionY: -0.3,
-    quantity: 30,
+    quantity: 0,
     scale: 0.05,
   },
 };
