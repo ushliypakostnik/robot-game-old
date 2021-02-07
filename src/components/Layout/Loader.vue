@@ -28,7 +28,7 @@ export default {
 @import "@/styles/_main.scss";
 
 .loader {
-  @include size($gutter * 4, $gutter * 4);
+  @include size($gutter * 8, $gutter * 8);
 
   svg path {
     fill: $colors__primary;

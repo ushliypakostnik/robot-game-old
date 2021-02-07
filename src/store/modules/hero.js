@@ -7,19 +7,29 @@ const initialState = {
   power: DESIGN.HERO.scales.power.start,
   ammo: DESIGN.HERO.scales.ammo.start,
 
+  anemone: 0,
+  crocus: 0,
+  daffodil: 0,
+  tulip: 0,
+
   isHeroOnWater: false,
   isHeroTired: false,
   isNotDamaged: false,
   isNotTired: false,
 };
 
-const state = initialState;
+const state = Object.assign({}, initialState);
 
 const getters = {
   health: state => state.health,
   endurance: state => state.endurance,
   power: state => state.power,
   ammo: state => state.ammo,
+
+  anemone: state => state.anemone,
+  crocus: state => state.crocus,
+  daffodil: state => state.daffodil,
+  tulip: state => state.tulip,
 
   isHeroOnWater: state => state.isHeroOnWater,
   isHeroTired: state => state.isHeroTired,
@@ -85,10 +95,7 @@ const mutations = {
   },
 
   heroReload: (state) => {
-    let field;
-    for (field in initialState) {
-      state[field] = initialState[field];
-    }
+    for (let field in initialState) state[field] = initialState[field];
   },
 };
 

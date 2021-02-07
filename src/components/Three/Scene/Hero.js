@@ -270,7 +270,8 @@ function Hero() {
           if (!scope.layersNew.includes(intersection.object.name)) scope.layersNew.push(intersection.object.name);
         });
         if (scope.layersNew.length !== scope.layers.length) {
-          console.log(scope.layers, scope.layersNew, scope.heroOnWater);
+          // Посмотреть слои под персонажем
+          // console.log(scope.layers, scope.layersNew, scope.heroOnWater);
           // На большой воде
           if (
             ((scope.layersNew.includes(OBJECTS.OCEAN.name)

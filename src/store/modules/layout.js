@@ -11,7 +11,7 @@ const initialState = {
   message: 1,
 };
 
-const state = initialState;
+const state = Object.assign({}, initialState);
 
 const getters = {
   language: state => state.language,
@@ -98,9 +98,7 @@ const mutations = {
   },
 
   layoutReload: (state) => {
-    state.isPause = true;
-    state.isDrone = false;
-    state.isGameOver = false;
+    for (let field in initialState) state[field] = initialState[field];
   },
 };
 

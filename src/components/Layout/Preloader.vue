@@ -40,6 +40,7 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
+    color: $colors__white;
     background: $colors__black;
     display: flex;
     justify-content: center;

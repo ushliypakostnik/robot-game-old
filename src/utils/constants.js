@@ -192,15 +192,14 @@ export const OBJECTS = {
     name: 'stone',
     quantityMin: 5,
     quantityMax: 10,
-    largeMin: DESIGN.HERO.jumpheight / 4,
+    largeMin: DESIGN.HERO.jumpheight / 2,
     largeMax: DESIGN.HERO.jumpheight,
-    smallMin: size(0.0025),
-    smallMax: size(0.01),
+    smallMin: size(0.0075),
+    smallMax: size(0.0125),
     position: [
       // x, y
-      /*
-      [size(0.375), size(0.415)],
-      [size(0.3), size(0.0625)],
+      [size(-0.3085), size(-0.375)],
+      [size(0.3), size(-0.0625)],
       [size(0.421), size(0.0905)],
       [size(0.41), size(0.08)],
       [size(0.4), size(0.11)],
@@ -208,66 +207,57 @@ export const OBJECTS = {
       [size(0.088), size(-0.1415)],
       [size(0.1275), size(-0.3475)],
 
-      [size(-0.2915), size(-0.491)],
+      [size(-0.275), size(-0.31)],
       [size(-0.1935), size(-0.167)],
 
       [size(-0.185), size(0.3)],
 
       [size(-0.220), size(0)],
       [size(-0.290), size(0.15)],
-      [size(-0.340), size(0.035)],
-      */
+      [size(-0.310), size(0.03)],
     ],
   },
   MOUNTAINS: {
     name: 'mountain',
     topMax: size(0.01),
-    bottomMin: size(0.01),
+    bottomMin: size(0.03),
     bottomMax: size(0.06),
     positionY: -0.1,
     position: [
       // x, z, height
-      /*
-      [size(-0.48), size(-0.47), size(0.06)],
       [size(-0.475), size(-0.5), size(0.1)],
-      [size(-0.525), size(-0.545), size(0.075)],
       [size(-0.575), size(-0.525), size(0.135)],
       [size(-0.575), size(-0.55), size(0.2)],
-      [size(-0.6), size(-0.5), size(0.065)],
-      [size(0.5), size(-0.6), size(0.045)],
-      [size(-0.45), size(-0.69), size(0.075)],
       [size(-0.3), size(-0.69), size(0.115)],
-      [size(-0.35), size(-0.633), size(0.085)],
+      [size(-0.35), size(-0.633), size(0.12)],
       [size(-0.335), size(-0.66), size(0.16)],
       [size(-0.375), size(-0.65), size(0.2)],
 
-      // В озере
-      [size(-0.14), size(-0.23), size(0.135)],
+      // В озере 1
+      [size(-0.15), size(-0.3), size(0.135)],
+      [size(-0.17), size(-0.28), size(0.1)],
 
       // Не в море
-      [size(0.37), size(0.385), size(0.033)],
+      // Отдельный залив 1
+      [size(0.3), size(-0.25), size(0.125)],
+      [size(0.32), size(-0.23), size(0.11)],
+      [size(0.29), size(-0.19), size(0.085)],
 
-      [size(-0.425), size(-0.445), size(0.037)],
-      [size(-0.425), size(-0.375), size(0.045)],
-      [size(-0.46), size(-0.35), size(0.049)],
-      [size(0.45), size(-0.36), size(0.045)],
-
-      [size(0.415), size(-0.42), size(0.055)],
-      [size(0.25), size(-0.275), size(0.046)],
-
-      [size(-0.25), size(0.34), size(0.051)],
-       */
+      // Отдельный залив 2
+      [size(-0.45), size(0.17), size(0.125)],
+      [size(-0.43), size(0.14), size(0.14)],
+      [size(-0.41), size(0.15), size(0.075)],
     ],
   },
   TREES: {
     tree1: {
-      quantity: 0, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
+      quantity: 9, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
       positionY: -1.5,
       heightMin: 15,
       heightMax: 70,
     },
     tree2: {
-      quantity: 0, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
+      quantity: 9, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
       positionY: -0.5,
       heightMin: 20,
       heightMax: 70,
@@ -277,29 +267,29 @@ export const OBJECTS = {
     positionY: -0.3,
     anemone: {
       name: 'anemone',
-      quantity: 0,
+      quantity: 10,
       scale: 0.1,
     },
     crocus: {
       name: 'crocus',
-      quantity: 0,
+      quantity: 10,
       scale: 0.075,
     },
     daffodil: {
       name: 'daffodil',
-      quantity: 0,
+      quantity: 10,
       scale: 0.35,
     },
     tulip: {
       name: 'tulip',
-      quantity: 0,
+      quantity: 10,
       scale: 0.175,
     },
   },
   BOTTLES: {
     name: 'bottle',
     positionY: -0.3,
-    quantity: 0,
+    quantity: 20,
     scale: 0.05,
   },
 };
@@ -315,8 +305,9 @@ export const LOCALES = {
       text5: 'Hidden movement: C or Alt',
       text6: 'Look: MOUSE',
       text7: 'Take a thing: E',
-      text8: 'Launch drone: TAB',
-      text9: 'Pause: P',
+      text8: 'Apply flower: 1234',
+      text9: 'Launch drone: TAB',
+      text10: 'Pause: P',
       music: 'Music: ',
       musiclink: 'Kafedra',
       startbutton: 'Play',
@@ -368,8 +359,9 @@ export const LOCALES = {
       text5: 'Cкрытное передвижение: C или Alt',
       text6: 'Осмотреться: Мышь',
       text7: 'Взять предмет: Е',
-      text8: 'Запустить дрон: TAB',
-      text9: 'Pause: P',
+      text8: 'Применить цветок: 1234',
+      text9: 'Запустить дрон: TAB',
+      text10: 'Pause: P',
       music: 'Музыка: ',
       musiclink: 'Kafedra',
       startbutton: 'Играть',

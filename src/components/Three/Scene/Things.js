@@ -12,16 +12,27 @@ import {
   randomPointInCircle,
   isInPointObjectsWithDistance,
   isInRoundObjectsWithCoefficient,
-  messagesDispatchHelper,
 } from '@/utils/utilities';
 
 function Things() {
-  let audio;
   const audioLoader = new Three.AudioLoader();
-  let pick;
-  let things = [];
+  const MTLLoader1 = new Three.MTLLoader();
+  const OBJLoader1 = new Three.OBJLoader();
+  const MTLLoader2 = new Three.MTLLoader();
+  const OBJLoader2 = new Three.OBJLoader();
+  const MTLLoader3 = new Three.MTLLoader();
+  const OBJLoader3 = new Three.OBJLoader();
+  const MTLLoader4 = new Three.MTLLoader();
+  const OBJLoader4 = new Three.OBJLoader();
+  const MTLLoader5 = new Three.MTLLoader();
+  const OBJLoader5 = new Three.OBJLoader();
+
+  let audio;
+  let things;
+  let T;
   let thing;
   let y;
+  let pick;
 
   const pseudoGeometry = new Three.SphereBufferGeometry(DESIGN.HERO.height / 2, 32, 32);
   let material;
@@ -48,15 +59,17 @@ function Things() {
   };
 
   const buitRandomThings = (scope, object, quantity, scale, name) => {
-    let T = [];
+    T = [];
+
     for (let i = 0; i < quantity; i++) {
       thing = object.clone();
+
       thing.scale.set(scale, scale, scale);
       thing.rotateX(-Math.PI / 2);
       thing.rotateZ(degreesToRadians(randomInteger(-1, 360)));
 
-      isBottles = name === 'bottles';
-      if (isBottles) thing.rotateY(degreesToRadians(randomInteger(-45, 45)));
+      isBottles = name === OBJECTS.BOTTLES.name;
+      if (isBottles) thing.rotateY(degreesToRadians(randomInteger(-33, 33)));
 
       const [X, Z] = randomPointInCircle(isBottles ? BOTTLES_RADIUS : FLOWER_RADIUS, 0, 0);
       const [x, z] = fixThingPosition(
@@ -108,10 +121,13 @@ function Things() {
         pseudoThing,
       });
     }
+
     return T;
   };
 
   this.init = function(scope) {
+    things = [];
+
     const geometry = new Three.SphereBufferGeometry(1, 1, 1);
     const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
     pick = new Three.Mesh(geometry, material);
@@ -133,8 +149,6 @@ function Things() {
     });
 
     // Anemone
-    const MTLLoader1 = new Three.MTLLoader();
-    const OBJLoader1 = new Three.OBJLoader();
     MTLLoader1.load("./images/models/Anemone/12973_anemone_flower_v1_l2.mtl", (materials) => {
       materials.preload();
 
@@ -155,8 +169,6 @@ function Things() {
     });
 
     // Crocus
-    const MTLLoader2 = new Three.MTLLoader();
-    const OBJLoader2 = new Three.OBJLoader();
     MTLLoader2.load("./images/models/Crocus/12974_crocus_flower_v1_l3.mtl", (materials) => {
       materials.preload();
 
@@ -177,8 +189,6 @@ function Things() {
     });
 
     // Daffodil
-    const MTLLoader3 = new Three.MTLLoader();
-    const OBJLoader3 = new Three.OBJLoader();
     MTLLoader3.load("./images/models/Daffodil/12977_Daffodil_flower_v1_l2.mtl", (materials) => {
       materials.preload();
 
@@ -199,8 +209,6 @@ function Things() {
     });
 
     // Tulip
-    const MTLLoader4 = new Three.MTLLoader();
-    const OBJLoader4 = new Three.OBJLoader();
     MTLLoader4.load("./images/models/Tulip/12978_tulip_flower_l3.mtl", (materials) => {
       materials.preload();
 
@@ -221,8 +229,6 @@ function Things() {
     });
 
     // Bottle
-    const MTLLoader5 = new Three.MTLLoader();
-    const OBJLoader5 = new Three.OBJLoader();
     MTLLoader5.load("./images/models/Bottle/14042_750_mL_Wine_Bottle_r_v2_L3.mtl", (materials) => {
       materials.preload();
 
@@ -252,21 +258,16 @@ function Things() {
 
     switch (pseudoThing.name) {
       case OBJECTS.FLOWERS.anemone.name:
-        scope.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.anemone.health });
-        scope.setNotTired(true);
-        messagesDispatchHelper(scope, 'startNoTired');
+        scope.setScale({ field: OBJECTS.FLOWERS.anemone.name, value: 1 });
         break;
       case OBJECTS.FLOWERS.crocus.name:
-        scope.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.crocus.health });
-        scope.setScale({ field: DESIGN.HERO.scales.power.name, value: DESIGN.EFFECTS.crocus.power });
+        scope.setScale({ field: OBJECTS.FLOWERS.crocus.name, value: 1 });
         break;
       case OBJECTS.FLOWERS.daffodil.name:
-        scope.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.daffodil.health });
-        scope.setNotDamaged(true);
-        messagesDispatchHelper(scope, 'startNoDamaged');
+        scope.setScale({ field: OBJECTS.FLOWERS.daffodil.name, value: 1 });
         break;
       case OBJECTS.FLOWERS.tulip.name:
-        scope.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.tulip.health });
+        scope.setScale({ field: OBJECTS.FLOWERS.tulip.name, value: 1 });
         break;
       case OBJECTS.BOTTLES.name:
         scope.setScale({ field: DESIGN.HERO.scales.ammo.name, value: DESIGN.EFFECTS.bottle.ammo });

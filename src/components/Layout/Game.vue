@@ -19,6 +19,21 @@
       >{{ $t('layout.gameovebutton') }}</button>
     </div>
 
+    <div class="game__things">
+      <div class="game__thing game__thing--anemones">
+        <div class="game__thing-circle" />{{ flower(anemone) }}
+      </div>
+      <div class="game__thing game__thing--crocuses">
+        <div class="game__thing-circle" />{{ flower(crocus) }}
+      </div>
+      <div class="game__thing game__thing--daffodils">
+        <div class="game__thing-circle" />{{ flower(daffodil) }}
+      </div>
+      <div class="game__thing game__thing--tulips">
+        <div class="game__thing-circle" />{{ flower(tulip) }}
+      </div>
+    </div>
+
     <div class="game__scales">
       <Scale
         face="health"
@@ -43,8 +58,8 @@
     <div class="game__messages">
       <div
         class="game__message"
-        v-for="message in messages"
-        v-bind:key="message"
+        v-for="message, index in messages"
+        :key="index"
       >
         <div
           v-if="message[1] === 1"
@@ -79,6 +94,12 @@ export default {
       endurance: 'hero/endurance',
       power: 'hero/power',
       ammo: 'hero/ammo',
+
+      anemone: 'hero/anemone',
+      crocus: 'hero/crocus',
+      daffodil: 'hero/daffodil',
+      tulip: 'hero/tulip',
+
       isHeroOnWater: 'hero/isHeroOnWater',
       isHeroTired: 'hero/isHeroTired',
       isNotDamaged: 'hero/isNotDamaged',
@@ -104,6 +125,10 @@ export default {
 
     reload() {
       this.$eventHub.$emit('reload');
+    },
+
+    flower(value) {
+      return value < 10 ? '0' + value : value;
     },
   },
 
@@ -171,6 +196,7 @@ export default {
   }
 
   &__messages {
+    max-width: 50%;
     position: absolute;
     top: $gutter / 2;
     right: $gutter / 2;
@@ -184,6 +210,53 @@ export default {
 
     &--small {
       @include text($font-size--small);
+    }
+  }
+
+  &__things {
+    position: absolute;
+    top: $gutter / 2;
+    left: $gutter * 3;
+    display: flex;
+  }
+
+  &__thing {
+    display: flex;
+    align-items: center;
+    color: $colors__white;
+    margin-right: $gutter;
+    text-shadow: 2px 2px 5px $colors__shadows;
+    @include text($font-size--small);
+
+    &-circle {
+      margin-right: $gutter / 4;
+      border-radius: 50%;
+      transform: translateY($gutter * -0.05);
+      @include size($gutter, $gutter);
+    }
+
+    &--anemones {
+      .game__thing-circle {
+        background: $colors__anemone;
+      }
+    }
+
+    &--crocuses {
+      .game__thing-circle {
+        background: $colors__crocus;
+      }
+    }
+
+    &--daffodils {
+      .game__thing-circle {
+        background: $colors__daffodil;
+      }
+    }
+
+    &--tulips {
+      .game__thing-circle {
+        background: $colors__tulip;
+      }
     }
   }
 }

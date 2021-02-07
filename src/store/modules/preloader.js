@@ -87,10 +87,11 @@ const mutations = {
     state.isSandsBuilt = false;
     state.isWatersBuilt = false;
     state.isTressBuilt = false;
-    state.isAnemoneBuilt = false;
-    state.isCrocusBuilt = false;
-    state.isDaffodilBuilt = false;
-    state.isTulipBuilt = false;
+    state.isAnemonesBuilt = false;
+    state.isCrocusesBuilt = false;
+    state.isDaffodilsBuilt = false;
+    state.isTulipsBuilt = false;
+    state.isBottlesBuilt = false;
 
     state.isGameLoaded = false;
   },

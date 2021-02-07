@@ -59,7 +59,7 @@ function Waters(scope) {
   };
 
   const isInLakeOrPuddle = (waters, x, z, r) => {
-    const result = waters.filter(water => (distance2D(water[0], water[1], x, z) + r) < (water[2] + r) * 1.5);
+    const result = waters.filter(water => (distance2D(water[0], water[1], x, z) + r) < (water[2] + r) * 2);
     return result.length > 0;
   };
 
@@ -140,7 +140,7 @@ function Waters(scope) {
 
         // Не слишком далеко
         counter = 0;
-        while (distance2D(0, 0, randomX, randomZ) - OBJECTS.BEACH.size > radius / 2) {
+        while (distance2D(0, 0, randomX, randomZ) + radius / 2 - OBJECTS.BEACH.size > 0) {
           counter++;
           randomX *= 0.9;
           randomZ *= 0.9;

@@ -23,6 +23,7 @@ import { FilmPass } from '@/components/Three/Modules/Postprocessing/FilmPass';
 import Stats from '@/components/Three/Modules/Utils/Stats';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
+import { messagesDispatchHelper } from '@/utils/utilities';
 
 import Atmosphere from './Atmosphere';
 import Grass from './Grass';
@@ -179,6 +180,12 @@ export default {
 
       endurance: 'hero/endurance',
       ammo: 'hero/ammo',
+
+      anemone: 'hero/anemone',
+      crocus: 'hero/crocus',
+      daffodil: 'hero/daffodil',
+      tulip: 'hero/tulip',
+
       isHeroOnWater: 'hero/isHeroOnWater',
       isHeroTired: 'hero/isHeroTired',
       isNotDamaged: 'hero/isNotDamaged',
@@ -232,7 +239,7 @@ export default {
 
       this.scene = new Three.Scene();
       this.scene.background = new Three.Color(0x4542a0);
-      this.scene.fog = new Three.Fog(0x615ebc, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE);
+      this.scene.fog = new Three.Fog(0x615ebc, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE / 2);
 
       // Cameras
 
@@ -374,7 +381,7 @@ export default {
       // this.controls.getObject().position.z = -300;
       this.controls.getObject().position.y = this.height + this.onObjectHeight;
 
-      this.camera.lookAt(this.directionStore.multiplyScalar(1000));
+      // this.camera.lookAt(this.directionStore.multiplyScalar(1000));
     },
 
     setWithDroneControl() {
@@ -429,6 +436,38 @@ export default {
 
         case 69: // E
           if (!this.isKeysLock && this.thing) this.things.pick(this, this.thing);
+          break;
+
+        case 49: // 1
+          if (!this.isKeysLock && this.anemone > 0) {
+            this.setScale({
+              field: DESIGN.HERO.scales.health.name,
+              value: DESIGN.EFFECTS.anemone.health
+            });
+            this.setNotTired(true);
+            messagesDispatchHelper(this, 'startNoTired');
+          }
+          break;
+
+        case 50: // 2
+          if (!this.isKeysLock && this.crocus > 0) {
+            this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.crocus.health });
+            this.setScale({ field: DESIGN.HERO.scales.power.name, value: DESIGN.EFFECTS.crocus.power });
+          }
+          break;
+
+        case 51: // 3
+          if (!this.isKeysLock && this.daffodil > 0) {
+            this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.daffodil.health });
+            this.setNotDamaged(true);
+            messagesDispatchHelper(this, 'startNoDamaged');
+          }
+          break;
+
+        case 52: // 4
+          if (!this.isKeysLock && this.tulip > 0) {
+            this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.tulip.health });
+          }
           break;
 
         case 9: // TAB

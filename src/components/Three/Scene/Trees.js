@@ -30,7 +30,7 @@ function Trees() {
     let newX = x;
     let newZ = z;
 
-    if (distance2D(0, 0, x, z) > DESIGN.GROUND_SIZE * 0.6) {
+    if (distance2D(0, 0, x, z) > DESIGN.GROUND_SIZE * 0.525) {
       newX = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
       newZ = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
     }
