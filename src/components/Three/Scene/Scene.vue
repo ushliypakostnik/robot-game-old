@@ -440,6 +440,7 @@ export default {
 
         case 49: // 1
           if (!this.isKeysLock && this.anemone > 0) {
+            this.setScale({ field: OBJECTS.FLOWERS.anemone.name, value: -1 });
             this.setScale({
               field: DESIGN.HERO.scales.health.name,
               value: DESIGN.EFFECTS.anemone.health
@@ -451,6 +452,7 @@ export default {
 
         case 50: // 2
           if (!this.isKeysLock && this.crocus > 0) {
+            this.setScale({ field: OBJECTS.FLOWERS.crocus.name, value: -1 });
             this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.crocus.health });
             this.setScale({ field: DESIGN.HERO.scales.power.name, value: DESIGN.EFFECTS.crocus.power });
           }
@@ -458,6 +460,7 @@ export default {
 
         case 51: // 3
           if (!this.isKeysLock && this.daffodil > 0) {
+            this.setScale({ field: OBJECTS.FLOWERS.daffodil.name, value: -1 });
             this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.daffodil.health });
             this.setNotDamaged(true);
             messagesDispatchHelper(this, 'startNoDamaged');
@@ -466,6 +469,7 @@ export default {
 
         case 52: // 4
           if (!this.isKeysLock && this.tulip > 0) {
+            this.setScale({ field: OBJECTS.FLOWERS.tulip.name, value: -1 });
             this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.tulip.health });
           }
           break;

@@ -156,9 +156,9 @@ export const OBJECTS = {
   PUDDLES: {
     name: 'puddle',
     // x, z
-    quantity: 9, // лучше квадратное число
-    min: size(0.04),
-    max: size(0.08),
+    quantity: 16, // лучше квадратное число
+    min: size(0.03),
+    max: size(0.06),
     positionY: 0.3,
   },
   SANDS: {
@@ -251,13 +251,13 @@ export const OBJECTS = {
   },
   TREES: {
     tree1: {
-      quantity: 9, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
+      quantity: 10, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
       positionY: -1.5,
       heightMin: 15,
       heightMax: 70,
     },
     tree2: {
-      quantity: 9, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
+      quantity: 10, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
       positionY: -0.5,
       heightMin: 20,
       heightMax: 70,
