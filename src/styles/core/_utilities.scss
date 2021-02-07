@@ -31,3 +31,8 @@
   will-change: opacity;
   animation: scaleNot $animation-duration infinite;
 }
+
+.blink {
+  will-change: opacity;
+  animation: blink $animation-duration infinite;
+}

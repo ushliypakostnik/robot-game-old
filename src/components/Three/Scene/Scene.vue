@@ -23,7 +23,7 @@ import { FilmPass } from '@/components/Three/Modules/Postprocessing/FilmPass';
 import Stats from '@/components/Three/Modules/Utils/Stats';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
-import { messagesDispatchHelper } from '@/utils/utilities';
+import { messagesByIdDispatchHelper } from '@/utils/utilities';
 
 import Atmosphere from './Atmosphere';
 import Grass from './Grass';
@@ -34,6 +34,7 @@ import Trees from './Trees';
 import Things from './Things';
 import Hero from './Hero';
 import Ammo from './Ammo';
+import Plot from './Plot';
 import Horses from './Horses';
 import Parrots from './Parrots';
 // import Boxes from './Boxes';
@@ -130,9 +131,12 @@ export default {
       stones: null,
       hero: null,
       robot: null,
+      plot: null,
       weapon: null,
       horses: null,
       parrots: null,
+
+      isOnStart: true, // Для стартовой позиции, см. Atmosphere.js
     };
   },
 
@@ -157,7 +161,6 @@ export default {
 
   created() {
     this.$eventHub.$on('lock', this.lock);
-    this.$eventHub.$on('reload', this.reload);
   },
 
   beforeDestroy() {
@@ -167,11 +170,12 @@ export default {
     // document.removeEventListener('mousemove', this.onMouseMove, false);
 
     if (this.$eventHub._events.lock) this.$eventHub.$off('lock');
-    if (this.$eventHub._events.lock) this.$eventHub.$off('reload');
   },
 
   computed: {
     ...mapGetters({
+      isGameLoaded: 'preloader/isGameLoaded',
+
       isPause: 'layout/isPause',
       isDrone: 'layout/isDrone',
       messages: 'layout/messages',
@@ -210,17 +214,16 @@ export default {
     ...mapActions({
       togglePause: 'layout/togglePause',
       toggleDrone: 'layout/toggleDrone',
+
+      addMessage: 'layout/addMessage',
       showMessage: 'layout/showMessage',
       hideMessageByView: 'layout/hideMessageByView',
+      setGameOver: 'layout/setGameOver',
 
       setHeroOnWater: 'hero/setHeroOnWater',
       setScale: 'hero/setScale',
       setNotDamaged: 'hero/setNotDamaged',
       setNotTired: 'hero/setNotTired',
-
-      preloaderReload: 'preloader/preloaderReload',
-      layoutReload: 'layout/layoutReload',
-      heroReload: 'hero/heroReload',
     }),
 
     init() {
@@ -239,7 +242,9 @@ export default {
 
       this.scene = new Three.Scene();
       this.scene.background = new Three.Color(0x4542a0);
-      this.scene.fog = new Three.Fog(0x615ebc, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE / 2);
+
+      // Туман
+      this.scene.fog = new Three.Fog(0x615ebc, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE);
 
       // Cameras
 
@@ -273,6 +278,10 @@ export default {
 
       this.setInFirstPersonControls();
 
+      this.setToStart();
+
+      this.camera.lookAt(this.startDirection.multiplyScalar(1000));
+
       this.scene.add(this.controls.getObject());
 
       this.scene.add(this.camera);
@@ -289,8 +298,40 @@ export default {
       this.weapon = new Ammo();
       this.weapon.init(this);
 
-      // Built random world
-      this.build();
+      // Plot
+      this.plot = new Plot();
+      this.plot.init(this);
+
+      // Waters
+      this.waters = new Waters(this);
+      this.waters.init();
+
+      // Sands
+      this.sands = new Sands();
+      this.sands.init(this);
+
+      // Ground
+      this.grass = new Grass();
+      this.grass.init(this);
+
+      // Stones
+      this.stones = new Stones();
+      this.stones.init(this);
+
+      // Trees
+      this.trees = new Trees();
+      this.trees.init(this);
+
+      // Things
+      this.things = new Things();
+      this.things.init(this);
+
+      // Enemies
+      this.horses = new Horses();
+      this.horses.init(this);
+
+      this.parrots = new Parrots();
+      this.parrots.init(this);
 
       // Raycasters
       this.raycasterUp = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 1, 0), 0, 100);
@@ -323,70 +364,16 @@ export default {
       this.render();
     },
 
-    build() {
-      // Objects
-
-      // Waters
-      this.waters = new Waters(this);
-      this.waters.init(this);
-
-      // Sands
-      this.sands = new Sands();
-      this.sands.init(this);
-
-      // Ground
-      this.grass = new Grass();
-      this.grass.init(this);
-
-      // Stones
-      this.stones = new Stones();
-      this.stones.init(this);
-
-      // Trees
-      this.trees = new Trees();
-      this.trees.init(this);
-
-      // Things
-      this.things = new Things();
-      this.things.init(this);
-
-      // Enemies
-      this.horses = new Horses();
-      this.horses.init(this);
-
-      this.parrots = new Parrots();
-      this.parrots.init(this);
-    },
-
-    reload() {
-      this.preloaderReload();
-      this.layoutReload();
-      this.heroReload();
-
-      this.build();
-
-      this.directionStore.copy(this.startDirection);
-      this.controls.getObject().position.x = 0;
-      this.controls.getObject().position.z = 0;
-
-      this.setInFirstPersonControls();
-    },
-
     setInFirstPersonControls() {
-      // Controls
+      // In first person controls with pointer lock API
       this.controls = this.mainControls;
-
-      // Переместиться в точку
-      // this.controls.getObject().position.x = -1200;
-      // this.controls.getObject().position.z = -300;
       this.controls.getObject().position.y = this.height + this.onObjectHeight;
-
-      // this.camera.lookAt(this.directionStore.multiplyScalar(1000));
     },
 
     setWithDroneControl() {
       this.directionStore = this.camera.getWorldDirection(this.direction);
 
+      // In drone orbit control
       this.controls = this.droneControls;
       this.controls.target.set(this.robot.position.x, this.robot.position.y, this.robot.position.z);
       if (!this.isDroneStart) {
@@ -395,6 +382,13 @@ export default {
       }
 
       this.controls.update();
+    },
+
+    setToStart() {
+      // Стартовая точка (или переместиться в точку при работе с миром)
+      this.controls.getObject().position.x = DESIGN.HERO.start[0];
+      this.controls.getObject().position.z = DESIGN.HERO.start[1];
+      this.controls.getObject().position.y = this.height + this.onObjectHeight;
     },
 
     lock() {
@@ -439,6 +433,15 @@ export default {
           break;
 
         case 49: // 1
+          if (!this.isKeysLock && this.daffodil > 0) {
+            this.setScale({ field: OBJECTS.FLOWERS.daffodil.name, value: -1 });
+            this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.daffodil.health });
+            this.setNotDamaged(true);
+            messagesByIdDispatchHelper(this, 'startNoDamaged');
+          }
+          break;
+
+        case 50: // 2
           if (!this.isKeysLock && this.anemone > 0) {
             this.setScale({ field: OBJECTS.FLOWERS.anemone.name, value: -1 });
             this.setScale({
@@ -446,24 +449,15 @@ export default {
               value: DESIGN.EFFECTS.anemone.health
             });
             this.setNotTired(true);
-            messagesDispatchHelper(this, 'startNoTired');
-          }
-          break;
-
-        case 50: // 2
-          if (!this.isKeysLock && this.crocus > 0) {
-            this.setScale({ field: OBJECTS.FLOWERS.crocus.name, value: -1 });
-            this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.crocus.health });
-            this.setScale({ field: DESIGN.HERO.scales.power.name, value: DESIGN.EFFECTS.crocus.power });
+            messagesByIdDispatchHelper(this, 'startNoTired');
           }
           break;
 
         case 51: // 3
-          if (!this.isKeysLock && this.daffodil > 0) {
-            this.setScale({ field: OBJECTS.FLOWERS.daffodil.name, value: -1 });
-            this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.daffodil.health });
-            this.setNotDamaged(true);
-            messagesDispatchHelper(this, 'startNoDamaged');
+          if (!this.isKeysLock && this.crocus > 0) {
+            this.setScale({ field: OBJECTS.FLOWERS.crocus.name, value: -1 });
+            this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.crocus.health });
+            this.setScale({ field: DESIGN.HERO.scales.power.name, value: DESIGN.EFFECTS.crocus.power });
           }
           break;
 
@@ -513,6 +507,8 @@ export default {
           if (!this.isKeysLock) {
             this.moveHidden = !this.moveHidden;
             if (this.moveRun) this.moveRun = false;
+            if (this.moveHidden) messagesByIdDispatchHelper(this, 'hiddenMoveEnabled');
+            else messagesByIdDispatchHelper(this, 'hiddenMoveDisabled');
           }
           break;
 
@@ -545,7 +541,7 @@ export default {
       this.delta = this.clock.getDelta();
 
       if (!this.isKeysLock && !this.isGameOver) {
-        // Зависнуть над сценой (+ отключи Притяжение в Hero.js)
+        // Зависнуть над сценой (+ отключи Притяжение в Hero.js и сделай Туман дальше (последнее знаение far больше))
         // this.controls.getObject().position.y = 1000;
 
         // console.log(this.renderer.info);
@@ -556,6 +552,9 @@ export default {
 
         // Hero
         this.hero.animate(this);
+
+        // Plot
+        if (this.isOnStart) this.plot.animate(this);
 
         // Atmosphere
         this.atmosphere.animate(this);
@@ -599,8 +598,15 @@ export default {
   },
 
   watch: {
+    isGameLoaded(value) {
+      if (value) this.things.update(this);
+    },
+
+    // Усталость
     isHeroTired(value) {
       if (value && this.moveRun) this.moveRun = false;
+      if (value) messagesByIdDispatchHelper(this, 'tired');
+      else messagesByIdDispatchHelper(this, 'recovered');
     },
 
     isDrone(value) {

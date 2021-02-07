@@ -1,5 +1,3 @@
-import storage from '@/utils/storage';
-
 const initialState = {
   isGameLoaded: false,
 
@@ -17,6 +15,8 @@ const initialState = {
   isTulipLoaded: false,
   isHorseLoaded: false,
   isParrotLoaded: false,
+  isBoatLoaded: false,
+  isWomanLoaded: false,
 
   isMashaComplete: false,
   isStepComplete: false,
@@ -31,6 +31,11 @@ const initialState = {
   isWindComplete: false,
   isDamageComplete: false,
   isPickComplete: false,
+  isHorseRunComplete: false,
+  isHorseWaterRunComplete: false,
+  isHorseFrComplete: false,
+  isParrotFlyComplete: false,
+  isParrotCryComplete: false,
 
   isAmmoBuilt: false,
   isGrassBuilt: false,
@@ -43,16 +48,20 @@ const initialState = {
   isDaffodilsBuilt: false,
   isTulipsBuilt: false,
   isBottlesBuilt: false,
-  isHorseRunComplete: false,
-  isHorseWaterRunComplete: false,
-  isHorseFrComplete: false,
-  isParrotFlyComplete: false,
-  isParrotCryComplete: false,
+  isBoatBuilt: false,
+  isWomanBuilt: false,
+  isHorsesBuilt: false,
+  isParrotsBuilt: false,
 };
+
 const state = initialState;
+
+let stateCopy;
+let result;
 
 const getters = {
   isGameLoaded: state => state.isGameLoaded,
+  isReload: state => state.isReload,
 };
 
 const actions = {
@@ -63,10 +72,6 @@ const actions = {
   isAllLoadedAndBuilt: ({ commit }) => {
     commit('isAllLoadedAndBuilt');
   },
-
-  preloaderReload: ({ commit}) => {
-    commit('preloaderReload');
-  },
 };
 
 const mutations = {
@@ -75,25 +80,10 @@ const mutations = {
   },
 
   isAllLoadedAndBuilt: (state) => {
-    const stateCopy = Object.assign({}, state);
+    stateCopy = Object.assign({}, state);
     delete stateCopy.isGameLoaded;
-    const result = Object.values(stateCopy).every(field => field === true);
+    result = Object.values(stateCopy).every(field => field === true);
     if (result) state.isGameLoaded = true;
-  },
-
-  preloaderReload: (state) => {
-    state.isGrassBuilt = false;
-    state.isStonesBuilt = false;
-    state.isSandsBuilt = false;
-    state.isWatersBuilt = false;
-    state.isTressBuilt = false;
-    state.isAnemonesBuilt = false;
-    state.isCrocusesBuilt = false;
-    state.isDaffodilsBuilt = false;
-    state.isTulipsBuilt = false;
-    state.isBottlesBuilt = false;
-
-    state.isGameLoaded = false;
   },
 };
 

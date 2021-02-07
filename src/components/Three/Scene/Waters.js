@@ -59,13 +59,13 @@ function Waters(scope) {
   };
 
   const isInLakeOrPuddle = (waters, x, z, r) => {
-    const result = waters.filter(water => (distance2D(water[0], water[1], x, z) + r) < (water[2] + r) * 2);
+    const result = waters.filter(water => (distance2D(water[0], water[1], x, z) + r) < (water[2] + r) * 1.25);
     return result.length > 0;
   };
 
   const fakeMaterial = new Three.MeshLambertMaterial({ color: 0xff0000 });
 
-  this.init = function () {
+  this.init = () => {
     // Ocean
     geometry = new Three.CircleBufferGeometry(OBJECTS.OCEAN.position[2], 32);
     water = initWater(scope.scene, geometry);
@@ -130,13 +130,14 @@ function Waters(scope) {
         }
 
         // Не рядом с 0, 0, 0
+        /*
         counter = 0;
         while (distance2D(0, 0, randomX, randomZ) < radius * 1.25) {
           counter++;
           randomX += radius * yesOrNo() * 1.25;
           randomZ += radius * yesOrNo() * 1.25;
           if (counter > 50) break;
-        }
+        } */
 
         // Не слишком далеко
         counter = 0;
@@ -170,7 +171,7 @@ function Waters(scope) {
     loaderDispatchHelper(scope.$store, 'isWatersBuilt');
   };
 
-  this.animate = function() {
+  this.animate = () => {
     waters.forEach((water) => {
       water.material.uniforms.time.value += 1.0 / 60.0;
     });

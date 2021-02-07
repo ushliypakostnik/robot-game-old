@@ -1,5 +1,12 @@
 <template>
   <div class="drone">
+    <div class="drone__block drone--daffodil">
+      <div class="drone__circle" />
+      <div class="drone__text">
+        {{ $t(`things.daffodil.name`) }}
+        {{ $t(`things.daffodil.text`) }}
+      </div>
+    </div>
     <div class="drone__block drone--anemone">
       <div class="drone__circle" />
       <div class="drone__text">
@@ -12,13 +19,6 @@
       <div class="drone__text">
         {{ $t(`things.crocus.name`) }}
         {{ $t(`things.crocus.text`) }}
-      </div>
-    </div>
-    <div class="drone__block drone--daffodil">
-      <div class="drone__circle" />
-      <div class="drone__text">
-        {{ $t(`things.daffodil.name`) }}
-        {{ $t(`things.daffodil.text`) }}
       </div>
     </div>
     <div class="drone__block drone--tulip">

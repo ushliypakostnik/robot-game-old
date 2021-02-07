@@ -3,7 +3,11 @@ import * as Three from 'three';
 import { Sky } from '@/components/Three/Modules/Elements/Sky';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
-import { loaderDispatchHelper, distance2D } from '@/utils/utilities';
+import {
+  loaderDispatchHelper,
+  distance2D,
+  messagesByViewDispatchHelper,
+} from '@/utils/utilities';
 
 function Atmosphere() {
   const audioLoader = new Three.AudioLoader();
@@ -24,7 +28,9 @@ function Atmosphere() {
   const geometry = new Three.SphereBufferGeometry(1, 1, 1);
   const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
 
-  this.init = function(scope) {
+  let isStart = false;
+
+  this.init = (scope) => {
     const sun = new Three.Vector3();
     const sky = new Sky();
     sky.scale.setScalar(450000);
@@ -147,23 +153,48 @@ function Atmosphere() {
     if (wind && wind.children[0] && wind.children[0].isPlaying) wind.children[0].stop();
   };
 
-  this.animate = function(scope) {
+  this.animate = (scope) => {
     if (!scope.isPause && !scope.isDrone) {
       newX = scope.controls.getObject().position.x;
       newZ = scope.controls.getObject().position.z;
 
+      if (!isStart) {
+        messagesByViewDispatchHelper(scope, 3, 'start');
+        isStart = true;
+      }
+
       if (Math.abs(x - newX) > DESIGN.GROUND_SIZE * 0.025 || Math.abs(z - newZ) > DESIGN.GROUND_SIZE * 0.025) {
+
+        // Громкость шума океана
         oceanVolume = distance2D(0, 0, newX, newZ) / OBJECTS.BEACH.size;
         if (oceanVolume > 1) oceanVolume = 1;
         else if (oceanVolume < 0) oceanVolume = 0;
 
         if (ocean && ocean.children[0] && ocean.children[0]) ocean.children[0].setVolume(oceanVolume);
 
+        // Утопление
+        if (distance2D(0, 0, newX, newZ) > DESIGN.GROUND_SIZE * 0.75 && scope.heroOnWater) messagesByViewDispatchHelper(scope, 4, 'ocean');
+        else scope.hideMessageByView(4);
+
+        if (distance2D(0, 0, newX, newZ) > DESIGN.GROUND_SIZE * 0.85 && scope.heroOnWater)
+          scope.setGameOver(true);
+
+        // Стартовая позиция
+        if (distance2D(DESIGN.HERO.start[0], DESIGN.HERO.start[1], newX, newZ) < OBJECTS.SANDS.position[0][2]) {
+          scope.isOnStart = true;
+          messagesByViewDispatchHelper(scope, 3, 'start');
+        } else {
+          scope.isOnStart = false;
+          scope.hideMessageByView(3);
+        }
+
         x = newX;
         z = newZ;
       }
 
       if (ocean && ocean.children[0] && !ocean.children[0].isPlaying) ocean.children[0].play();
+
+      // Громкость ветра
 
       if (scope.onObjectHeight !== onFloor) {
         if (onFloor !== 0) wind.children[0].setVolume(DESIGN.VOLUME.wind);

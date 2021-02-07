@@ -3,7 +3,11 @@ import * as Three from 'three';
 import { FBXLoader } from '@/components/Three/Modules/Utils/FBXLoader.js';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
-import { loaderDispatchHelper, messagesDispatchHelper } from '@/utils/utilities';
+import {
+  loaderDispatchHelper,
+  messagesByViewDispatchHelper,
+  messagesByIdDispatchHelper,
+} from '@/utils/utilities';
 
 function Hero() {
   let mixer;
@@ -45,7 +49,7 @@ function Hero() {
 
   let fixFirstThingsRaycast = false;
 
-  this.init = function(scope) {
+  this.init = (scope) => {
     loader.load('./images/models/Hero.fbx', (hero) => {
       loaderDispatchHelper(scope.$store, 'isHeroLoaded');
 
@@ -211,7 +215,7 @@ function Hero() {
     }
   };
 
-  this.animate = function(scope) {
+  this.animate = (scope) => {
     if (!scope.isPause && !scope.isDrone) {
       // Check objects
       stopDistance = scope.moveRun ? 10 : 5;
@@ -229,7 +233,7 @@ function Hero() {
         if (!fixFirstThingsRaycast) fixFirstThingsRaycast = true;
         else {
           scope.thing = scope.intersections[0].object;
-          if (!scope.messages.some(message => message[1] === 1)) scope.showMessage({ id: null, view: 1, name: scope.intersections[0].object.name });
+          messagesByViewDispatchHelper(scope, 1, scope.intersections[0].object.name);
         }
       } else {
         scope.thing = null;
@@ -309,7 +313,7 @@ function Hero() {
           damageTime += delta;
           damageSoundTime += delta;
 
-          if (damageTime > 0.075) {
+          if (damageTime > 0.05) {
             scope.setScale({
               field: DESIGN.HERO.scales.health.name,
               value: -1
@@ -338,7 +342,7 @@ function Hero() {
           notDamageClock.stop();
           notDamageTime = 0;
           scope.setNotDamaged(false);
-          messagesDispatchHelper(scope, 'endNoDamaged');
+          messagesByIdDispatchHelper(scope, 'endNoDamaged');
         }
       }
 
@@ -351,9 +355,7 @@ function Hero() {
           if (!isEnduranceRecoveryStart && scope.endurance < 100 && !scope.moveRun) {
             isEnduranceRecoveryStart = true;
             enduranceClock.start();
-          } else if (isEnduranceRecoveryStart && scope.moveRun) {
-            isEnduranceRecoveryStart = false;
-          }
+          } else if (isEnduranceRecoveryStart && scope.moveRun) isEnduranceRecoveryStart = false;
 
           enduranceTime += enduranceClock.getDelta();
 
@@ -378,7 +380,7 @@ function Hero() {
           notTiredClock.stop();
           notTiredTime = 0;
           scope.setNotTired(false);
-          messagesDispatchHelper(scope, 'endNoTired');
+          messagesByIdDispatchHelper(scope, 'endNoTired');
         }
       }
 
@@ -526,7 +528,7 @@ function Hero() {
     if (play !== 'waterrun' && waterrun && waterrun.children[0] && waterrun.children[0].isPlaying) waterrun.children[0].stop();
   };
 
-  this.animateDrone = function(scope) {
+  this.animateDrone = (scope) => {
     if (!scope.isPause) {
       if (mixer) mixer.update(scope.delta / 20);
 

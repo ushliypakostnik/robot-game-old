@@ -17,6 +17,14 @@ export const LANGUAGES = [
 // Auto language
 export const AUTO_LANG = localStorage.getItem(LOCALSTORAGE.LANGUAGE) || null;
 
+// World
+
+// Тут главный размер, относительно которого все по ширине,
+// кроме того что должно быть адекватным росту по высоте
+const size = (size) => {
+  return size * 2000;
+};
+
 export const DESIGN = {
   BREAKPOINTS: {
     desktop: 1025,
@@ -28,7 +36,7 @@ export const DESIGN = {
     daffodil0x: 0xf0cf08,
     tulip0x: 0xcf3326,
   },
-  GROUND_SIZE: 2000,
+  GROUND_SIZE: size(1),
   VOLUME: {
     small: 0.35,
     normal: 0.5,
@@ -55,6 +63,7 @@ export const DESIGN = {
     speed: 400,
     jumpspeed: 250,
     jumpheight: 33,
+    start: [size(-0.33), size(0.53)],
     scales: {
       health: {
         name: 'health',
@@ -75,7 +84,7 @@ export const DESIGN = {
       },
     },
   },
-  MESSAGES_TIMEOUT: 3500,
+  MESSAGES_TIMEOUT: 2500,
   EFFECTS: {
     time: {
       health: 10,
@@ -98,10 +107,6 @@ export const DESIGN = {
       ammo: 50,
     },
   },
-};
-
-const size = (size) => {
-  return size * DESIGN.GROUND_SIZE;
 };
 
 export const OBJECTS = {
@@ -139,7 +144,7 @@ export const OBJECTS = {
     // x, z, radius
     position: [
       // Отдельный залив 1
-      [size(0.3), size(-0.25), size(0.125)],
+      [size(0.31), size(-0.26), size(0.125)],
 
       // Отдельный залив 2
       [size(-0.45), size(0.15), size(0.12)],
@@ -157,8 +162,8 @@ export const OBJECTS = {
     name: 'puddle',
     // x, z
     quantity: 16, // лучше квадратное число
-    min: size(0.03),
-    max: size(0.06),
+    min: size(0.035),
+    max: size(0.070),
     positionY: 0.3,
   },
   SANDS: {
@@ -166,11 +171,14 @@ export const OBJECTS = {
     // x, z, radius
     positionY: 0.15,
     position: [
+      // Стартовый остров - рядом с отдельным заливом 2, который дальше и меньше
+      [DESIGN.HERO.start[0] + size(-0.01), DESIGN.HERO.start[1] - size(-0.01), size(0.045)],
+
       // В 1
       [size(-0.31), size(-0.375), size(0.08)],
 
       // В море рядом с 1
-      [size(-0.5), size(-0.33), size(0.09)], // соединенный с сушей
+      [size(-0.5), size(-0.33), size(0.09)], // соединенный с сушей (чаще всего - зависит от рандомной корректировки)
       [size(-0.67), size(-0.23), size(0.05)], // дальше в море больший
       [size(-0.63), size(-0.13), size(0.027)], // ближе к берегу меньший
 
@@ -178,43 +186,13 @@ export const OBJECTS = {
       [size(0.15), size(0.19), size(0.04)],
 
       // Рядом с отдельным заливом 2
-      [size(-0.55), size(0.35), size(0.07)], // больший
-      [size(-0.325), size(0.525), size(0.04)],  // дальше, меньший
+      [size(-0.55), size(0.35), size(0.07)], // рядом и больший
 
       // Рядом с отдельным заливом 1
       [size(0.45), size(-0.45), size(0.05)],
 
       // В море между предыдущим и заливом
       [size(0.225), size(-0.625), size(0.065)],
-    ],
-  },
-  STONES: {
-    name: 'stone',
-    quantityMin: 5,
-    quantityMax: 10,
-    largeMin: DESIGN.HERO.jumpheight / 2,
-    largeMax: DESIGN.HERO.jumpheight,
-    smallMin: size(0.0075),
-    smallMax: size(0.0125),
-    position: [
-      // x, y
-      [size(-0.3085), size(-0.375)],
-      [size(0.3), size(-0.0625)],
-      [size(0.421), size(0.0905)],
-      [size(0.41), size(0.08)],
-      [size(0.4), size(0.11)],
-
-      [size(0.088), size(-0.1415)],
-      [size(0.1275), size(-0.3475)],
-
-      [size(-0.275), size(-0.31)],
-      [size(-0.1935), size(-0.167)],
-
-      [size(-0.185), size(0.3)],
-
-      [size(-0.220), size(0)],
-      [size(-0.290), size(0.15)],
-      [size(-0.310), size(0.03)],
     ],
   },
   MOUNTAINS: {
@@ -249,16 +227,43 @@ export const OBJECTS = {
       [size(-0.41), size(0.15), size(0.075)],
     ],
   },
+  STONES: {
+    name: 'stone',
+    quantityMin: 5,
+    quantityMax: 10,
+    largeMin: DESIGN.HERO.jumpheight / 2,
+    largeMax: DESIGN.HERO.jumpheight,
+    smallMin: size(0.0066),
+    smallMax: size(0.01),
+    position: [
+      // x, y
+      [size(-0.3085), size(-0.375)],
+      [size(0.3), size(-0.0625)],
+      [size(0.421), size(0.0905)],
+      [size(0.41), size(0.08)],
+      [size(0.4), size(0.11)],
+
+      [size(0.088), size(-0.1415)],
+      [size(0.1275), size(-0.3475)],
+
+      [size(-0.275), size(-0.31)],
+      [size(-0.1935), size(-0.167)],
+
+      [size(-0.185), size(0.3)],
+
+      [size(-0.220), size(0)],
+      [size(-0.290), size(0.15)],
+      [size(-0.310), size(0.03)],
+    ],
+  },
   TREES: {
     tree1: {
-      quantity: 10, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
-      positionY: -1.5,
+      quantity: 12, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
       heightMin: 15,
       heightMax: 70,
     },
     tree2: {
-      quantity: 10, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
-      positionY: -0.5,
+      quantity: 12, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
       heightMin: 20,
       heightMax: 70,
     },
@@ -318,12 +323,22 @@ export const LOCALES = {
       gameovebutton: 'Replay',
     },
     messages: {
-      message1: 'Pick up:',
+      message1: 'Pick up: ',
       message2: {
+        tired: 'The robot is tired of running.',
+        recovered: 'The robot can run again.',
         startNoDamaged: `The robot is invulnerable for ${DESIGN.EFFECTS.time.health} seconds!`,
         startNoTired: `The robot will not get tired of running ${DESIGN.EFFECTS.time.endurance} seconds!`,
         endNoDamaged: 'The invulnerability effect is over.',
         endNoTired: 'The robot gets tired of running again.',
+        hiddenMoveEnabled: 'The robot moves in stealth mode.',
+        hiddenMoveDisabled: 'Stealth mode disabled.',
+      },
+      message3: {
+        start: `The drinking robot-woman says:<br />««When we get off this atoll?<br />'It\'s full of big robots,<br />which can be drunk<br />and disassembled for spare parts,<br />to fix our boat?»`,
+      },
+      message4: {
+        ocean: `The robot has climbed too far into the ocean!<br />He\'s going to drown nowт!`,
       },
     },
     things: {
@@ -374,10 +389,20 @@ export const LOCALES = {
     messages: {
       message1: 'Подобрать: ',
       message2: {
+        tired: 'Робот устал от бега.',
+        recovered: 'Робот снова может бегать.',
         startNoDamaged: `Робот получил неуязвимость на ${DESIGN.EFFECTS.time.health} секунд!`,
         startNoTired: `Робот не будет уставать от бега ${DESIGN.EFFECTS.time.endurance} секунд!`,
         endNoDamaged: 'Эффект неуязвимости закончился.',
         endNoTired: 'Робот снова устает от бега.',
+        hiddenMoveEnabled: 'Робот двигается в скрытном режиме.',
+        hiddenMoveDisabled: 'Скрытный режим отключен.',
+      },
+      message3: {
+        start: `Робот-собутыльница говорит:<br />«Когда мы уже свалим с этого атолла?<br />Здесь полно больших роботов,<br />которых можно опоить<br />и разобрать на запчасти,<br />чтобы починить наш катер?»`,
+      },
+      message4: {
+        ocean: `Робот забрался слишком далеко в океан!<br />Он сейчас утонет!`,
       },
     },
     things: {

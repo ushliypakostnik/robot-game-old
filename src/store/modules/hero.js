@@ -18,7 +18,7 @@ const initialState = {
   isNotTired: false,
 };
 
-const state = Object.assign({}, initialState);
+const state = initialState;
 
 const getters = {
   health: state => state.health,
@@ -57,10 +57,6 @@ const actions = {
   setScale: ({ commit }, payload) => {
     commit('setScale', payload);
   },
-
-  heroReload: ({ commit }) => {
-    commit('heroReload');
-  },
 };
 
 const mutations = {
@@ -92,10 +88,6 @@ const mutations = {
       && state[payload.field] + payload.value > 99){
       state[payload.field] = 100;
     } else state[payload.field] = state[payload.field] + payload.value;
-  },
-
-  heroReload: (state) => {
-    for (let field in initialState) state[field] = initialState[field];
   },
 };
 

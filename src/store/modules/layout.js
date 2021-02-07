@@ -6,12 +6,12 @@ const initialState = {
   language: null,
   isPause: true,
   isDrone: false,
-  isGameOver: false,
   messages: [],
-  message: 1,
+  message: 0,
+  isGameOver: false,
 };
 
-const state = Object.assign({}, initialState);
+const state = initialState;
 
 const getters = {
   language: state => state.language,
@@ -39,6 +39,10 @@ const actions = {
     commit('toggleDrone', isDrone);
   },
 
+  addMessage: ({ commit }) => {
+    commit('addMessage');
+  },
+
   showMessage: ({ commit }, { id, view, name }) => {
     commit('showMessage', { id, view, name });
   },
@@ -54,10 +58,6 @@ const actions = {
   setGameOver: ({ commit }, isGameOver) => {
     commit('setGameOver', isGameOver);
   },
-
-  layoutReload: ({ commit }) => {
-    commit('layoutReload');
-  },
 };
 
 const mutations = {
@@ -67,6 +67,10 @@ const mutations = {
 
   togglePause: (state, isPause) => {
     state.isPause = isPause;
+  },
+
+  addMessage: (state) => {
+    state.message = state.message + 1;
   },
 
   toggleDrone: (state, isDrone) => {
@@ -95,10 +99,6 @@ const mutations = {
 
   setGameOver: (state, isGameOver) => {
     state.isGameOver = isGameOver;
-  },
-
-  layoutReload: (state) => {
-    for (let field in initialState) state[field] = initialState[field];
   },
 };
 

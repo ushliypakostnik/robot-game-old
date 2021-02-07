@@ -32,7 +32,7 @@ function Grass() {
     return result.length > 0;
   };
 
-  this.init = function(scope) {
+  this.init = (scope) => {
     // Vertex displacement
     const vertex = new Three.Vector3();
 

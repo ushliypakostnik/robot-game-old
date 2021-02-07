@@ -20,14 +20,14 @@
     </div>
 
     <div class="game__things">
+      <div class="game__thing game__thing--daffodils">
+        <div class="game__thing-circle" />{{ flower(daffodil) }}
+      </div>
       <div class="game__thing game__thing--anemones">
         <div class="game__thing-circle" />{{ flower(anemone) }}
       </div>
       <div class="game__thing game__thing--crocuses">
         <div class="game__thing-circle" />{{ flower(crocus) }}
-      </div>
-      <div class="game__thing game__thing--daffodils">
-        <div class="game__thing-circle" />{{ flower(daffodil) }}
       </div>
       <div class="game__thing game__thing--tulips">
         <div class="game__thing-circle" />{{ flower(tulip) }}
@@ -38,13 +38,13 @@
       <Scale
         face="health"
         :progress="health"
-        :not="isNotDamaged"
+        :not="isNotDamaged && !isGameOver"
       />
       <Scale
         face="endurance"
         :progress="endurance"
-        :lock="isHeroTired"
-        :not="isNotTired"
+        :lock="isHeroTired && !isGameOver"
+        :not="isNotTired && !isGameOver"
       />
       <Scale
         face="power"
@@ -55,20 +55,42 @@
       {{ ammo }}/{{ ammoMagazine }}
     </div>
 
-    <div class="game__messages">
+    <div
+      v-if="!isGameOver"
+      class="game__messages"
+    >
       <div
-        class="game__message"
         v-for="message, index in messages"
         :key="index"
+        class="game__message-wrapper"
       >
+        <!-- Подбор предметов -->
         <div
           v-if="message[1] === 1"
           class="game__message"
         >{{ $t(`messages.message${message[1]}`) }}{{ $t(`things.${message[2]}.name`) }}</div>
+
+        <!-- Сообщение о применении или конце действие эффекта  -->
         <div
           v-if="message[1] === 2"
           class="game__message game__message--small"
-        >{{ $t(`messages.message2.${message[2]}`) }}</div>
+        >{{message[0]}}: {{ $t(`messages.message2.${message[2]}`) }}</div>
+
+        <!-- Стартовое сообщение  -->
+        <div
+          v-if="message[1] === 3 && message[2] === 'start'"
+          class="game__message game__message--xsmall"
+        >
+          <div v-html="$t(`messages.message3.${message[2]}`)" />
+        </div>
+
+        <!-- Предупреждение об утоплении!!!  -->
+        <div
+          v-if="message[1] === 4 && message[2] === 'ocean'"
+          class="game__message game__message--small game__message--warning blink"
+        >
+          <div v-html="$t(`messages.message4.${message[2]}`)" />
+        </div>
       </div>
     </div>
   </div>
@@ -124,7 +146,7 @@ export default {
     }),
 
     reload() {
-      this.$eventHub.$emit('reload');
+      window.location.reload();
     },
 
     flower(value) {
@@ -206,10 +228,19 @@ export default {
   &__message {
     color: $colors__white;
     text-shadow: 2px 2px 5px $colors__shadows;
+    margin-bottom: $gutter / 2;
     @include text($font-size--normal);
 
     &--small {
       @include text($font-size--small);
+    }
+
+    &--xsmall {
+      @include text($font-size--xsmall);
+    }
+
+    &--warning {
+      color: $colors__primary--light;
     }
   }
 
@@ -225,7 +256,7 @@ export default {
     align-items: center;
     color: $colors__white;
     margin-right: $gutter;
-    text-shadow: 2px 2px 5px $colors__shadows;
+    text-shadow: 1px 2px 3px $colors__shadows;
     @include text($font-size--small);
 
     &-circle {

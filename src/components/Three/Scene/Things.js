@@ -29,9 +29,16 @@ function Things() {
 
   let audio;
   let things;
-  let T;
+  let t;
   let thing;
+  let randomX;
+  let randomZ;
+  let x;
   let y;
+  let z;
+  let sand;
+  let onSands;
+  let sandIndex;
   let pick;
 
   const pseudoGeometry = new Three.SphereBufferGeometry(DESIGN.HERO.height / 2, 32, 32);
@@ -39,10 +46,26 @@ function Things() {
   let pseudoThing;
   let isBottles;
 
-  const FLOWER_RADIUS = DESIGN.GROUND_SIZE * 0.53;
-  const BOTTLES_RADIUS = DESIGN.GROUND_SIZE * 0.57;
+  const THINGS_RADIUS = DESIGN.GROUND_SIZE * 0.545;
 
-  const fixThingPosition = (raduis, stones, waters, trees, x, z) => {
+  // Острова без стартового
+  const sands = OBJECTS.SANDS.position.slice(1);
+
+  const fixThingOnSandPosition = (isle, stones, waters, trees, x, z) => {
+    let counter = 0;
+    let newX = x;
+    let newZ = z;
+    while (isInPointObjectsWithDistance(trees, newX, newZ, 2) ||
+          isInRoundObjectsWithCoefficient(stones, newX, newZ, 1.1) ||
+          isInRoundObjectsWithCoefficient(waters, newX, newZ, 1.25)) {
+      counter++;
+      [randomX, randomZ] = randomPointInCircle(isle[2] * 0.8, isle[0], isle[1]);
+      if (counter > 50) break;
+    }
+    return [newX, newZ];
+  };
+
+  const fixThingOnGroundPosition = (raduis, stones, waters, trees, x, z) => {
     let counter = 0;
     let newX = x;
     let newZ = z;
@@ -59,7 +82,16 @@ function Things() {
   };
 
   const buitRandomThings = (scope, object, quantity, scale, name) => {
-    T = [];
+    t = [];
+
+    // Бутылки?
+    isBottles = name === OBJECTS.BOTTLES.name;
+
+    // Первый остров на который будем ставитьж
+    sandIndex = isBottles ? 1 : 0;
+
+    // Столько таких предметов пойдут на острова
+    onSands = randomInteger(Math.floor(quantity / 4), Math.floor(quantity / 2));
 
     for (let i = 0; i < quantity; i++) {
       thing = object.clone();
@@ -68,15 +100,56 @@ function Things() {
       thing.rotateX(-Math.PI / 2);
       thing.rotateZ(degreesToRadians(randomInteger(-1, 360)));
 
-      isBottles = name === OBJECTS.BOTTLES.name;
       if (isBottles) thing.rotateY(degreesToRadians(randomInteger(-33, 33)));
 
-      const [X, Z] = randomPointInCircle(isBottles ? BOTTLES_RADIUS : FLOWER_RADIUS, 0, 0);
-      const [x, z] = fixThingPosition(
-        isBottles ? BOTTLES_RADIUS : FLOWER_RADIUS,
-        scope.objectsStoneData,
-        scope.objectsWaterData,
-        scope.objectsTreesData, X, Z);
+      // На стартовый - только бутылки
+      if (isBottles && i < 5) {
+        switch (i) {
+          case 0:
+            [x, z] = [DESIGN.HERO.start[0] + 3, DESIGN.HERO.start[1] - 7];
+            break;
+          case 1:
+            [x, z] = [DESIGN.HERO.start[0] - 7, DESIGN.HERO.start[1] - 12];
+            break;
+          case 2:
+            [x, z] = [DESIGN.HERO.start[0] + 2, DESIGN.HERO.start[1] - 15];
+            break;
+          case 3:
+            [x, z] = [DESIGN.HERO.start[0] + 15, DESIGN.HERO.start[1] + 12];
+            break;
+          case 4:
+            [x, z] = [DESIGN.HERO.start[0] - 17, DESIGN.HERO.start[1] + 10];
+            break;
+        }
+      } else if (onSands > 0) {
+        // На другие острова
+        if (sandIndex > sands.length - 1) sandIndex = isBottles ? 1 : 0;
+
+        sand = sands[sandIndex];
+        [randomX, randomZ] = randomPointInCircle(sand[2] * 0.8, sand[0], sand[1]);
+        [x, z] = fixThingOnSandPosition(
+          sand,
+          scope.objectsStoneData,
+          scope.objectsWaterData,
+          scope.objectsTreesData,
+          randomX,
+          randomZ
+        );
+
+        onSands--;
+        sandIndex = sandIndex + randomInteger(1, Math.floor(OBJECTS.SANDS.position.length / 3));
+      } else {
+        // Куда-нибудь на суше
+        [randomX, randomZ] = randomPointInCircle(THINGS_RADIUS, 0, 0);
+        [x, z] = fixThingOnGroundPosition(
+          THINGS_RADIUS,
+          scope.objectsStoneData,
+          scope.objectsWaterData,
+          scope.objectsTreesData,
+          randomX,
+          randomZ
+        );
+      }
 
       y = isBottles ? (OBJECTS.BOTTLES.positionY - Math.random() * 0.1) : OBJECTS.FLOWERS.positionY;
       thing.position.set(x, y, z);
@@ -116,16 +189,16 @@ function Things() {
       scope.scene.add(thing);
       scope.scene.add(pseudoThing);
       scope.objectsThings.push(pseudoThing);
-      T.push({
+      t.push({
         mesh: thing,
         pseudoThing,
       });
     }
 
-    return T;
+    return t;
   };
 
-  this.init = function(scope) {
+  this.init = (scope) => {
     things = [];
 
     const geometry = new Three.SphereBufferGeometry(1, 1, 1);
@@ -243,14 +316,19 @@ function Things() {
           OBJECTS.BOTTLES.scale,
           OBJECTS.BOTTLES.name,
         ));
-
         loaderDispatchHelper(scope.$store, 'isBottlesBuilt');
       });
     });
   };
 
-  this.pick = function(scope) {
+  // Отрендерить бутылки - важно на старте
+  this.update = (scope) => {
+    scope.render();
+  };
+
+  this.pick = (scope) => {
     thing = things.find(item => item.pseudoThing.id === scope.thing.id);
+
     const { mesh, pseudoThing } = thing;
     scope.scene.remove(mesh);
     scope.scene.remove(pseudoThing);
@@ -275,10 +353,13 @@ function Things() {
     }
 
     // Sound
-    if (pick && pick.children[0]) pick.children[0].play();
+    if (pick && pick.children[0]) {
+      if (pick.children[0].isPlaying) pick.children[0].stop();
+      pick.children[0].play();
+    }
   };
 
-  this.toggle = function(scope) {
+  this.toggle = (scope) => {
     scope.objectsThings.forEach((thing) => {
       if (scope.isDrone) {
         thing.scale.set(2, 2, 2);

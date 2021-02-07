@@ -32,6 +32,8 @@ function Parrots() {
   let parrot;
   let X;
   let Z;
+  let x;
+  let z;
   let y;
   let rotate;
   let bend;
@@ -45,7 +47,7 @@ function Parrots() {
 
   const PARROTS_RADIUS = DESIGN.GROUND_SIZE * 0.6;
 
-  this.init = function(scope) {
+  this.init = (scope) => {
     managerAudio1.onLoad = () => {
       audioLoader2.load('./audio/parrotcry.mp3', (buffer) => {
         addAudioToPseudoObjects(scope, parrots, 'pseudoParrot', buffer, DESIGN.VOLUME.parrots.cry);
@@ -73,7 +75,7 @@ function Parrots() {
         y = randomInteger(OBJECTS.PARROTS.minHeight, OBJECTS.PARROTS.maxHeight);
         Z = randomInteger(-1 * DESIGN.GROUND_SIZE / 2, DESIGN.GROUND_SIZE / 2);
 
-        const [x, z] = fixEnemyPosition(
+        [x, z] = fixEnemyPosition(
           PARROTS_RADIUS,
           scope.objectsStoneData,
           scope.objectsTreesData, X, Z);
@@ -110,12 +112,13 @@ function Parrots() {
         scope.scene.add(parrot);
         scope.scene.add(pseudoParrot);
       }
+      loaderDispatchHelper(scope.$store, 'isParrotsBuilt');
     });
 
     audioClock = new Three.Clock(false);
   };
 
-  this.animate = function(scope) {
+  this.animate = (scope) => {
     parrots.forEach((parrot) => {
       // Raycast
       scope.directionForward = parrot.mesh.getWorldDirection(scope.direction);

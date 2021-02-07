@@ -31,13 +31,20 @@ function delay(ms) {
   });
 }
 
-export const messagesDispatchHelper = (scope, name) => {
-  let id = scope.message++;
+export const messagesByIdDispatchHelper = (scope, name) => {
+  let id = scope.message + 1;
+  scope.addMessage(id);
+
   scope.$store.dispatch('layout/showMessage', { id, view: 2, name }).then(() => {
     delay(DESIGN.MESSAGES_TIMEOUT).then(() => {
       scope.$store.dispatch('layout/hideMessageById', id);
     }).catch((error) => { console.log(error); });
   }).catch((error) => { console.log(error); });
+};
+
+export const messagesByViewDispatchHelper = (scope, view, name) => {
+  if (!scope.messages.some(message => message[1] === view))
+    scope.showMessage({ id: null, view, name });
 };
 
 export const distance2D = (x1, y1, x2, y2) => {

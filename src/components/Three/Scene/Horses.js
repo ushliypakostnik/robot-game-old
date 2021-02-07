@@ -34,6 +34,8 @@ function Horses() {
   let horse;
   let X;
   let Z;
+  let x;
+  let z;
   let rotate;
   let bend;
   let accelerationVelocity;
@@ -44,7 +46,7 @@ function Horses() {
 
   const HORSES_RADIUS = DESIGN.GROUND_SIZE * 0.51;
 
-  this.init = function(scope) {
+  this.init = (scope) => {
     managerAudio2.onLoad = () => {
       audioLoader3.load('./audio/horsefr.mp3', (buffer) => {
         addAudioToPseudoObjects(scope, horses, 'pseudoHorse', buffer, DESIGN.VOLUME.horses.fr);
@@ -79,7 +81,7 @@ function Horses() {
         X = randomInteger(-1 * DESIGN.GROUND_SIZE / 2, DESIGN.GROUND_SIZE / 2);
         Z = randomInteger(-1 * DESIGN.GROUND_SIZE / 2, DESIGN.GROUND_SIZE / 2);
 
-        const [x, z] = fixEnemyPosition(
+        [x, z] = fixEnemyPosition(
           HORSES_RADIUS,
           scope.objectsStoneData,
           scope.objectsTreesData, X, Z);
@@ -117,12 +119,13 @@ function Horses() {
         scope.scene.add(horse);
         scope.scene.add(pseudoHorse);
       }
+      loaderDispatchHelper(scope.$store, 'isHorsesBuilt');
     });
 
     audioClock = new Three.Clock(false);
   };
 
-  this.animate = function(scope) {
+  this.animate = (scope) => {
     horses.forEach((horse, index) => {
       // Raycast
       scope.directionForward = horse.mesh.getWorldDirection(scope.direction);

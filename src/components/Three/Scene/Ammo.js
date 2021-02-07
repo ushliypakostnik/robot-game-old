@@ -18,7 +18,7 @@ function Ammo() {
   const AMMO_RADIUS = 0.5;
   const STOP_DISTANCE = 1;
 
-  this.init = function(scope) {
+  this.init = (scope) => {
     const geometry = new Three.SphereBufferGeometry(1, 1, 1);
     const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
     spit = new Three.Mesh(geometry, material);
@@ -111,7 +111,6 @@ function Ammo() {
     if (!scope.isPause && !scope.isDrone && !ammo.isPlay) {
       ammo.fakeMesh.position.set(ammo.mesh.position.x, ammo.mesh.position.y, ammo.mesh.position.z);
       if (ammo.fakeMesh.children[0]) ammo.fakeMesh.children[0].play();
-      console.log(ammo.fakeMesh.position, ammo.fakeMesh.children[0]);
       ammo.isPlay = true;
     }
   };
@@ -129,7 +128,7 @@ function Ammo() {
     return ammo;
   };
 
-  this.animate = function(scope) {
+  this.animate = (scope) => {
     ammos.forEach((ammo) => {
       // Летит
       if (ammo.onFly) {

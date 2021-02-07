@@ -5,24 +5,28 @@ import { loaderDispatchHelper, lightRandomRaduis } from '@/utils/utilities';
 
 function Sands() {
   let geometry;
+  let beach;
   let sand;
+  let raduis;
 
-  this.init = function(scope) {
+  this.init = (scope) => {
     const mapBeach = new Three.TextureLoader().load('./images/textures/sand.jpg', (texture) => {
       scope.render();
       loaderDispatchHelper(scope.$store, 'isSandLoaded1');
     });
+
     const mapSand = new Three.TextureLoader().load('./images/textures/sand.jpg', (texture) => {
       scope.render();
       loaderDispatchHelper(scope.$store, 'isSandLoaded2');
     });
+
     const materialBeach = new Three.MeshLambertMaterial({ color: 0xf0db7d, map: mapBeach });
     const materialSand = new Three.MeshLambertMaterial({ color: 0xf0db7d, map: mapSand });
 
     // Beach
     geometry = new Three.CircleBufferGeometry(OBJECTS.BEACH.size, 128);
 
-    const beach = new Three.Mesh(geometry, materialBeach);
+    beach = new Three.Mesh(geometry, materialBeach);
     beach.rotation.x = -Math.PI / 2;
     beach.position.set(0, OBJECTS.BEACH.positionY, 0);
     beach.material.map.repeat.set(512, 512);
@@ -39,7 +43,9 @@ function Sands() {
 
     // Sands
     for (let i = 0; i < OBJECTS.SANDS.position.length; i++) {
-      geometry = new Three.CircleBufferGeometry(lightRandomRaduis(OBJECTS.SANDS.position[i][2]), 32);
+      // У стартового острова не рандомим радиус
+      raduis = i === 0 ? OBJECTS.SANDS.position[i][2] : lightRandomRaduis(OBJECTS.SANDS.position[i][2]);
+      geometry = new Three.CircleBufferGeometry(raduis, 32);
 
       sand = new Three.Mesh(geometry, materialSand);
       sand.rotation.x = -Math.PI / 2;
