@@ -25,6 +25,9 @@ const size = (size) => {
   return size * 2000;
 };
 
+// Количество реальных объектов-капель в обойме вино-оружия
+const ammo = 25;
+
 export const DESIGN = {
   BREAKPOINTS: {
     desktop: 1025,
@@ -79,8 +82,9 @@ export const DESIGN = {
       },
       ammo: {
         name: 'ammo',
-        start: 500,
-        magazine: 50,
+        start: ammo * 20,
+        objects: ammo,
+        magazine: ammo * 2,
       },
     },
   },
@@ -104,7 +108,7 @@ export const DESIGN = {
       health: 30,
     },
     bottle: {
-      ammo: 50,
+      ammo: ammo * 2,
     },
   },
 };
