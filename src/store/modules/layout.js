@@ -43,8 +43,8 @@ const actions = {
     commit('addMessage');
   },
 
-  showMessage: ({ commit }, { id, view, name }) => {
-    commit('showMessage', { id, view, name });
+  showMessage: ({ commit }, { id, view, name, data }) => {
+    commit('showMessage', { id, view, name, data });
   },
 
   hideMessageByView: ({ commit }, view) => {
@@ -77,9 +77,9 @@ const mutations = {
     state.isDrone = isDrone;
   },
 
-  showMessage: (state, { id, view, name }) => {
+  showMessage: (state, { id, view, name, data }) => {
     messages = state.messages;
-    messages.push([id, view, name]);
+    messages.push([id, view, name, data]);
     state.messages = messages;
   },
 

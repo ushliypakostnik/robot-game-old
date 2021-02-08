@@ -31,11 +31,11 @@ function delay(ms) {
   });
 }
 
-export const messagesByIdDispatchHelper = (scope, name) => {
+export const messagesByIdDispatchHelper = (scope, name, data) => {
   let id = scope.message + 1;
   scope.addMessage(id);
 
-  scope.$store.dispatch('layout/showMessage', { id, view: 2, name }).then(() => {
+  scope.$store.dispatch('layout/showMessage', { id, view: 2, name, data }).then(() => {
     delay(DESIGN.MESSAGES_TIMEOUT).then(() => {
       scope.$store.dispatch('layout/hideMessageById', id);
     }).catch((error) => { console.log(error); });

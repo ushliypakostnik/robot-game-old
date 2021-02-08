@@ -64,19 +64,22 @@
         :key="index"
         class="game__message-wrapper"
       >
-        <!-- Подбор предметов -->
+        <!-- Подобрать предмет / поверженого врага (в дальнейшем)? -->
         <div
           v-if="message[1] === 1"
           class="game__message"
-        >{{ $t(`messages.message${message[1]}`) }}{{ $t(`things.${message[2]}.name`) }}</div>
+        >{{ $t(`messages.message${message[1]}`) }} {{ $t(`things.${message[2]}.name`) }}</div>
 
-        <!-- Сообщение о применении или конце действие эффекта  -->
+        <!-- Нумерованные сообщения о режимах, применении предметов, конце действия эффектов  -->
         <div
           v-if="message[1] === 2"
           class="game__message game__message--small"
-        >{{message[0]}}: {{ $t(`messages.message2.${message[2]}`) }}</div>
+        >
+          {{message[0]}}: <span v-html="$t(`messages.message2.${message[2]}`)" />
+          <span v-if="message[3]"> {{ $t(`things.${message[3]}.name`) }}</span>
+        </div>
 
-        <!-- Стартовое сообщение  -->
+        <!-- Стартовое сообщение - реплика подруги -->
         <div
           v-if="message[1] === 3 && message[2] === 'start'"
           class="game__message game__message--xsmall"
@@ -84,7 +87,7 @@
           <div v-html="$t(`messages.message3.${message[2]}`)" />
         </div>
 
-        <!-- Предупреждение об утоплении!!!  -->
+        <!-- Предупреждение об утоплении!!! -->
         <div
           v-if="message[1] === 4 && message[2] === 'ocean'"
           class="game__message game__message--small game__message--warning blink"

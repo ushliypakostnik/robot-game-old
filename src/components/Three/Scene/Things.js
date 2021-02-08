@@ -12,6 +12,7 @@ import {
   randomPointInCircle,
   isInPointObjectsWithDistance,
   isInRoundObjectsWithCoefficient,
+  messagesByIdDispatchHelper,
 } from '@/utils/utilities';
 
 function Things() {
@@ -335,20 +336,25 @@ function Things() {
     scope.objectsThings.splice(scope.objectsThings.indexOf(pseudoThing), 1);
 
     switch (pseudoThing.name) {
+      case OBJECTS.FLOWERS.daffodil.name:
+        scope.setScale({ field: OBJECTS.FLOWERS.daffodil.name, value: 1 });
+        messagesByIdDispatchHelper(scope, 'pickFlower', OBJECTS.FLOWERS.daffodil.name);
+        break;
       case OBJECTS.FLOWERS.anemone.name:
         scope.setScale({ field: OBJECTS.FLOWERS.anemone.name, value: 1 });
+        messagesByIdDispatchHelper(scope, 'pickFlower', OBJECTS.FLOWERS.anemone.name);
         break;
       case OBJECTS.FLOWERS.crocus.name:
         scope.setScale({ field: OBJECTS.FLOWERS.crocus.name, value: 1 });
-        break;
-      case OBJECTS.FLOWERS.daffodil.name:
-        scope.setScale({ field: OBJECTS.FLOWERS.daffodil.name, value: 1 });
+        messagesByIdDispatchHelper(scope, 'pickFlower', OBJECTS.FLOWERS.crocus.name);
         break;
       case OBJECTS.FLOWERS.tulip.name:
         scope.setScale({ field: OBJECTS.FLOWERS.tulip.name, value: 1 });
+        messagesByIdDispatchHelper(scope, 'pickFlower', OBJECTS.FLOWERS.tulip.name);
         break;
       case OBJECTS.BOTTLES.name:
         scope.setScale({ field: DESIGN.HERO.scales.ammo.name, value: DESIGN.EFFECTS.bottle.ammo });
+        messagesByIdDispatchHelper(scope, 'pickBottle');
         break;
     }
 

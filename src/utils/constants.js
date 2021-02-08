@@ -323,22 +323,26 @@ export const LOCALES = {
       gameovebutton: 'Replay',
     },
     messages: {
-      message1: 'Pick up: ',
+      message1: 'Pick up:',
       message2: {
         tired: 'The robot is tired of running.',
         recovered: 'The robot can run again.',
+        hiddenMoveEnabled: 'The robot moves in stealth mode.',
+        hiddenMoveDisabled: 'Stealth mode disabled.',
         startNoDamaged: `The robot is invulnerable for ${DESIGN.EFFECTS.time.health} seconds!`,
         startNoTired: `The robot will not get tired of running ${DESIGN.EFFECTS.time.endurance} seconds!`,
         endNoDamaged: 'The invulnerability effect is over.',
         endNoTired: 'The robot gets tired of running again.',
-        hiddenMoveEnabled: 'The robot moves in stealth mode.',
-        hiddenMoveDisabled: 'Stealth mode disabled.',
+        appliedСrocus: `The robot used a crocus!<br />Strength has grown by ${DESIGN.EFFECTS.crocus.power}%`,
+        appliedTulip: `The robot used a tulip!<br />It feels so much better!`,
+        pickBottle: 'The wine tank has been refilled!',
+        pickFlower: 'Robot plucked a:',
       },
       message3: {
         start: `The drinking robot-woman says:<br />««When we get off this atoll?<br />'It\'s full of big robots,<br />which can be drunk<br />and disassembled for spare parts,<br />to fix our boat?»`,
       },
       message4: {
-        ocean: `The robot has climbed too far into the ocean!<br />He\'s going to drown nowт!`,
+        ocean: `The robot has climbed too far into the ocean!<br />He\'s going to drown now!`
       },
     },
     things: {
@@ -387,16 +391,20 @@ export const LOCALES = {
       gameovebutton: 'Играть заново',
     },
     messages: {
-      message1: 'Подобрать: ',
+      message1: 'Подобрать:',
       message2: {
         tired: 'Робот устал от бега.',
         recovered: 'Робот снова может бегать.',
+        hiddenMoveEnabled: 'Робот двигается в скрытном режиме.',
+        hiddenMoveDisabled: 'Скрытный режим отключен.',
         startNoDamaged: `Робот получил неуязвимость на ${DESIGN.EFFECTS.time.health} секунд!`,
         startNoTired: `Робот не будет уставать от бега ${DESIGN.EFFECTS.time.endurance} секунд!`,
         endNoDamaged: 'Эффект неуязвимости закончился.',
         endNoTired: 'Робот снова устает от бега.',
-        hiddenMoveEnabled: 'Робот двигается в скрытном режиме.',
-        hiddenMoveDisabled: 'Скрытный режим отключен.',
+        appliedСrocus: `Робот использовал крокус!<br />Сила выросла на ${DESIGN.EFFECTS.crocus.power}%`,
+        appliedTulip: `Робот использовал тюльпан!<br />Он чувствует себя намного лучше!`,
+        pickBottle: 'Бак с вином пополнен!',
+        pickFlower: 'Робот сорвал:',
       },
       message3: {
         start: `Робот-собутыльница говорит:<br />«Когда мы уже свалим с этого атолла?<br />Здесь полно больших роботов,<br />которых можно опоить<br />и разобрать на запчасти,<br />чтобы починить наш катер?»`,

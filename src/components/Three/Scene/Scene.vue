@@ -458,6 +458,7 @@ export default {
             this.setScale({ field: OBJECTS.FLOWERS.crocus.name, value: -1 });
             this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.crocus.health });
             this.setScale({ field: DESIGN.HERO.scales.power.name, value: DESIGN.EFFECTS.crocus.power });
+            messagesByIdDispatchHelper(this, 'appliedСrocus');
           }
           break;
 
@@ -465,6 +466,7 @@ export default {
           if (!this.isKeysLock && this.tulip > 0) {
             this.setScale({ field: OBJECTS.FLOWERS.tulip.name, value: -1 });
             this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.tulip.health });
+            messagesByIdDispatchHelper(this, 'appliedTulip');
           }
           break;
 
