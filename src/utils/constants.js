@@ -29,6 +29,7 @@ const size = (size) => {
 const ammo = 25;
 
 export const DESIGN = {
+  V: 0.1,
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -86,6 +87,12 @@ export const DESIGN = {
         objects: ammo,
         magazine: ammo * 2,
       },
+    },
+  },
+  ENEMIES: {
+    mode: {
+      idle: 'idle',
+      active: 'active',
     },
   },
   MESSAGES_TIMEOUT: 2500,

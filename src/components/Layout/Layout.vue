@@ -15,7 +15,7 @@
         class="layout__blocker"
       >
         <div class="layout__instructions">
-          <h1>{{ $t('layout.text0') }}</h1>
+          <h1>{{ $t('layout.text0') }} {{ version }}</h1>
           <h4>{{ $t('layout.text1') }}</h4>
           <h4>{{ $t('layout.text2') }}</h4>
           <h4>{{ $t('layout.text3') }}</h4>
@@ -57,6 +57,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
+import { DESIGN } from '@/utils/constants';
 import ScreenHelper from '@/utils/screen-helper';
 
 import Gate from '@/components/Layout/Gate.vue';
@@ -99,6 +100,10 @@ export default {
       isPause: 'layout/isPause',
       isDrone: 'layout/isDrone',
     }),
+
+    version() {
+      return DESIGN.V;
+    },
   },
 
   methods: {
