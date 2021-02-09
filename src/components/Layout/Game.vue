@@ -68,7 +68,7 @@
         <div
           v-if="message[1] === 1"
           class="game__message"
-        >{{ $t(`messages.message${message[1]}`) }} {{ $t(`things.${message[2]}.name`) }}</div>
+        >{{ $t(`messages.message${message[1]}`) }} {{ getMessageByName(message[2]) }}</div>
 
         <!-- Нумерованные сообщения о режимах, применении предметов, конце действия эффектов  -->
         <div
@@ -76,7 +76,7 @@
           class="game__message game__message--small"
         >
           {{message[0]}}: <span v-html="$t(`messages.message2.${message[2]}`)" />
-          <span v-if="message[3]"> {{ $t(`things.${message[3]}.name`) }}</span>
+          <span v-if="message[3]"> {{ getMessageByName(message[3]) }}</span>
         </div>
 
         <!-- Стартовое сообщение - реплика подруги -->
@@ -112,7 +112,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
-import { DESIGN } from '@/utils/constants';
+import { DESIGN, OBJECTS } from '@/utils/constants';
 
 import Scale from '@/components/Layout/Scale.vue';
 
@@ -145,7 +145,7 @@ export default {
     }),
 
     ammoMagazine() {
-      const magazine = Math.floor((this.ammo - 1) / DESIGN.HERO.scales.ammo.magazine) + 1;
+      const magazine = Math.floor((this.ammo - 1) / DESIGN.EFFECTS.bottle.ammo) + 1;
       return magazine < 10 ? '0' + magazine : magazine;
     },
   },
@@ -164,6 +164,21 @@ export default {
 
     flower(value) {
       return value < 10 ? '0' + value : value;
+    },
+
+    getMessageByName(name) {
+      switch (name) {
+        case OBJECTS.FLOWERS.anemone.name:
+        case OBJECTS.FLOWERS.crocus.name:
+        case OBJECTS.FLOWERS.daffodil.name:
+        case OBJECTS.FLOWERS.tulip.name:
+          return this.$t(`things.${name}.name`);
+        case OBJECTS.BOTTLES.name:
+          return this.$t(`things.${name}.declination`);
+        case OBJECTS.HORSES.name:
+        case OBJECTS.PARROTS.name:
+          return this.$t(`enemies.${name}.declination`);
+      }
     },
   },
 

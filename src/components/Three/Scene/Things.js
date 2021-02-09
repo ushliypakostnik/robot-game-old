@@ -45,6 +45,7 @@ function Things() {
   const pseudoGeometry = new Three.SphereBufferGeometry(DESIGN.HERO.height / 2, 32, 32);
   let material;
   let pseudoThing;
+  let pseudoMesh;
   let isBottles;
 
   const THINGS_RADIUS = DESIGN.GROUND_SIZE * 0.545;
@@ -327,33 +328,54 @@ function Things() {
 
   this.pick = (scope) => {
     thing = things.find(item => item.pseudoThing.id === scope.thing.id);
+    if (thing) {
+      const { mesh, pseudoThing } = thing;
+      scope.scene.remove(mesh);
+      scope.scene.remove(pseudoThing);
+      scope.objectsThings.splice(scope.objectsThings.indexOf(pseudoThing), 1);
 
-    const { mesh, pseudoThing } = thing;
-    scope.scene.remove(mesh);
-    scope.scene.remove(pseudoThing);
-    scope.objectsThings.splice(scope.objectsThings.indexOf(pseudoThing), 1);
+      switch (pseudoThing.name) {
+        case OBJECTS.FLOWERS.daffodil.name:
+          scope.setScale({ field: OBJECTS.FLOWERS.daffodil.name, value: 1 });
+          messagesByIdDispatchHelper(scope, 2, 'pickFlower', OBJECTS.FLOWERS.daffodil.name);
+          break;
+        case OBJECTS.FLOWERS.anemone.name:
+          scope.setScale({ field: OBJECTS.FLOWERS.anemone.name, value: 1 });
+          messagesByIdDispatchHelper(scope, 2, 'pickFlower', OBJECTS.FLOWERS.anemone.name);
+          break;
+        case OBJECTS.FLOWERS.crocus.name:
+          scope.setScale({ field: OBJECTS.FLOWERS.crocus.name, value: 1 });
+          messagesByIdDispatchHelper(scope, 2, 'pickFlower', OBJECTS.FLOWERS.crocus.name);
+          break;
+        case OBJECTS.FLOWERS.tulip.name:
+          scope.setScale({ field: OBJECTS.FLOWERS.tulip.name, value: 1 });
+          messagesByIdDispatchHelper(scope, 2, 'pickFlower', OBJECTS.FLOWERS.tulip.name);
+          break;
+        case OBJECTS.BOTTLES.name:
+          scope.setScale({ field: DESIGN.HERO.scales.ammo.name, value: DESIGN.EFFECTS.bottle.ammo });
+          messagesByIdDispatchHelper(scope, 2, 'pickBottle');
+          break;
+      }
+    } else {
+      thing = scope.objectsEnemies.find(enemy => enemy.pseudoMesh.id === scope.thing.id);
+      if (thing) {
+        const { mesh, pseudoMesh } = thing;
+        scope.scene.remove(mesh);
+        scope.scene.remove(pseudoMesh);
+        scope.objectsEnemies.splice(scope.objectsEnemies.indexOf(thing), 1);
+        scope.objectsPseudoEnemies.splice(scope.objectsPseudoEnemies.indexOf(pseudoMesh), 1);
 
-    switch (pseudoThing.name) {
-      case OBJECTS.FLOWERS.daffodil.name:
-        scope.setScale({ field: OBJECTS.FLOWERS.daffodil.name, value: 1 });
-        messagesByIdDispatchHelper(scope, 2, 'pickFlower', OBJECTS.FLOWERS.daffodil.name);
-        break;
-      case OBJECTS.FLOWERS.anemone.name:
-        scope.setScale({ field: OBJECTS.FLOWERS.anemone.name, value: 1 });
-        messagesByIdDispatchHelper(scope, 2, 'pickFlower', OBJECTS.FLOWERS.anemone.name);
-        break;
-      case OBJECTS.FLOWERS.crocus.name:
-        scope.setScale({ field: OBJECTS.FLOWERS.crocus.name, value: 1 });
-        messagesByIdDispatchHelper(scope, 2, 'pickFlower', OBJECTS.FLOWERS.crocus.name);
-        break;
-      case OBJECTS.FLOWERS.tulip.name:
-        scope.setScale({ field: OBJECTS.FLOWERS.tulip.name, value: 1 });
-        messagesByIdDispatchHelper(scope, 2, 'pickFlower', OBJECTS.FLOWERS.tulip.name);
-        break;
-      case OBJECTS.BOTTLES.name:
-        scope.setScale({ field: DESIGN.HERO.scales.ammo.name, value: DESIGN.EFFECTS.bottle.ammo });
-        messagesByIdDispatchHelper(scope, 2, 'pickBottle');
-        break;
+        switch (pseudoMesh.name) {
+          case OBJECTS.HORSES.name:
+            scope.setScale({ field: DESIGN.HERO.scales.power.name, value: DESIGN.EFFECTS.horse.power });
+            messagesByIdDispatchHelper(scope, 2, 'pickAnimal', OBJECTS.HORSES.name);
+            break;
+          case OBJECTS.PARROTS.name:
+            scope.setScale({ field: DESIGN.HERO.scales.power.name, value: DESIGN.EFFECTS.parrot.power });
+            messagesByIdDispatchHelper(scope, 2, 'pickAnimal', OBJECTS.PARROTS.name);
+            break;
+        }
+      }
     }
 
     // Sound

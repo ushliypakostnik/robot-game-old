@@ -158,7 +158,7 @@ function Atmosphere() {
 
   // Обнаружение врагами
   const checkEnemies = (scope, x, z) => {
-    liveEnemies = scope.objectsEnemies.filter(enemy => enemy.mode !== DESIGN.ENEMIES.mode.drunk);
+    liveEnemies = scope.objectsEnemies.filter(enemy => enemy.mode !== DESIGN.ENEMIES.mode.drunk || enemy.mode !== DESIGN.ENEMIES.mode.thing);
 
     isBesideNew = false;
     liveEnemies.forEach((enemy) => {
@@ -178,8 +178,6 @@ function Atmosphere() {
         messagesByIdDispatchHelper(scope, 5, 'discovered', enemy.pseudoMesh.name);
       }
     });
-
-    console.log(isBeside, isBesideNew);
 
     if (isBeside !== isBesideNew) {
       if (isBesideNew) messagesByIdDispatchHelper(scope, 5, 'enemiesBeside');

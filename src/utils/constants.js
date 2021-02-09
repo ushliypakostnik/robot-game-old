@@ -29,7 +29,7 @@ const size = (size) => {
 const ammo = 25;
 
 export const DESIGN = {
-  V: 0.1,
+  V: 0.2,
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -88,9 +88,8 @@ export const DESIGN = {
       },
       ammo: {
         name: 'ammo',
-        start: ammo * 20,
+        start: ammo * 100,
         objects: ammo,
-        magazine: ammo * 2,
       },
     },
   },
@@ -99,30 +98,31 @@ export const DESIGN = {
       idle: 'idle',
       active: 'active',
       drunk: 'drunk',
+      thing: 'thing',
     },
     minIntoxication: 25,
   },
   MESSAGES_TIMEOUT: 2500,
   EFFECTS: {
     time: {
-      health: 10,
-      endurance: 10,
+      health: 20,
+      endurance: 20,
     },
     anemone: {
       health: 20,
     },
     crocus: {
-      health: 10,
+      health: 30,
       power: 2,
     },
     daffodil: {
-      health: 5,
+      health: 10,
     },
     tulip: {
-      health: 30,
+      health: 40,
     },
     bottle: {
-      ammo: ammo * 2,
+      ammo: ammo * 4,
     },
     horse: {
       power: 10,
@@ -141,38 +141,39 @@ export const OBJECTS = {
     name: 'horse',
     scale: 0.03,
     quantity: 4,
-    velocityRun: {
+    velocityMove: {
       [DESIGN.ENEMIES.mode.idle]: 1,
-      [DESIGN.ENEMIES.mode.active]: 1.5,
+      [DESIGN.ENEMIES.mode.active]: 1.75,
     },
     velocityBend: {
       [DESIGN.ENEMIES.mode.idle]: 0.5,
-      [DESIGN.ENEMIES.mode.active]: 1.25,
+      [DESIGN.ENEMIES.mode.active]: 1.5,
     },
     distance: {
       [DESIGN.ENEMIES.mode.idle]: 10,
-      [DESIGN.ENEMIES.mode.active]: 20,
+      [DESIGN.ENEMIES.mode.active]: 22.5,
     },
     frequency: {
       fr: 300,
       cry: 300,
     },
+    damage: 0.02,
   },
   PARROTS: {
     name: 'parrot',
     scale: 0.09,
     quantity: 4,
-    velocityFly: {
+    velocityMove: {
       [DESIGN.ENEMIES.mode.idle]: 1,
-      [DESIGN.ENEMIES.mode.active]: 2,
+      [DESIGN.ENEMIES.mode.active]: 2.25,
     },
     velocityBend: {
       [DESIGN.ENEMIES.mode.idle]: 0.75,
-      [DESIGN.ENEMIES.mode.active]: 1.75,
+      [DESIGN.ENEMIES.mode.active]: 2,
     },
     distance: {
       [DESIGN.ENEMIES.mode.idle]: 10,
-      [DESIGN.ENEMIES.mode.active]: 15,
+      [DESIGN.ENEMIES.mode.active]: 17.5,
     },
     frequency: {
       cry: 250,
@@ -180,6 +181,7 @@ export const OBJECTS = {
     },
     minHeight: 2,
     maxHeight: 20,
+    damage: 0.03,
   },
   OCEAN: {
     name: 'ocean',
@@ -393,6 +395,7 @@ export const LOCALES = {
         appliedTulip: `The robot used a tulip!<br />It feels so much better!`,
         pickBottle: 'The wine tank has been refilled!',
         pickFlower: 'Robot plucked a:',
+        pickAnimal: 'Robot reworked:',
       },
       message3: {
         start: `The drinking robot-woman says:<br />««When we get off this atoll?<br />'It\'s full of big robots,<br />which can be drunk<br />and disassembled for spare parts,<br />to fix our boat?»`,
@@ -424,7 +427,8 @@ export const LOCALES = {
         text: `: grants ${DESIGN.EFFECTS.tulip.health}% health`,
       },
       bottle: {
-        name: 'A bottle of wine',
+        name: 'Bottle of wine',
+        declination: 'A bottle of wine',
         text: `: contains ${DESIGN.EFFECTS.bottle.ammo} drops`,
       },
     },
@@ -478,6 +482,7 @@ export const LOCALES = {
         appliedTulip: `Робот использовал тюльпан!<br />Он чувствует себя намного лучше!`,
         pickBottle: 'Бак с вином пополнен!',
         pickFlower: 'Робот сорвал:',
+        pickAnimal: 'Робот переработал:',
       },
       message3: {
         start: `Робот-собутыльница говорит:<br />«Когда мы уже свалим с этого атолла?<br />Здесь полно больших роботов,<br />которых можно опоить<br />и разобрать на запчасти,<br />чтобы починить наш катер?»`,
@@ -510,6 +515,7 @@ export const LOCALES = {
       },
       bottle: {
         name: 'Бутылка вина',
+        declination: 'Бутылку вина',
         text: `: cодержит ${DESIGN.EFFECTS.bottle.ammo} капель`,
       },
     },

@@ -117,6 +117,7 @@ function Parrots() {
 
         parrots.push({
           health: 100,
+          damage: OBJECTS.PARROTS.damage,
           mode: DESIGN.ENEMIES.mode.idle,
           mesh: parrot,
           pseudoMesh,
@@ -127,6 +128,10 @@ function Parrots() {
           velocityVertical,
           beforeObject: false,
           side: null,
+          isStop: false,
+          stopSide: yesOrNo(),
+          stopAngle: 0,
+          isFall: false,
         });
         scope.scene.add(parrot);
         scope.scene.add(pseudoMesh);
@@ -158,7 +163,7 @@ function Parrots() {
 
     // Скорость
     intoxication = getMinIntoxication(parrot.health);
-    speed = parrot.accelerationVelocity * OBJECTS.PARROTS.velocityFly[parrot.mode] * intoxication;
+    speed = parrot.accelerationVelocity * OBJECTS.PARROTS.velocityMove[parrot.mode] * intoxication;
 
     // Скорость аудио
     if (parrot.mesh.children[0] && parrot.mesh.children[0].isPlaying)
@@ -228,7 +233,7 @@ function Parrots() {
   };
 
   this.animate = (scope) => {
-    parrots.forEach((parrot) => {
+    parrots.filter(parrot => parrot.mode !== DESIGN.ENEMIES.mode.thing).forEach((parrot) => {
       switch (parrot.mode) {
         // Cпокойный режим
         case DESIGN.ENEMIES.mode.idle:
@@ -254,11 +259,47 @@ function Parrots() {
           sober(parrot, scope);
           break;
 
-        // Опьянела
+        // Опьянел
         case DESIGN.ENEMIES.mode.drunk:
+          if (!parrot.isStop) {
+            stop(parrot);
+            parrot.isStop = true;
+          }
+
+          if (!parrot.isFall) {
+            speed = OBJECTS.PARROTS.velocityBend[DESIGN.ENEMIES.mode.idle] * parrot.stopSide * scope.delta * 3;
+            parrot.mesh.rotateZ(speed);
+            parrot.stopAngle += Math.abs(speed);
+            if (parrot.stopAngle > Math.PI) parrot.isFall = true;
+          } else {
+            // Снизу distance
+            scope.directionDown = new Three.Vector3(0, 0, 0).crossVectors(scope.x, scope.z);
+            scope.raycasterDown.set(parrot.mesh.position, scope.directionDown);
+            scope.intersections = scope.raycasterDown.intersectObjects(scope.objectsGround.concat(scope.objectsVertical));
+            onDown = scope.intersections[0].distance ? scope.intersections[0].distance : 0.5;
+
+            console.log(onDown);
+
+            parrot.mesh.position.y -= scope.delta * 6;
+            parrot.pseudoMesh.position.y = parrot.mesh.position.y;
+            if (onDown < 0.5) {
+              parrot.mode = DESIGN.ENEMIES.mode.thing;
+              parrot.pseudoMesh.userData = { isThing: true };
+              parrot.pseudoMesh.position.y -= 0.5;
+              parrot.pseudoMesh.scale.set(0.5, 0.5, 0.5);
+            }
+          }
           break;
       }
     });
+  };
+
+  const stop = (parrot) => {
+    if (parrot.mesh.children[0] && parrot.mesh.children[0].isPlaying) parrot.mesh.children[0].stop();
+
+    // Крики
+    if (parrot.pseudoMesh.children[0] && parrot.pseudoMesh.children[0].isPlaying) parrot.pseudoMesh.children[0].stop();
+    if (parrot.pseudoMesh.children[1] && parrot.pseudoMesh.children[1].isPlaying) parrot.pseudoMesh.children[1].stop();
   };
 
   this.stop = () => {

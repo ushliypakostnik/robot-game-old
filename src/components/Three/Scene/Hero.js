@@ -236,8 +236,15 @@ function Hero() {
           messagesByViewDispatchHelper(scope, 1, scope.intersections[0].object.name);
         }
       } else {
-        scope.thing = null;
-        scope.hideMessageByView(1);
+        // Enemies
+        scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsPseudoEnemies.filter(enemy => enemy.userData.isThing));
+        if (scope.intersections.length > 0 && scope.intersections[0].distance < DESIGN.HERO.height * 2) {
+          scope.thing = scope.intersections[0].object;
+          messagesByViewDispatchHelper(scope, 1, scope.intersections[0].object.name);
+        } else {
+          scope.thing = null;
+          scope.hideMessageByView(1);
+        }
       }
 
       // Backward

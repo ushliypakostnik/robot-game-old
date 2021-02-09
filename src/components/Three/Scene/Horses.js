@@ -12,6 +12,7 @@ import {
   addImmediateAudioToObjects,
   addAudioToPseudoObjects,
   getMinIntoxication,
+  radiansToDegrees,
 } from '@/utils/utilities';
 
 function Horses() {
@@ -122,6 +123,7 @@ function Horses() {
 
         horses.push({
           health: 100,
+          damage: OBJECTS.HORSES.damage,
           mode: DESIGN.ENEMIES.mode.idle,
           mesh: horse,
           pseudoMesh,
@@ -134,6 +136,9 @@ function Horses() {
           isOnWater: null,
           layers: [],
           layersNew: [],
+          isStop: false,
+          stopSide: yesOrNo(),
+          stopAngle: 0,
         });
         scope.scene.add(horse);
         scope.scene.add(pseudoMesh);
@@ -174,11 +179,11 @@ function Horses() {
 
     // Скорость
     intoxication = getMinIntoxication(horse.health);
-    speed = horse.accelerationVelocity * OBJECTS.HORSES.velocityRun[horse.mode] * intoxication;
+    speed = horse.accelerationVelocity * OBJECTS.HORSES.velocityMove[horse.mode] * intoxication;
 
     // Скорость аудио
     if (horse.mesh.children[0] && horse.mesh.children[0].isPlaying)
-      horse.mesh.children[0].setPlaybackRate( speed/ 1.5);
+      horse.mesh.children[0].setPlaybackRate( speed / 1.5);
     if (horse.mesh.children[1] && horse.mesh.children[1].isPlaying)
       horse.mesh.children[1].setPlaybackRate(speed / 1.5);
 
@@ -250,11 +255,11 @@ function Horses() {
 
     // Позиция
     horse.pseudoMesh.position.set(horse.mesh.position.x, 0, horse.mesh.position.z);
-    if (horse.mixer) horse.mixer.update(speed * scope.delta);
+    horse.mixer.update(speed * scope.delta);
   };
 
   this.animate = (scope) => {
-    horses.forEach((horse, index) => {
+    horses.filter(horse => horse.mode !== DESIGN.ENEMIES.mode.thing).forEach((horse, index) => {
       switch (horse.mode) {
         // Cпокойный режим
         case DESIGN.ENEMIES.mode.idle:
@@ -282,9 +287,32 @@ function Horses() {
 
         // Опьянела
         case DESIGN.ENEMIES.mode.drunk:
+          if (!horse.isStop) {
+            stop(horse);
+            horse.isStop = true;
+          }
+
+          speed = OBJECTS.HORSES.velocityBend[DESIGN.ENEMIES.mode.idle] * horse.stopSide * scope.delta * 2;
+          horse.stopAngle += Math.abs(speed);
+          if (horse.stopAngle < Math.PI / 2) horse.mesh.rotateZ(speed);
+          else {
+            horse.mode = DESIGN.ENEMIES.mode.thing;
+            horse.pseudoMesh.userData = { isThing: true };
+            horse.pseudoMesh.position.y -= 0.5;
+            horse.pseudoMesh.scale.set(0.5, 0.5, 0.5);
+          }
           break;
       }
     });
+  };
+
+  const stop = (horse) => {
+    if (horse.mesh.children[0] && horse.mesh.children[0].isPlaying) horse.mesh.children[0].stop();
+    if (horse.mesh.children[1] && horse.mesh.children[1].isPlaying) horse.mesh.children[1].stop();
+
+    // Фыркание и ржание
+    if (horse.pseudoMesh.children[0] && horse.pseudoMesh.children[0].isPlaying) horse.pseudoMesh.children[0].stop();
+    if (horse.pseudoMesh.children[1] && horse.pseudoMesh.children[1].isPlaying) horse.pseudoMesh.children[1].stop();
   };
 
   this.stop = () => {

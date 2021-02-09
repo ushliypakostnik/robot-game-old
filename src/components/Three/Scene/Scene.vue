@@ -184,6 +184,7 @@ export default {
       message: 'layout/message',
       isGameOver: 'layout/isGameOver',
 
+      power: 'hero/power',
       endurance: 'hero/endurance',
       ammo: 'hero/ammo',
 
@@ -607,7 +608,8 @@ export default {
           enemy.visible = this.isDrone;
         } else {
           enemy.visible = this.isDrone;
-          enemy.scale.set(1, 1, 1);
+          if (enemy.userData.isThing) enemy.scale.set(0.5, 0.5, 0.5);
+          else enemy.scale.set(1, 1, 1);
         }
         enemy.updateMatrix();
       });

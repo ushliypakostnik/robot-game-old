@@ -55,6 +55,10 @@ export const degreesToRadians = (degrees) => {
   return degrees * (Math.PI / 180);
 };
 
+export const radiansToDegrees = (radians) => {
+  return radians * (180/ Math.PI);
+};
+
 export const randomPointInCircle = (radius, x, y) => {
   const r = radius * Math.sqrt(Math.random());
   const theta = Math.random() * 2 * Math.PI;
@@ -127,4 +131,8 @@ export const addAudioToPseudoObjects = (scope, objects, buffer, volume) => {
 export const getMinIntoxication = (health) => {
   return health < DESIGN.ENEMIES.minIntoxication ? DESIGN.ENEMIES.minIntoxication / 100 : health / 100;
 };
+
+export const balancePower = (power) => {
+  return power + (101 - power) / 5;
+}
 

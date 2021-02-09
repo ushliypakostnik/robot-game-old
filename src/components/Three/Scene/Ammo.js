@@ -3,6 +3,7 @@ import * as Three from 'three';
 import { DESIGN, OBJECTS } from '@/utils/constants';
 
 import { loaderDispatchHelper } from '@/utils/utilities';
+import { balancePower } from '../../../utils/utilities';
 
 function Ammo() {
   let audio;
@@ -13,6 +14,10 @@ function Ammo() {
   let ammoIndex;
   let ammo;
   let fakeAmmo;
+
+  let enemy;
+  let onEnemy;
+  let inEnemy;
 
   const AMMO_GRAVITY = 5;
   const AMMO_RADIUS = 0.5;
@@ -70,10 +75,11 @@ function Ammo() {
           velocity: new Three.Vector3(),
           scale: 1,
           onFly: false,
-          onWall: false,
+          onObjects: false,
           onGround: false,
           off: false,
           isPlay: false,
+          isHit: false,
           removed: true,
         });
       }
@@ -87,13 +93,14 @@ function Ammo() {
 
   const update = (ammo) => {
     ammo.scale = 1;
-    ammo.onWall = false;
+    ammo.onObjects = false;
     ammo.onGround = false;
     ammo.off = false;
     ammo.isPlay = false;
     ammo.mesh.scale.set(ammo.scale, ammo.scale, ammo.scale);
     ammo.removed = false;
     ammo.onFly = true;
+    ammo.isHit = false;
   };
 
   const shot = (scope) => {
@@ -131,9 +138,9 @@ function Ammo() {
     ammo.mesh.position.copy(ammo.collider.center);
   };
 
-  const wall = (scope, ammo) => {
+  const block = (scope, ammo) => {
     play(scope, ammo);
-    ammo.onWall = true;
+    ammo.onObjects = true;
     ammo.onFly = false;
     ammo.velocity.x = 0;
     ammo.velocity.y = 0;
@@ -143,23 +150,54 @@ function Ammo() {
   const cast = (scope, ammo) => {
     scope.direction.copy(ammo.velocity).normalize();
     scope.raycasterForward.set(ammo.mesh.position, scope.direction);
+
+    // Перед вертикальным объектом
     scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical);
     scope.onForward = scope.intersections.length > 0 ? scope.intersections[0].distance < STOP_DISTANCE : false;
 
-    if (scope.onForward) {
-      wall(scope, ammo);
+    // Перед врагом
+    scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsPseudoEnemies);
+    onEnemy = scope.intersections.length > 0 ? scope.intersections[0].distance < STOP_DISTANCE : false;
+    if (onEnemy) enemy = scope.objectsEnemies.find(enemy => enemy.pseudoMesh.id === scope.intersections[0].object.id);
+
+    if (scope.onForward || onEnemy) {
+      block(scope, ammo);
     } else {
       scope.raycasterBackward.set(ammo.mesh.position, scope.direction.negate());
+
+      // За вертикальным объектом
       scope.intersections = scope.raycasterBackward.intersectObjects(scope.objectsVertical);
       scope.onBackward = scope.intersections.length > 0;
 
       if (scope.onBackward) {
-        wall(scope, ammo);
-
         ammo.mesh.x = scope.intersections[0].point.x + ammo.collider.center.addScaledVector(ammo.velocity.negate(), scope.delta * 200).x;
         ammo.mesh.y = scope.intersections[0].point.y + ammo.collider.center.addScaledVector(ammo.velocity.negate(), scope.delta * 200).y;
         ammo.mesh.z = scope.intersections[0].point.z + +ammo.collider.center.addScaledVector(ammo.velocity.negate(), scope.delta * 200).z;
       }
+
+      // За врагом
+      scope.intersections = scope.raycasterBackward.intersectObjects(scope.objectsPseudoEnemies);
+      inEnemy = scope.intersections.length > 0;
+      if (inEnemy) enemy = scope.objectsEnemies.find(enemy => enemy.pseudoMesh.id === scope.intersections[0].object.id);
+
+      if (scope.onBackward || inEnemy) {
+        block(scope, ammo);
+      }
+    }
+
+    if (enemy &&
+      (enemy.mode === DESIGN.ENEMIES.mode.idle || enemy.mode === DESIGN.ENEMIES.mode.active) &&
+      !ammo.isHit) {
+      if (enemy.mode === DESIGN.ENEMIES.mode.idle) enemy.mode = DESIGN.ENEMIES.mode.active;
+      enemy.health -= balancePower(scope.power) * enemy.damage;
+      ammo.isHit = true;
+
+      if (enemy.health < 0) {
+        enemy.mode = DESIGN.ENEMIES.mode.drunk;
+        enemy.accelerationVelocity = 1;
+        enemy.accelerationBend = 1;
+      }
+      console.log('Попал!!!', enemy.health);
     }
   };
 
@@ -181,7 +219,7 @@ function Ammo() {
   this.animate = (scope) => {
     ammos.filter(ammo => !ammo.removed).forEach((ammo) => {
       // Летит или упало, но не попало в объект
-      if (!ammo.onWall) {
+      if (!ammo.onObjects) {
         fly(scope, ammo);
 
         // Упало
