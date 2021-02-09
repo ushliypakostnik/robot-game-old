@@ -323,9 +323,7 @@ function Things() {
   };
 
   // Отрендерить бутылки - важно на старте
-  this.update = (scope) => {
-    scope.render();
-  };
+  this.update = scope => scope.render();
 
   this.pick = (scope) => {
     thing = things.find(item => item.pseudoThing.id === scope.thing.id);
@@ -338,23 +336,23 @@ function Things() {
     switch (pseudoThing.name) {
       case OBJECTS.FLOWERS.daffodil.name:
         scope.setScale({ field: OBJECTS.FLOWERS.daffodil.name, value: 1 });
-        messagesByIdDispatchHelper(scope, 'pickFlower', OBJECTS.FLOWERS.daffodil.name);
+        messagesByIdDispatchHelper(scope, 2, 'pickFlower', OBJECTS.FLOWERS.daffodil.name);
         break;
       case OBJECTS.FLOWERS.anemone.name:
         scope.setScale({ field: OBJECTS.FLOWERS.anemone.name, value: 1 });
-        messagesByIdDispatchHelper(scope, 'pickFlower', OBJECTS.FLOWERS.anemone.name);
+        messagesByIdDispatchHelper(scope, 2, 'pickFlower', OBJECTS.FLOWERS.anemone.name);
         break;
       case OBJECTS.FLOWERS.crocus.name:
         scope.setScale({ field: OBJECTS.FLOWERS.crocus.name, value: 1 });
-        messagesByIdDispatchHelper(scope, 'pickFlower', OBJECTS.FLOWERS.crocus.name);
+        messagesByIdDispatchHelper(scope, 2, 'pickFlower', OBJECTS.FLOWERS.crocus.name);
         break;
       case OBJECTS.FLOWERS.tulip.name:
         scope.setScale({ field: OBJECTS.FLOWERS.tulip.name, value: 1 });
-        messagesByIdDispatchHelper(scope, 'pickFlower', OBJECTS.FLOWERS.tulip.name);
+        messagesByIdDispatchHelper(scope, 2, 'pickFlower', OBJECTS.FLOWERS.tulip.name);
         break;
       case OBJECTS.BOTTLES.name:
         scope.setScale({ field: DESIGN.HERO.scales.ammo.name, value: DESIGN.EFFECTS.bottle.ammo });
-        messagesByIdDispatchHelper(scope, 'pickBottle');
+        messagesByIdDispatchHelper(scope, 2, 'pickBottle');
         break;
     }
 
@@ -368,7 +366,7 @@ function Things() {
   this.toggle = (scope) => {
     scope.objectsThings.forEach((thing) => {
       if (scope.isDrone) {
-        thing.scale.set(2, 2, 2);
+        thing.scale.set(3.5, 3.5, 3.5);
         thing.position.y += 0.5;
         thing.visible = scope.isDrone;
       } else {

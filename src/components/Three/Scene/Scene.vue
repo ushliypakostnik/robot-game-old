@@ -117,7 +117,9 @@ export default {
       objectsGround: [], // все объекты для вертикального рейкастинга
       objectsVertical: [], // все объекты с которыми сталкивается горизонтально
       objectsThings: [], // все псевдовещи
-      objectsPuddles: [], // все лужи
+      objectsPuddles: [], // все псевдолужи
+      objectsEnemies: [], // все враги
+      objectsPseudoEnemies: [], // все псевдовраги
       objectsStoneData: [], // все камни и горы - данные - [x, z, r]
       objectsWaterData: [], // все озера и лужи - данные - [x, z, r]
       objectsTreesData: [], // все деревья - данные - [x, z]
@@ -437,7 +439,7 @@ export default {
             this.setScale({ field: OBJECTS.FLOWERS.daffodil.name, value: -1 });
             this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.daffodil.health });
             this.setNotDamaged(true);
-            messagesByIdDispatchHelper(this, 'startNoDamaged');
+            messagesByIdDispatchHelper(this, 2, 'startNoDamaged');
           }
           break;
 
@@ -449,7 +451,7 @@ export default {
               value: DESIGN.EFFECTS.anemone.health
             });
             this.setNotTired(true);
-            messagesByIdDispatchHelper(this, 'startNoTired');
+            messagesByIdDispatchHelper(this, 2, 'startNoTired');
           }
           break;
 
@@ -458,7 +460,7 @@ export default {
             this.setScale({ field: OBJECTS.FLOWERS.crocus.name, value: -1 });
             this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.crocus.health });
             this.setScale({ field: DESIGN.HERO.scales.power.name, value: DESIGN.EFFECTS.crocus.power });
-            messagesByIdDispatchHelper(this, 'appliedСrocus');
+            messagesByIdDispatchHelper(this, 2, 'appliedСrocus');
           }
           break;
 
@@ -466,7 +468,7 @@ export default {
           if (!this.isKeysLock && this.tulip > 0) {
             this.setScale({ field: OBJECTS.FLOWERS.tulip.name, value: -1 });
             this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.tulip.health });
-            messagesByIdDispatchHelper(this, 'appliedTulip');
+            messagesByIdDispatchHelper(this, 2, 'appliedTulip');
           }
           break;
 
@@ -509,8 +511,8 @@ export default {
           if (!this.isKeysLock) {
             this.moveHidden = !this.moveHidden;
             if (this.moveRun) this.moveRun = false;
-            if (this.moveHidden) messagesByIdDispatchHelper(this, 'hiddenMoveEnabled');
-            else messagesByIdDispatchHelper(this, 'hiddenMoveDisabled');
+            if (this.moveHidden) messagesByIdDispatchHelper(this, 2, 'hiddenMoveEnabled');
+            else messagesByIdDispatchHelper(this, 2, 'hiddenMoveDisabled');
           }
           break;
 
@@ -597,6 +599,19 @@ export default {
       if (!this.isDrone) this.renderer.render(this.scene, this.camera);
       else this.composer.render();
     },
+
+    toggle() {
+      this.objectsPseudoEnemies.forEach((enemy) => {
+        if (this.isDrone) {
+          enemy.scale.set(2.5, 2.5, 2.5);
+          enemy.visible = this.isDrone;
+        } else {
+          enemy.visible = this.isDrone;
+          enemy.scale.set(1, 1, 1);
+        }
+        enemy.updateMatrix();
+      });
+    },
   },
 
   watch: {
@@ -607,8 +622,8 @@ export default {
     // Усталость
     isHeroTired(value) {
       if (value && this.moveRun) this.moveRun = false;
-      if (value) messagesByIdDispatchHelper(this, 'tired');
-      else messagesByIdDispatchHelper(this, 'recovered');
+      if (value) messagesByIdDispatchHelper(this, 2, 'tired');
+      else messagesByIdDispatchHelper(this, 2, 'recovered');
     },
 
     isDrone(value) {
@@ -628,6 +643,7 @@ export default {
         this.robot.visible = true;
 
         this.things.toggle(this);
+        this.toggle();
 
         // Controls
         this.setWithDroneControl();
@@ -639,6 +655,7 @@ export default {
         this.robot.visible = false;
 
         this.things.toggle(this);
+        this.toggle();
 
         // Controls
         this.setInFirstPersonControls();

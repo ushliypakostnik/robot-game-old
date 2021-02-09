@@ -11,18 +11,22 @@ import {
   loaderDispatchHelper,
   addImmediateAudioToObjects,
   addAudioToPseudoObjects,
+  getMinIntoxication,
 } from '@/utils/utilities';
 
 function Parrots() {
   const manager = new Three.LoadingManager();
   const managerAudio1 = new Three.LoadingManager();
+  const managerAudio2 = new Three.LoadingManager();
   const loader = new GLTFLoader(manager);
   const audioLoader1 = new Three.AudioLoader(managerAudio1);
-  const audioLoader2 = new Three.AudioLoader();
+  const audioLoader2 = new Three.AudioLoader(managerAudio2);
+  const audioLoader3 = new Three.AudioLoader();
 
-  const fakeMaterial = new Three.MeshLambertMaterial({ color: 0xff0000 });
+  const fakeMaterial = new Three.MeshLambertMaterial({ color: DESIGN.COLORS.parrot0x });
+  fakeMaterial.blending = Three.NoBlending;
   const fakeGeometry = new Three.SphereBufferGeometry(OBJECTS.PARROTS.scale * 60, 32, 32);
-  let pseudoParrot;
+  let pseudoMesh;
 
   let audioClock;
   let audioTime = 0;
@@ -45,14 +49,25 @@ function Parrots() {
   let mixer;
   let decision;
 
+  let intoxication;
+  let speed;
+
   const PARROTS_RADIUS = DESIGN.GROUND_SIZE * 0.6;
 
   this.init = (scope) => {
-    managerAudio1.onLoad = () => {
-      audioLoader2.load('./audio/parrotcry.mp3', (buffer) => {
-        addAudioToPseudoObjects(scope, parrots, 'pseudoParrot', buffer, DESIGN.VOLUME.parrots.cry);
+    managerAudio2.onLoad = () => {
+      audioLoader3.load('./audio/parrotcry.mp3', (buffer) => {
+        addAudioToPseudoObjects(scope, parrots, buffer, DESIGN.VOLUME.parrots.cry);
 
         loaderDispatchHelper(scope.$store, 'isParrotCryComplete');
+      });
+    };
+
+    managerAudio1.onLoad = () => {
+      audioLoader2.load('./audio/parrotcry2.mp3', (buffer) => {
+        addAudioToPseudoObjects(scope, parrots, buffer, DESIGN.VOLUME.parrots.cry2);
+
+        loaderDispatchHelper(scope.$store, 'isParrotCry2Complete');
       });
     };
 
@@ -93,14 +108,18 @@ function Parrots() {
         mixer = new Three.AnimationMixer(parrot);
         mixer.clipAction(gltf.animations[0]).setDuration(1).play();
 
-        pseudoParrot = new Three.Mesh(fakeGeometry, fakeMaterial);
+        pseudoMesh = new Three.Mesh(fakeGeometry, fakeMaterial);
 
-        pseudoParrot.position.set(x, y, z);
-        pseudoParrot.visible = false;
+        pseudoMesh.name = OBJECTS.PARROTS.name;
+
+        pseudoMesh.position.set(x, y, z);
+        pseudoMesh.visible = false;
 
         parrots.push({
+          health: 100,
+          mode: DESIGN.ENEMIES.mode.idle,
           mesh: parrot,
-          pseudoParrot,
+          pseudoMesh,
           mixer,
           bend,
           accelerationVelocity,
@@ -110,97 +129,146 @@ function Parrots() {
           side: null,
         });
         scope.scene.add(parrot);
-        scope.scene.add(pseudoParrot);
+        scope.scene.add(pseudoMesh);
+        scope.objectsPseudoEnemies.push(pseudoMesh);
       }
+      scope.objectsEnemies = scope.objectsEnemies.concat(parrots);
       loaderDispatchHelper(scope.$store, 'isParrotsBuilt');
     });
 
     audioClock = new Three.Clock(false);
   };
 
+  // Idle or Active Mode Movement
+  const sober = (parrot, scope) => {
+    // Audio
+    // Фикс проблемы с громкостью позиционированного аудио на старте
+    if (!audioClock.running && audioTime === 0) audioClock.start();
+
+    if (audioTime > 2) audioClock.stop();
+    else {
+      audioTime += audioClock.getDelta();
+      volume = DESIGN.VOLUME.parrots.volume * audioTime / 2;
+      if (volume > 1) volume = 1;
+      if (parrot.mesh.children[0] && parrot.mesh.children[0].isPlaying) parrot.mesh.children[0].setVolume(volume);
+    }
+
+    // Полет
+    if (parrot.mesh.children[0] && !parrot.mesh.children[0].isPlaying) parrot.mesh.children[0].play();
+
+    // Скорость
+    intoxication = getMinIntoxication(parrot.health);
+    speed = parrot.accelerationVelocity * OBJECTS.PARROTS.velocityFly[parrot.mode] * intoxication;
+
+    // Скорость аудио
+    if (parrot.mesh.children[0] && parrot.mesh.children[0].isPlaying)
+      parrot.mesh.children[0].setPlaybackRate(speed / 1.25);
+
+    // Raycast
+    // Спереди
+    scope.directionForward = parrot.mesh.getWorldDirection(scope.direction);
+    scope.raycasterForward.set(parrot.mesh.position, scope.directionForward);
+    scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical);
+    scope.onForward = scope.intersections.length > 0;
+
+    // Снизу
+    scope.directionDown = new Three.Vector3(0, 0, 0).crossVectors(scope.x, scope.z);
+    scope.raycasterDown.set(parrot.mesh.position, scope.directionDown);
+    scope.intersections = scope.raycasterDown.intersectObjects(scope.objectsVertical);
+    onDown = scope.intersections.length > 0;
+
+    // Объект спереди - поворачиваем
+    if (scope.onForward) {
+      parrot.beforeObject = true;
+
+      parrot.side = yesOrNo();
+      parrot.mesh.rotateY(parrot.side * 45);
+
+      // Позиция
+      parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta));
+    } else {
+      // Вперед!!!
+      parrot.beforeObject = false;
+      parrot.side = null;
+
+      decision = randomInteger(1, 25) === 1;
+      if (decision) parrot.bend = yesOrNo();
+
+      decision = randomInteger(1, 50) === 1;
+      if (decision) parrot.accelerationBend = Math.random();
+
+      parrot.mesh.rotateY((parrot.bend + parrot.accelerationBend) * OBJECTS.PARROTS.velocityBend[parrot.mode] * intoxication * scope.delta);
+
+      decision = randomInteger(1, 50) === 1;
+      if (decision) parrot.accelerationVelocity = Math.random() + 0.5;
+
+      // Высота
+      decision = randomInteger(1, 50) === 1;
+      if (decision) parrot.velocityVertical = (Math.random() + 2.5) * yesOrNo();
+
+      if (onDown) parrot.velocityVertical = Math.abs(parrot.velocityVertical);
+      else {
+        if (parrot.mesh.position.y < OBJECTS.PARROTS.minHeight ||
+          parrot.mesh.position.y > OBJECTS.PARROTS.maxHeight) parrot.velocityVertical *= -1;
+      }
+
+      parrot.mesh.position.y += parrot.velocityVertical * scope.delta;
+
+      // Не слишком далеко
+      if (distance2D(0, 0, parrot.mesh.position.x, parrot.mesh.position.z) > PARROTS_RADIUS)
+        parrot.mesh.rotateY(parrot.side * 45);
+
+      // Позиция
+      parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).multiplyScalar(speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta));
+    }
+
+    // Позиция
+    parrot.pseudoMesh.position.set(parrot.mesh.position.x, parrot.mesh.position.y, parrot.mesh.position.z);
+    if (parrot.mixer) parrot.mixer.update(speed * scope.delta);
+  };
+
   this.animate = (scope) => {
     parrots.forEach((parrot) => {
-      // Raycast
-      scope.directionForward = parrot.mesh.getWorldDirection(scope.direction);
-      scope.raycasterForward.set(parrot.mesh.position, scope.directionForward);
-      scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical);
-      scope.onForward = scope.intersections.length > 0;
+      switch (parrot.mode) {
+        // Cпокойный режим
+        case DESIGN.ENEMIES.mode.idle:
+          // Крики 2
+          decision = randomInteger(1, OBJECTS.PARROTS.frequency.cry) === 1;
+          if (decision) {
+            if (parrot.pseudoMesh.children[1] && parrot.pseudoMesh.children[1].isPlaying) parrot.pseudoMesh.children[1].stop();
+            if (parrot.pseudoMesh.children[0] && !parrot.pseudoMesh.children[0].isPlaying) parrot.pseudoMesh.children[0].play();
+          }
 
-      scope.directionDown = new Three.Vector3(0, 0, 0).crossVectors(scope.x, scope.z);
-      scope.raycasterDown.set(parrot.mesh.position, scope.directionDown);
-      scope.intersections = scope.raycasterDown.intersectObjects(scope.objectsVertical);
-      onDown = scope.intersections.length > 0;
+          sober(parrot, scope);
+          break;
 
-      if (scope.onForward) {
-        parrot.beforeObject = true;
-        parrot.side = yesOrNo();
+        // Aктивный режим
+        case DESIGN.ENEMIES.mode.active:
+          // Крики
+          decision = randomInteger(1, OBJECTS.PARROTS.frequency.cry2) === 1;
+          if (decision) {
+            if (parrot.pseudoMesh.children[0] && parrot.pseudoMesh.children[0].isPlaying) parrot.pseudoMesh.children[0].stop();
+            if (parrot.pseudoMesh.children[1] && !parrot.pseudoMesh.children[1].isPlaying) parrot.pseudoMesh.children[1].play();
+          }
 
-        parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar((OBJECTS.PARROTS.velocity * parrot.accelerationVelocity) * scope.delta));
-        parrot.mesh.rotateY(parrot.side * 45);
-      } else {
-        parrot.beforeObject = false;
-        parrot.side = null;
+          sober(parrot, scope);
+          break;
 
-        decision = randomInteger(1, 25) === 1;
-        if (decision) parrot.bend = yesOrNo();
-
-        decision = randomInteger(1, 50) === 1;
-        if (decision) parrot.accelerationBend = Math.random();
-
-        parrot.mesh.rotateY((parrot.bend + parrot.accelerationBend) * scope.delta);
-
-        decision = randomInteger(1, 50) === 1;
-        if (decision) parrot.accelerationVelocity = Math.random() + 0.5;
-
-        decision = randomInteger(1, 50) === 1;
-        if (decision) parrot.velocityVertical = (Math.random() + 2.5) * yesOrNo();
-
-        if (onDown) {
-          parrot.velocityVertical = Math.abs(parrot.velocityVertical);
-        } else {
-          if (parrot.mesh.position.y < OBJECTS.PARROTS.minHeight ||
-            parrot.mesh.position.y > OBJECTS.PARROTS.maxHeight) parrot.velocityVertical *= -1;
-        }
-
-        if (distance2D(0, 0, parrot.mesh.position.x, parrot.mesh.position.z) > PARROTS_RADIUS)
-          parrot.mesh.rotateY(parrot.side * 45);
-
-        parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).multiplyScalar((OBJECTS.PARROTS.velocity * parrot.accelerationVelocity) * scope.delta));
-        parrot.mesh.position.y += parrot.velocityVertical * scope.delta;
+        // Опьянела
+        case DESIGN.ENEMIES.mode.drunk:
+          break;
       }
-
-      // Audio
-      if (parrot.mesh) {
-        if (!audioClock.running && audioTime === 0) audioClock.start();
-
-        if (audioTime > 2) audioClock.stop();
-        else {
-          audioTime += audioClock.getDelta();
-          volume = DESIGN.VOLUME.parrots.volume * audioTime / 2;
-          if (volume > 1) volume = 1;
-          if (parrot.mesh.children[0] && parrot.mesh.children[0].isPlaying) parrot.mesh.children[0].setVolume(volume);
-        }
-
-        if (parrot.mesh.children[0] && !parrot.mesh.children[0].isPlaying) parrot.mesh.children[0].play();
-
-        if (parrot.mesh.children[0] && parrot.mesh.children[0].isPlaying)
-          parrot.mesh.children[0].setPlaybackRate(parrot.accelerationVelocity / 1.2);
-
-        decision = randomInteger(1, 175) === 1;
-        if (decision) if (parrot.pseudoParrot.children[0] && !parrot.pseudoParrot.children[0].isPlaying) parrot.pseudoParrot.children[0].play();
-      }
-
-      parrot.pseudoParrot.position.set(parrot.mesh.position.x, parrot.mesh.position.y, parrot.mesh.position.z);
-      if (parrot.mixer) parrot.mixer.update(scope.delta * parrot.accelerationVelocity);
     });
   };
 
   this.stop = () => {
     parrots.forEach((parrot) => {
-      if (parrot.mesh && parrot.mesh.children[0] && parrot.mesh.children[0].isPlaying) parrot.mesh.children[0].stop();
-      if (parrot.mesh && parrot.mesh.children[1] && parrot.mesh.children[1].isPlaying) parrot.mesh.children[1].stop();
+      // Полет
+      if (parrot.mesh.children[0] && parrot.mesh.children[0].isPlaying) parrot.mesh.children[0].stop();
 
-      if (parrot.pseudoParrot && parrot.pseudoParrot.children[0] && parrot.pseudoParrot.children[0].isPlaying) parrot.pseudoParrot.children[0].stop();
+      // Крики
+      if (parrot.pseudoMesh.children[0] && parrot.pseudoMesh.children[0].isPlaying) parrot.pseudoMesh.children[0].stop();
+      if (parrot.pseudoMesh.children[1] && parrot.pseudoMesh.children[1].isPlaying) parrot.pseudoMesh.children[1].stop();
     });
   };
 }

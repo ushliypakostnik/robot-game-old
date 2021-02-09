@@ -34,8 +34,10 @@ const initialState = {
   isHorseRunComplete: false,
   isHorseWaterRunComplete: false,
   isHorseFrComplete: false,
+  isHorseCryComplete: false,
   isParrotFlyComplete: false,
   isParrotCryComplete: false,
+  isParrotCry2Complete: false,
 
   isAmmoBuilt: false,
   isGrassBuilt: false,

@@ -39,25 +39,30 @@ export const DESIGN = {
     crocus0x: 0x8267bf,
     daffodil0x: 0xf0cf08,
     tulip0x: 0xcf3326,
+    horse0x: 0x623611,
+    parrot0x: 0x3c9d9d,
   },
   GROUND_SIZE: size(1),
+  checkDistance: size(0.025), // проверки при изменении позиции на 50 метров
   VOLUME: {
     small: 0.35,
     normal: 0.5,
     max: 1,
     masha: 0.75,
     wind: 0.35,
+    positional: {
+      ref: 50,
+      max: 2000,
+    },
     horses: {
       volume: 1,
       fr: 0.75,
-      ref: 50,
-      max: 2000,
+      cry: 0.75,
     },
     parrots: {
       volume: 0.7,
       cry: 1,
-      ref: 35,
-      max: 2000,
+      cry2: 1,
     },
   },
   HERO: {
@@ -93,7 +98,9 @@ export const DESIGN = {
     mode: {
       idle: 'idle',
       active: 'active',
+      drunk: 'drunk',
     },
+    minIntoxication: 25,
   },
   MESSAGES_TIMEOUT: 2500,
   EFFECTS: {
@@ -117,6 +124,12 @@ export const DESIGN = {
     bottle: {
       ammo: ammo * 2,
     },
+    horse: {
+      power: 10,
+    },
+    parrot: {
+      power: 7,
+    },
   },
 };
 
@@ -125,14 +138,46 @@ export const OBJECTS = {
     startY: 75,
   },
   HORSES: {
+    name: 'horse',
     scale: 0.03,
-    quantity: 0,
-    velocity: 20,
+    quantity: 4,
+    velocityRun: {
+      [DESIGN.ENEMIES.mode.idle]: 1,
+      [DESIGN.ENEMIES.mode.active]: 1.5,
+    },
+    velocityBend: {
+      [DESIGN.ENEMIES.mode.idle]: 0.5,
+      [DESIGN.ENEMIES.mode.active]: 1.25,
+    },
+    distance: {
+      [DESIGN.ENEMIES.mode.idle]: 10,
+      [DESIGN.ENEMIES.mode.active]: 20,
+    },
+    frequency: {
+      fr: 300,
+      cry: 300,
+    },
   },
   PARROTS: {
+    name: 'parrot',
     scale: 0.09,
-    quantity: 0,
-    velocity: 25,
+    quantity: 4,
+    velocityFly: {
+      [DESIGN.ENEMIES.mode.idle]: 1,
+      [DESIGN.ENEMIES.mode.active]: 2,
+    },
+    velocityBend: {
+      [DESIGN.ENEMIES.mode.idle]: 0.75,
+      [DESIGN.ENEMIES.mode.active]: 1.75,
+    },
+    distance: {
+      [DESIGN.ENEMIES.mode.idle]: 10,
+      [DESIGN.ENEMIES.mode.active]: 15,
+    },
+    frequency: {
+      cry: 250,
+      cry2: 250,
+    },
     minHeight: 2,
     maxHeight: 20,
   },
@@ -336,14 +381,14 @@ export const LOCALES = {
     messages: {
       message1: 'Pick up:',
       message2: {
-        tired: 'The robot is tired of running.',
-        recovered: 'The robot can run again.',
-        hiddenMoveEnabled: 'The robot moves in stealth mode.',
-        hiddenMoveDisabled: 'Stealth mode disabled.',
+        tired: 'The robot is tired of running',
+        recovered: 'The robot can run again',
+        hiddenMoveEnabled: 'The robot moves in stealth mode',
+        hiddenMoveDisabled: 'Stealth mode disabled',
         startNoDamaged: `The robot is invulnerable for ${DESIGN.EFFECTS.time.health} seconds!`,
         startNoTired: `The robot will not get tired of running ${DESIGN.EFFECTS.time.endurance} seconds!`,
-        endNoDamaged: 'The invulnerability effect is over.',
-        endNoTired: 'The robot gets tired of running again.',
+        endNoDamaged: 'The invulnerability effect is over',
+        endNoTired: 'The robot gets tired of running again',
         appliedСrocus: `The robot used a crocus!<br />Strength has grown by ${DESIGN.EFFECTS.crocus.power}%`,
         appliedTulip: `The robot used a tulip!<br />It feels so much better!`,
         pickBottle: 'The wine tank has been refilled!',
@@ -354,6 +399,11 @@ export const LOCALES = {
       },
       message4: {
         ocean: `The robot has climbed too far into the ocean!<br />He\'s going to drown now!`
+      },
+      message5: {
+        enemiesBeside: `Enemies spotted nearby!<br />The robot should be careful!`,
+        notEnemiesBeside: 'No one around...',
+        discovered: 'The robot scared '
       },
     },
     things: {
@@ -376,6 +426,18 @@ export const LOCALES = {
       bottle: {
         name: 'A bottle of wine',
         text: `: contains ${DESIGN.EFFECTS.bottle.ammo} drops`,
+      },
+    },
+    enemies: {
+      horse: {
+        name: 'Wild Horse',
+        declination: 'a wild horse',
+        text: `: good health, animal processing gives ${DESIGN.EFFECTS.horse.power}% to damage power`,
+      },
+      parrot: {
+        name: 'Giant parrot',
+        declination: 'a giant parrot',
+        text: `: weak health, animal processing gives ${DESIGN.EFFECTS.parrot.power}% to damage power`,
       },
     },
   },
@@ -404,14 +466,14 @@ export const LOCALES = {
     messages: {
       message1: 'Подобрать:',
       message2: {
-        tired: 'Робот устал от бега.',
-        recovered: 'Робот снова может бегать.',
-        hiddenMoveEnabled: 'Робот двигается в скрытном режиме.',
-        hiddenMoveDisabled: 'Скрытный режим отключен.',
+        tired: 'Робот устал от бега',
+        recovered: 'Робот снова может бегать',
+        hiddenMoveEnabled: 'Робот двигается в скрытном режиме',
+        hiddenMoveDisabled: 'Скрытный режим отключен',
         startNoDamaged: `Робот получил неуязвимость на ${DESIGN.EFFECTS.time.health} секунд!`,
         startNoTired: `Робот не будет уставать от бега ${DESIGN.EFFECTS.time.endurance} секунд!`,
-        endNoDamaged: 'Эффект неуязвимости закончился.',
-        endNoTired: 'Робот снова устает от бега.',
+        endNoDamaged: 'Эффект неуязвимости закончился',
+        endNoTired: 'Робот снова устает от бега',
         appliedСrocus: `Робот использовал крокус!<br />Сила выросла на ${DESIGN.EFFECTS.crocus.power}%`,
         appliedTulip: `Робот использовал тюльпан!<br />Он чувствует себя намного лучше!`,
         pickBottle: 'Бак с вином пополнен!',
@@ -422,6 +484,11 @@ export const LOCALES = {
       },
       message4: {
         ocean: `Робот забрался слишком далеко в океан!<br />Он сейчас утонет!`,
+      },
+      message5: {
+        enemiesBeside: `Рядом замечены враги!<br/>Роботу стоит быть осторожнее!`,
+        notEnemiesBeside: 'Рядом никого...',
+        discovered: 'Робот вспугнул'
       },
     },
     things: {
@@ -444,6 +511,18 @@ export const LOCALES = {
       bottle: {
         name: 'Бутылка вина',
         text: `: cодержит ${DESIGN.EFFECTS.bottle.ammo} капель`,
+      },
+    },
+    enemies: {
+      horse: {
+        name: 'Дикая лощадь',
+        declination: ': дикую лощадь',
+        text: `: хорошее здоровье, переработка животного дает ${DESIGN.EFFECTS.horse.power}% к силе урона`,
+      },
+      parrot: {
+        name: 'Гигансткий попугай',
+        declination: ': гигансткого попугая',
+        text: `: слабое здоровье, переработка животного дает ${DESIGN.EFFECTS.parrot.power}% к силе урона`,
       },
     },
   },

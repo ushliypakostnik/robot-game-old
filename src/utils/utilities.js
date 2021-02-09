@@ -31,11 +31,11 @@ function delay(ms) {
   });
 }
 
-export const messagesByIdDispatchHelper = (scope, name, data) => {
+export const messagesByIdDispatchHelper = (scope, view, name, data) => {
   let id = scope.message + 1;
   scope.addMessage(id);
 
-  scope.$store.dispatch('layout/showMessage', { id, view: 2, name, data }).then(() => {
+  scope.$store.dispatch('layout/showMessage', { id, view, name, data }).then(() => {
     delay(DESIGN.MESSAGES_TIMEOUT).then(() => {
       scope.$store.dispatch('layout/hideMessageById', id);
     }).catch((error) => { console.log(error); });
@@ -97,8 +97,8 @@ export const addImmediateAudioToObjects = (scope, objects, buffer) => {
 
     audio.setBuffer(buffer);
     audio.setVolume(0);
-    audio.setRefDistance(DESIGN.VOLUME.horses.ref);
-    audio.setMaxDistance(DESIGN.VOLUME.horses.max);
+    audio.setRefDistance(DESIGN.VOLUME.positional.ref);
+    audio.setMaxDistance(DESIGN.VOLUME.positional.max);
     audio.setLoop(true);
     audio.setRolloffFactor(1) ;
     // audio.setDistanceModel('exponential');
@@ -107,21 +107,24 @@ export const addImmediateAudioToObjects = (scope, objects, buffer) => {
   });
 };
 
-export const addAudioToPseudoObjects = (scope, objects, field, buffer, volume) => {
+export const addAudioToPseudoObjects = (scope, objects, buffer, volume) => {
   let audio;
   objects.forEach((object) => {
     audio = new Three.PositionalAudio(scope.listener);
 
     audio.setBuffer(buffer);
     audio.setVolume(volume);
-    audio.setRefDistance(DESIGN.VOLUME.horses.ref);
-    audio.setMaxDistance(DESIGN.VOLUME.horses.max);
+    audio.setRefDistance(DESIGN.VOLUME.positional.ref);
+    audio.setMaxDistance(DESIGN.VOLUME.positional.max);
     audio.setLoop(false);
     audio.setRolloffFactor(1) ;
     // audio.setDistanceModel('exponential');
 
-    if (field === 'pseudoHorse') object.pseudoHorse.add(audio);
-    else if (field === 'pseudoParrot') object.pseudoParrot.add(audio);
+    object.pseudoMesh.add(audio);
   });
+};
+
+export const getMinIntoxication = (health) => {
+  return health < DESIGN.ENEMIES.minIntoxication ? DESIGN.ENEMIES.minIntoxication / 100 : health / 100;
 };
 

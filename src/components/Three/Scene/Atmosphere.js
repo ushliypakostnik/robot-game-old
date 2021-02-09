@@ -7,6 +7,7 @@ import {
   loaderDispatchHelper,
   distance2D,
   messagesByViewDispatchHelper,
+  messagesByIdDispatchHelper,
 } from '@/utils/utilities';
 
 function Atmosphere() {
@@ -20,6 +21,13 @@ function Atmosphere() {
   let z;
   let newX;
   let newZ;
+
+  let liveEnemies;
+  let isBeside = false;
+  let isBesideNew;
+  let px;
+  let pz;
+
   let oceanVolume = 0;
 
   let onFloor = 0;
@@ -148,9 +156,36 @@ function Atmosphere() {
     });
   };
 
-  this.stop = () => {
-    if (ocean && ocean.children[0] && ocean.children[0].isPlaying) ocean.children[0].stop();
-    if (wind && wind.children[0] && wind.children[0].isPlaying) wind.children[0].stop();
+  // Обнаружение врагами
+  const checkEnemies = (scope, x, z) => {
+    liveEnemies = scope.objectsEnemies.filter(enemy => enemy.mode !== DESIGN.ENEMIES.mode.drunk);
+
+    isBesideNew = false;
+    liveEnemies.forEach((enemy) => {
+      px = enemy.pseudoMesh.position.x;
+      pz = enemy.pseudoMesh.position.z;
+
+      // 200 метров - предупреждении что рядом враги или никого!
+      if (distance2D(px, pz, x, z) < DESIGN.checkDistance * 4 && !isBesideNew) isBesideNew = true;
+
+      // 150 метров - напуганных врагов попускает
+      if (distance2D(px, pz, x, z) > DESIGN.checkDistance * 3 && enemy.mode === DESIGN.ENEMIES.mode.active) enemy.mode = DESIGN.ENEMIES.mode.idle;
+
+      // 125 метров - если скрытое передвижение не включено - пугает врага, 75 если включено!
+      if ((distance2D(px, pz, x, z) < DESIGN.checkDistance * 2.5 && !scope.moveHidden && enemy.mode === DESIGN.ENEMIES.mode.idle) ||
+        (distance2D(px, pz, x, z) < DESIGN.checkDistance * 1.5 && scope.moveHidden && enemy.mode === DESIGN.ENEMIES.mode.idle)) {
+        enemy.mode = DESIGN.ENEMIES.mode.active;
+        messagesByIdDispatchHelper(scope, 5, 'discovered', enemy.pseudoMesh.name);
+      }
+    });
+
+    console.log(isBeside, isBesideNew);
+
+    if (isBeside !== isBesideNew) {
+      if (isBesideNew) messagesByIdDispatchHelper(scope, 5, 'enemiesBeside');
+      else messagesByIdDispatchHelper(scope, 5, 'notEnemiesBeside');
+      isBeside = isBesideNew;
+    }
   };
 
   this.animate = (scope) => {
@@ -158,12 +193,15 @@ function Atmosphere() {
       newX = scope.controls.getObject().position.x;
       newZ = scope.controls.getObject().position.z;
 
+      // Проверки привязанные к позиции персонажа в мире
+
       if (!isStart) {
         messagesByViewDispatchHelper(scope, 3, 'start');
+        checkEnemies(scope, newX, newZ);
         isStart = true;
       }
 
-      if (Math.abs(x - newX) > DESIGN.GROUND_SIZE * 0.025 || Math.abs(z - newZ) > DESIGN.GROUND_SIZE * 0.025) {
+      if (Math.abs(x - newX) > DESIGN.checkDistance || Math.abs(z - newZ) > DESIGN.checkDistance) {
 
         // Громкость шума океана
         oceanVolume = distance2D(0, 0, newX, newZ) / OBJECTS.BEACH.size;
@@ -187,6 +225,8 @@ function Atmosphere() {
           scope.isOnStart = false;
           scope.hideMessageByView(3);
         }
+
+        checkEnemies(scope, newX, newZ);
 
         x = newX;
         z = newZ;
@@ -213,6 +253,11 @@ function Atmosphere() {
     } else {
       this.stop();
     }
+  };
+
+  this.stop = () => {
+    if (ocean && ocean.children[0] && ocean.children[0].isPlaying) ocean.children[0].stop();
+    if (wind && wind.children[0] && wind.children[0].isPlaying) wind.children[0].stop();
   };
 }
 

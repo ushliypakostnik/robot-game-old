@@ -94,6 +94,16 @@
         >
           <div v-html="$t(`messages.message4.${message[2]}`)" />
         </div>
+
+        <!-- Нумерованные сообщения связанные с врагами  -->
+        <div
+          v-if="message[1] === 5"
+          class="game__message game__message--small"
+        >
+          {{message[0]}}: <span v-html="$t(`messages.message5.${message[2]}`)" />
+          <span v-if="message[3]"> {{ $t(`enemies.${message[3]}.declination`) }}</span>
+        </div>
+
       </div>
     </div>
   </div>

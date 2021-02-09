@@ -342,7 +342,7 @@ function Hero() {
           notDamageClock.stop();
           notDamageTime = 0;
           scope.setNotDamaged(false);
-          messagesByIdDispatchHelper(scope, 'endNoDamaged');
+          messagesByIdDispatchHelper(scope, 2, 'endNoDamaged');
         }
       }
 
@@ -380,7 +380,7 @@ function Hero() {
           notTiredClock.stop();
           notTiredTime = 0;
           scope.setNotTired(false);
-          messagesByIdDispatchHelper(scope, 'endNoTired');
+          messagesByIdDispatchHelper(scope, 2, 'endNoTired');
         }
       }
 
