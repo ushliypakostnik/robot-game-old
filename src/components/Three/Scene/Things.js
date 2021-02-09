@@ -53,9 +53,9 @@ function Things() {
   const sands = OBJECTS.SANDS.position.slice(1);
 
   const fixThingOnSandPosition = (isle, stones, waters, trees, x, z) => {
-    let counter = 0;
     let newX = x;
     let newZ = z;
+    let counter = 0;
     while (isInPointObjectsWithDistance(trees, newX, newZ, 2) ||
           isInRoundObjectsWithCoefficient(stones, newX, newZ, 1.1) ||
           isInRoundObjectsWithCoefficient(waters, newX, newZ, 1.25)) {

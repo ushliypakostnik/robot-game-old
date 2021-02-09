@@ -63,6 +63,11 @@ function Waters(scope) {
     return result.length > 0;
   };
 
+  const isInSands = (sands, x, z, r) => {
+    const result = sands.filter(sand => (distance2D(sand[0], sand[1], x, z) + r) < (sand[2] + r) * 1.1);
+    return result.length > 0;
+  };
+
   const fakeMaterial = new Three.MeshLambertMaterial({ color: 0xff0000 });
 
   this.init = () => {
@@ -120,9 +125,10 @@ function Waters(scope) {
         randomX = (x * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2);
         randomZ = (z * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2);
 
-        // Не внутри другого озера
+        // Не внутри другого озера, луши или острова
         counter = 0;
-        while (isInLakeOrPuddle(scope.objectsWaterData, randomX, randomZ, radius)) {
+        while (isInLakeOrPuddle(scope.objectsWaterData, randomX, randomZ, radius)
+              || isInSands(OBJECTS.SANDS.position, randomX, randomZ, radius)) {
           counter++;
           randomX *= 1.25 * yesOrNo();
           randomZ *= 1.25 * yesOrNo();

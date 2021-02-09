@@ -206,11 +206,11 @@ function Parrots() {
       decision = randomInteger(1, 50) === 1;
       if (decision) parrot.velocityVertical = (Math.random() + 2.5) * yesOrNo();
 
-      if (onDown) parrot.velocityVertical = Math.abs(parrot.velocityVertical);
-      else {
-        if (parrot.mesh.position.y < OBJECTS.PARROTS.minHeight ||
-          parrot.mesh.position.y > OBJECTS.PARROTS.maxHeight) parrot.velocityVertical *= -1;
-      }
+      if (onDown && parrot.mesh.position.y > OBJECTS.PARROTS.maxHeight) {
+        parrot.velocityVertical = 0;
+        parrot.accelerationVelocity = 1.5;
+      } else if (onDown || parrot.mesh.position.y < OBJECTS.PARROTS.minHeight) parrot.velocityVertical = Math.abs(parrot.velocityVertical);
+      else if (parrot.mesh.position.y > OBJECTS.PARROTS.maxHeight) parrot.velocityVertical = -1 * Math.abs(parrot.velocityVertical);
 
       parrot.mesh.position.y += parrot.velocityVertical * scope.delta;
 
