@@ -22,6 +22,7 @@ function Atmosphere() {
   let newX;
   let newZ;
 
+  let moveHiddenStore;
   let liveEnemies;
   let isBeside = false;
   let isBesideNew;
@@ -165,15 +166,15 @@ function Atmosphere() {
       px = enemy.pseudoMesh.position.x;
       pz = enemy.pseudoMesh.position.z;
 
-      // 200 метров - предупреждении что рядом враги или никого!
-      if (distance2D(px, pz, x, z) < DESIGN.checkDistance * 4 && !isBesideNew) isBesideNew = true;
+      // 250 метров - предупреждении что рядом враги или никого!
+      if (distance2D(px, pz, x, z) < DESIGN.checkDistance * 5 && !isBesideNew) isBesideNew = true;
 
-      // 150 метров - напуганных врагов попускает
-      if (distance2D(px, pz, x, z) > DESIGN.checkDistance * 3 && enemy.mode === DESIGN.ENEMIES.mode.active) enemy.mode = DESIGN.ENEMIES.mode.idle;
+      // 200 метров - напуганных врагов попускает
+      if (distance2D(px, pz, x, z) > DESIGN.checkDistance * 4 && enemy.mode === DESIGN.ENEMIES.mode.active) enemy.mode = DESIGN.ENEMIES.mode.idle;
 
-      // 125 метров - если скрытое передвижение не включено - пугает врага, 75 если включено!
-      if ((distance2D(px, pz, x, z) < DESIGN.checkDistance * 2.5 && !scope.moveHidden && enemy.mode === DESIGN.ENEMIES.mode.idle) ||
-        (distance2D(px, pz, x, z) < DESIGN.checkDistance * 1.5 && scope.moveHidden && enemy.mode === DESIGN.ENEMIES.mode.idle)) {
+      // 150 метров - если скрытое передвижение не включено - пугает врага, 100 если включено!
+      if ((distance2D(px, pz, x, z) < DESIGN.checkDistance * 3 && !scope.moveHidden && enemy.mode === DESIGN.ENEMIES.mode.idle) ||
+        (distance2D(px, pz, x, z) < DESIGN.checkDistance * 2 && scope.moveHidden && enemy.mode === DESIGN.ENEMIES.mode.idle)) {
         enemy.mode = DESIGN.ENEMIES.mode.active;
         messagesByIdDispatchHelper(scope, 5, 'discovered', enemy.pseudoMesh.name);
       }
@@ -190,6 +191,25 @@ function Atmosphere() {
     if (!scope.isPause && !scope.isDrone) {
       newX = scope.controls.getObject().position.x;
       newZ = scope.controls.getObject().position.z;
+
+      if (ocean && ocean.children[0] && !ocean.children[0].isPlaying) ocean.children[0].play();
+
+      // Громкость ветра
+
+      if (scope.onObjectHeight !== onFloor) {
+        if (onFloor !== 0) wind.children[0].setVolume(DESIGN.VOLUME.wind);
+        else {
+          windVolume = (scope.onObjectHeight / OBJECTS.STONES.largeMax * DESIGN.VOLUME.wind * 2) + DESIGN.VOLUME.wind;
+          if (windVolume > 1) windVolume = 1;
+          else if (windVolume < DESIGN.VOLUME.wind) windVolume = DESIGN.VOLUME.wind;
+
+          if (wind && wind.children[0] && wind.children[0]) wind.children[0].setVolume(DESIGN.VOLUME.wind * 3);
+        }
+
+        onFloor = scope.onObjectHeight;
+      }
+
+      if (wind && wind.children[0] && !wind.children[0].isPlaying) wind.children[0].play();
 
       // Проверки привязанные к позиции персонажа в мире
 
@@ -230,24 +250,13 @@ function Atmosphere() {
         z = newZ;
       }
 
-      if (ocean && ocean.children[0] && !ocean.children[0].isPlaying) ocean.children[0].play();
+      if (moveHiddenStore !== scope.moveHidden) {
+        checkEnemies(scope, newX, newZ);
 
-      // Громкость ветра
-
-      if (scope.onObjectHeight !== onFloor) {
-        if (onFloor !== 0) wind.children[0].setVolume(DESIGN.VOLUME.wind);
-        else {
-          windVolume = (scope.onObjectHeight / OBJECTS.STONES.largeMax * DESIGN.VOLUME.wind * 2) + DESIGN.VOLUME.wind;
-          if (windVolume > 1) windVolume = 1;
-          else if (windVolume < DESIGN.VOLUME.wind) windVolume = DESIGN.VOLUME.wind;
-
-          if (wind && wind.children[0] && wind.children[0]) wind.children[0].setVolume(DESIGN.VOLUME.wind * 3);
-        }
-
-        onFloor = scope.onObjectHeight;
+        moveHiddenStore = scope.moveHidden;
+        x = newX;
+        z = newZ;
       }
-
-      if (wind && wind.children[0] && !wind.children[0].isPlaying) wind.children[0].play();
     } else {
       this.stop();
     }

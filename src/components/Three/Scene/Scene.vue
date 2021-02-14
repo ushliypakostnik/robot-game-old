@@ -37,7 +37,7 @@ import Ammo from './Ammo';
 import Plot from './Plot';
 import Horses from './Horses';
 import Parrots from './Parrots';
-// import Boxes from './Boxes';
+import Robots from './Robots';
 
 export default {
   name: 'Scene',
@@ -112,7 +112,6 @@ export default {
       onBackward: null,
       onLeft: null,
       onRight: null,
-      onLargeWater: null,
 
       objectsGround: [], // все объекты для вертикального рейкастинга
       objectsVertical: [], // все объекты с которыми сталкивается горизонтально
@@ -193,6 +192,7 @@ export default {
       daffodil: 'hero/daffodil',
       tulip: 'hero/tulip',
 
+      isHeroOnDamage: 'hero/isHeroOnDamage',
       isHeroOnWater: 'hero/isHeroOnWater',
       isHeroTired: 'hero/isHeroTired',
       isNotDamaged: 'hero/isNotDamaged',
@@ -205,6 +205,15 @@ export default {
       },
       set(value) {
         this.setHeroOnWater(value);
+      }
+    },
+
+    heroOnDamage: {
+      get() {
+        return this.isHeroOnDamage;
+      },
+      set(value) {
+        this.setHeroOnDamage(value);
       }
     },
 
@@ -223,6 +232,7 @@ export default {
       hideMessageByView: 'layout/hideMessageByView',
       setGameOver: 'layout/setGameOver',
 
+      setHeroOnDamage: 'hero/setHeroOnDamage',
       setHeroOnWater: 'hero/setHeroOnWater',
       setScale: 'hero/setScale',
       setNotDamaged: 'hero/setNotDamaged',
@@ -335,6 +345,9 @@ export default {
 
       this.parrots = new Parrots();
       this.parrots.init(this);
+
+      this.robots = new Robots();
+      this.robots.init(this);
 
       // Raycasters
       this.raycasterUp = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 1, 0), 0, 100);
@@ -571,11 +584,14 @@ export default {
         this.horses.animate(this);
 
         this.parrots.animate(this);
+
+        this.robots.animate(this);
       } else {
         this.atmosphere.stop();
         this.hero.stop();
         this.horses.stop();
         this.parrots.stop();
+        this.robots.stop();
       }
 
       if (!this.isPause && this.isDrone) {
@@ -604,11 +620,13 @@ export default {
     toggle() {
       this.objectsPseudoEnemies.forEach((enemy) => {
         if (this.isDrone) {
-          enemy.scale.set(2.5, 2.5, 2.5);
+          if (enemy.name === OBJECTS.ROBOTS.name) enemy.scale.set(1, 1, 1);
+          else enemy.scale.set(2, 2, 2);
           enemy.visible = this.isDrone;
         } else {
           enemy.visible = this.isDrone;
           if (enemy.userData.isThing) enemy.scale.set(0.5, 0.5, 0.5);
+          else if (enemy.name === OBJECTS.ROBOTS.name) enemy.scale.set(0.5, 1, 0.5);
           else enemy.scale.set(1, 1, 1);
         }
         enemy.updateMatrix();

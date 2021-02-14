@@ -41,6 +41,7 @@ export const DESIGN = {
     tulip0x: 0xcf3326,
     horse0x: 0x623611,
     parrot0x: 0x3c9d9d,
+    robot0x: 0x7c5415,
   },
   GROUND_SIZE: size(1),
   checkDistance: size(0.025), // проверки при изменении позиции на 50 метров
@@ -64,6 +65,10 @@ export const DESIGN = {
       cry: 1,
       cry2: 1,
     },
+    robots: {
+      run: 0.8,
+      noize: 1,
+    },
   },
   HERO: {
     scale: 0.02,
@@ -73,6 +78,10 @@ export const DESIGN = {
     jumpspeed: 250,
     jumpheight: 33,
     start: [size(-0.33), size(0.53)],
+    damage: {
+      water: -1,
+      robot: -0.25,
+    },
     scales: {
       health: {
         name: 'health',
@@ -102,7 +111,7 @@ export const DESIGN = {
     },
     minIntoxication: 25,
   },
-  MESSAGES_TIMEOUT: 2500,
+  MESSAGES_TIMEOUT: 3000,
   EFFECTS: {
     time: {
       health: 20,
@@ -137,17 +146,34 @@ export const OBJECTS = {
   DRONE: {
     startY: 75,
   },
+  ROBOTS: {
+    name: 'robot',
+    scale: 1.75,
+    quantity: 2,
+    positionY: 0.3,
+    velocityMove: {
+      [DESIGN.ENEMIES.mode.idle]: 1,
+      [DESIGN.ENEMIES.mode.active]: 2.5,
+    },
+    velocityBend: {
+      [DESIGN.ENEMIES.mode.active]: 120,
+    },
+    distance: {
+      [DESIGN.ENEMIES.mode.active]: 18,
+    },
+    damage: 1, // 0.005
+  },
   HORSES: {
     name: 'horse',
     scale: 0.03,
     quantity: 4,
     velocityMove: {
-      [DESIGN.ENEMIES.mode.idle]: 1,
-      [DESIGN.ENEMIES.mode.active]: 1.75,
+      [DESIGN.ENEMIES.mode.idle]: 1.25,
+      [DESIGN.ENEMIES.mode.active]: 2,
     },
     velocityBend: {
-      [DESIGN.ENEMIES.mode.idle]: 0.5,
-      [DESIGN.ENEMIES.mode.active]: 1.5,
+      [DESIGN.ENEMIES.mode.idle]: 30,
+      [DESIGN.ENEMIES.mode.active]: 90,
     },
     distance: {
       [DESIGN.ENEMIES.mode.idle]: 10,
@@ -168,8 +194,8 @@ export const OBJECTS = {
       [DESIGN.ENEMIES.mode.active]: 2.25,
     },
     velocityBend: {
-      [DESIGN.ENEMIES.mode.idle]: 0.75,
-      [DESIGN.ENEMIES.mode.active]: 2,
+      [DESIGN.ENEMIES.mode.idle]: 40,
+      [DESIGN.ENEMIES.mode.active]: 110,
     },
     distance: {
       [DESIGN.ENEMIES.mode.idle]: 10,
@@ -219,7 +245,7 @@ export const OBJECTS = {
   PUDDLES: {
     name: 'puddle',
     // x, z
-    quantity: 16, // лучше квадратное число
+    quantity: 12, // лучше квадратное число
     min: size(0.035),
     max: size(0.070),
     positionY: 0.3,
@@ -316,12 +342,12 @@ export const OBJECTS = {
   },
   TREES: {
     tree1: {
-      quantity: 12, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
+      quantity: 10, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
       heightMin: 15,
       heightMax: 70,
     },
     tree2: {
-      quantity: 12, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
+      quantity: 10, // лучше квадратное число, реально в 2 раза больше (2 способа рандомной расстановки)
       heightMin: 20,
       heightMax: 70,
     },
@@ -398,7 +424,7 @@ export const LOCALES = {
         pickAnimal: 'Robot reworked:',
       },
       message3: {
-        start: `The drinking robot-woman says:<br />««When we get off this atoll?<br />'It\'s full of big robots,<br />which can be drunk<br />and disassembled for spare parts,<br />to fix our boat?»`,
+        start: `The drinking robot-woman says:<br />««When we get off this atoll?<br />'It\'s full of dancing yellow robots,<br />which can be drunk<br />and disassembled for spare parts,<br />to fix our boat?»`,
       },
       message4: {
         ocean: `The robot has climbed too far into the ocean!<br />He\'s going to drown now!`
@@ -406,7 +432,7 @@ export const LOCALES = {
       message5: {
         enemiesBeside: `Enemies spotted nearby!<br />The robot should be careful!`,
         notEnemiesBeside: 'No one around...',
-        discovered: 'The robot scared '
+        discovered: 'The robot disturbed '
       },
     },
     things: {
@@ -442,6 +468,11 @@ export const LOCALES = {
         name: 'Giant parrot',
         declination: 'a giant parrot',
         text: `: weak health, animal processing gives ${DESIGN.EFFECTS.parrot.power}% to damage power`,
+      },
+      robot: {
+        name: 'Robot dancer',
+        declination: ': the robot dancer',
+        text: `: powerful health, you need to disassemble ${OBJECTS.ROBOTS.quantity} pieces to fix the boat`,
       },
     },
   },
@@ -485,7 +516,7 @@ export const LOCALES = {
         pickAnimal: 'Робот переработал:',
       },
       message3: {
-        start: `Робот-собутыльница говорит:<br />«Когда мы уже свалим с этого атолла?<br />Здесь полно больших роботов,<br />которых можно опоить<br />и разобрать на запчасти,<br />чтобы починить наш катер?»`,
+        start: `Робот-собутыльница говорит:<br />«Когда мы уже свалим с этого атолла?<br />Здесь полно танцующих желтых роботов,<br />которых можно опоить<br />и разобрать на запчасти,<br />чтобы починить наш катер?»`,
       },
       message4: {
         ocean: `Робот забрался слишком далеко в океан!<br />Он сейчас утонет!`,
@@ -493,7 +524,7 @@ export const LOCALES = {
       message5: {
         enemiesBeside: `Рядом замечены враги!<br/>Роботу стоит быть осторожнее!`,
         notEnemiesBeside: 'Рядом никого...',
-        discovered: 'Робот вспугнул'
+        discovered: 'Робот потревожил'
       },
     },
     things: {
@@ -529,6 +560,11 @@ export const LOCALES = {
         name: 'Гигансткий попугай',
         declination: ': гигансткого попугая',
         text: `: слабое здоровье, переработка животного дает ${DESIGN.EFFECTS.parrot.power}% к силе урона`,
+      },
+      robot: {
+        name: 'Робот-танцор',
+        declination: ': робота-танцора',
+        text: `: мощнейшее здоровье, нужно разобрать на детали ${OBJECTS.ROBOTS.quantity} штуки чтобы починить катер`,
       },
     },
   },

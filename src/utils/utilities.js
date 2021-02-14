@@ -94,20 +94,21 @@ export const fixEnemyPosition = (raduis, stones, trees, x, z) => {
   return [newX, newZ];
 };
 
-export const addImmediateAudioToObjects = (scope, objects, buffer) => {
+export const addImmediateAudioToObjects = (scope, objects, buffer, volume, isRobots) => {
   let audio;
   objects.forEach((object) => {
     audio = new Three.PositionalAudio(scope.listener);
 
     audio.setBuffer(buffer);
-    audio.setVolume(0);
+    audio.setVolume(volume);
     audio.setRefDistance(DESIGN.VOLUME.positional.ref);
     audio.setMaxDistance(DESIGN.VOLUME.positional.max);
     audio.setLoop(true);
     audio.setRolloffFactor(1) ;
     // audio.setDistanceModel('exponential');
 
-    object.mesh.add(audio);
+    if (isRobots) object.pseudoMesh.add(audio);
+    else object.mesh.add(audio);
   });
 };
 

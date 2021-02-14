@@ -3,7 +3,7 @@
     <div
       class="game__overlay"
       :class="[
-        isHeroOnWater && !isNotDamaged && !isGameOver && `game__overlay--damage damage`,
+        (isHeroOnWater || isHeroOnDamage) && !isNotDamaged && !isGameOver && `game__overlay--damage damage`,
         isGameOver && `game__overlay--gameover`,
       ]"
     >
@@ -135,6 +135,7 @@ export default {
       daffodil: 'hero/daffodil',
       tulip: 'hero/tulip',
 
+      isHeroOnDamage: 'hero/isHeroOnWater',
       isHeroOnWater: 'hero/isHeroOnWater',
       isHeroTired: 'hero/isHeroTired',
       isNotDamaged: 'hero/isNotDamaged',

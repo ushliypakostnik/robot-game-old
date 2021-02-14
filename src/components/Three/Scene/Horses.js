@@ -12,7 +12,7 @@ import {
   addImmediateAudioToObjects,
   addAudioToPseudoObjects,
   getMinIntoxication,
-  radiansToDegrees,
+  degreesToRadians,
 } from '@/utils/utilities';
 
 function Horses() {
@@ -26,14 +26,10 @@ function Horses() {
   const audioLoader3 = new Three.AudioLoader(managerAudio3);
   const audioLoader4 = new Three.AudioLoader();
 
-  const fakeMaterial = new Three.MeshLambertMaterial({ color: DESIGN.COLORS.horse0x });
+  const fakeMaterial = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.horse0x });
   fakeMaterial.blending = Three.NoBlending;
   const fakeGeometry = new Three.SphereBufferGeometry(OBJECTS.HORSES.scale * 220, 32, 32);
   let pseudoMesh;
-
-  let audioClock;
-  let audioTime = 0;
-  let volume;
 
   const horses = [];
   let horse;
@@ -73,7 +69,7 @@ function Horses() {
 
     managerAudio1.onLoad = () => {
       audioLoader2.load('./audio/waterhorse.mp3', (buffer) => {
-        addImmediateAudioToObjects(scope, horses, buffer);
+        addImmediateAudioToObjects(scope, horses, buffer, DESIGN.VOLUME.horses.volume, false);
 
         loaderDispatchHelper(scope.$store, 'isHorseWaterRunComplete');
       });
@@ -81,7 +77,7 @@ function Horses() {
 
     manager.onLoad = () => {
       audioLoader1.load('./audio/horse.mp3', (buffer) => {
-        addImmediateAudioToObjects(scope, horses, buffer);
+        addImmediateAudioToObjects(scope, horses, buffer, DESIGN.VOLUME.horses.volume, false);
 
         loaderDispatchHelper(scope.$store, 'isHorseRunComplete');
       });
@@ -106,7 +102,7 @@ function Horses() {
 
         rotate = randomInteger(-180, 180);
         bend = yesOrNo();
-        horse.rotateY(rotate);
+        horse.rotateY(degreesToRadians(rotate));
 
         accelerationVelocity = Math.random();
         accelerationBend = Math.random();
@@ -147,25 +143,10 @@ function Horses() {
       scope.objectsEnemies = scope.objectsEnemies.concat(horses);
       loaderDispatchHelper(scope.$store, 'isHorsesBuilt');
     });
-
-    audioClock = new Three.Clock(false);
   };
 
   // Idle or Active Mode Movement
   const sober = (horse, scope) => {
-    // Audio
-    // Фикс проблемы с громкостью позиционированного аудио на старте
-    if (!audioClock.running && audioTime === 0) audioClock.start();
-
-    if (audioTime > 1) audioClock.stop();
-    else {
-      audioTime += audioClock.getDelta();
-      volume = DESIGN.VOLUME.horses.volume * audioTime;
-      if (volume > 1) volume = 1;
-      if (horse.mesh.children[0] && horse.mesh.children[0].isPlaying) horse.mesh.children[0].setVolume(volume);
-      if (horse.mesh.children[1] && horse.mesh.children[1].isPlaying) horse.mesh.children[1].setVolume(volume);
-    }
-
     // Бег
     if (!horse.isOnWater) {
       // По воде
@@ -221,7 +202,7 @@ function Horses() {
       horse.onForward = true;
 
       horse.side = yesOrNo();
-      horse.mesh.rotateY(horse.side * 45);
+      horse.mesh.rotateY(horse.side * Math.PI / 4);
 
       // Позиция
       horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta));
@@ -236,7 +217,7 @@ function Horses() {
       decision = randomInteger(1, 50) === 1;
       if (decision) horse.accelerationBend = Math.random();
 
-      horse.mesh.rotateY((horse.bend + horse.accelerationBend) * OBJECTS.HORSES.velocityBend[horse.mode] * intoxication * scope.delta);
+      horse.mesh.rotateY(degreesToRadians((horse.bend + horse.accelerationBend) * OBJECTS.HORSES.velocityBend[horse.mode] * intoxication * scope.delta));
 
       decision = randomInteger(1, 50) === 1;
       if (decision) {
@@ -247,7 +228,7 @@ function Horses() {
 
       // Не слишком далеко
       if (distance2D(0, 0, horse.mesh.position.x, horse.mesh.position.z) > HORSES_RADIUS)
-        horse.mesh.rotateY(horse.side * 45);
+        horse.mesh.rotateY(horse.side * Math.PI / 4);
 
       // Позиция
       horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).multiplyScalar(speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta));
@@ -255,7 +236,7 @@ function Horses() {
 
     // Позиция
     horse.pseudoMesh.position.set(horse.mesh.position.x, 0, horse.mesh.position.z);
-    horse.mixer.update(speed * scope.delta);
+    if (horse.mixer) horse.mixer.update(speed * scope.delta);
   };
 
   this.animate = (scope) => {
@@ -292,7 +273,7 @@ function Horses() {
             horse.isStop = true;
           }
 
-          speed = OBJECTS.HORSES.velocityBend[DESIGN.ENEMIES.mode.idle] * horse.stopSide * scope.delta * 2;
+          speed = OBJECTS.HORSES.velocityBend[DESIGN.ENEMIES.mode.idle] * horse.stopSide * scope.delta / 20;
           horse.stopAngle += Math.abs(speed);
           if (horse.stopAngle < Math.PI / 2) horse.mesh.rotateZ(speed);
           else {

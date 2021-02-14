@@ -388,7 +388,7 @@ function Things() {
   this.toggle = (scope) => {
     scope.objectsThings.forEach((thing) => {
       if (scope.isDrone) {
-        thing.scale.set(3.5, 3.5, 3.5);
+        thing.scale.set(3, 3, 3);
         thing.position.y += 0.5;
         thing.visible = scope.isDrone;
       } else {

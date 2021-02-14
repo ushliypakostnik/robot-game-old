@@ -3,7 +3,7 @@ import * as Three from 'three';
 import { OBJLoader } from '@/components/Three/Modules/Utils/OBJLoader.js';
 import { GLTFLoader } from '@/components/Three/Modules/Utils/GLTFLoader';
 
-import { DESIGN, OBJECTS } from '@/utils/constants';
+import { DESIGN } from '@/utils/constants';
 import { loaderDispatchHelper } from '@/utils/utilities';
 
 function Plot() {
@@ -11,11 +11,8 @@ function Plot() {
   const loader = new GLTFLoader();
 
   let woman;
+  let animations;
   let mixer;
-
-  const fakeMaterial = new Three.MeshLambertMaterial({ color: 0xff0000 });
-  const fakeGeometry = new Three.SphereBufferGeometry(DESIGN.HERO.height / 2, 32, 32);
-  let pseudoWoman;
 
   this.init = (scope) => {
     // Boat
@@ -37,10 +34,11 @@ function Plot() {
       loaderDispatchHelper(scope.$store, 'isBoatBuilt');
     });
 
-    // Woman
+    // Woman-robot
     loader.load('./images/models/Xbot.glb', (gltf) => {
       loaderDispatchHelper(scope.$store, 'isWomanLoaded');
       woman = gltf.scene;
+      animations = gltf.animations;
 
       // woman.rotation.x = -Math.PI / 2;
       woman.scale.set(1.9, 1.9, 1.9);
@@ -48,9 +46,9 @@ function Plot() {
       woman.position.set(DESIGN.HERO.start[0] - 7, 0.3, DESIGN.HERO.start[1] - 20);
 
       mixer = new Three.AnimationMixer(woman);
-      mixer.clipAction(gltf.animations[1]).setDuration(1).play();
-      mixer.clipAction(gltf.animations[2]).setDuration(1).play();
-      mixer.update(scope.delta);
+      mixer.clipAction(animations[1]).setEffectiveTimeScale(1).setDuration(1).play();
+      mixer.clipAction(animations[2]).setEffectiveTimeScale(2).setDuration(1).play();
+      if (mixer) mixer.update(scope.delta);
 
       woman.updateMatrix();
       woman.matrixAutoUpdate = true;

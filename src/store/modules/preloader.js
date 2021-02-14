@@ -17,6 +17,7 @@ const initialState = {
   isParrotLoaded: false,
   isBoatLoaded: false,
   isWomanLoaded: false,
+  isRobotsLoaded: false,
 
   isMashaComplete: false,
   isStepComplete: false,
@@ -38,6 +39,8 @@ const initialState = {
   isParrotFlyComplete: false,
   isParrotCryComplete: false,
   isParrotCry2Complete: false,
+  isRobotsRunComplete: false,
+  isRobotsNoizeComplete: false,
 
   isAmmoBuilt: false,
   isGrassBuilt: false,
@@ -54,6 +57,7 @@ const initialState = {
   isWomanBuilt: false,
   isHorsesBuilt: false,
   isParrotsBuilt: false,
+  isRobotsBuilt: false,
 };
 
 const state = initialState;

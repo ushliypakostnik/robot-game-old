@@ -12,6 +12,7 @@ const initialState = {
   daffodil: 0,
   tulip: 0,
 
+  isHeroOnDamage: false,
   isHeroOnWater: false,
   isHeroTired: false,
   isNotDamaged: false,
@@ -31,6 +32,7 @@ const getters = {
   daffodil: state => state.daffodil,
   tulip: state => state.tulip,
 
+  isHeroOnDamage: state => state.isHeroOnDamage,
   isHeroOnWater: state => state.isHeroOnWater,
   isHeroTired: state => state.isHeroTired,
   isNotDamaged: state => state.isNotDamaged,
@@ -38,6 +40,10 @@ const getters = {
 };
 
 const actions = {
+  setHeroOnDamage: ({ commit }, isHeroOnDamage) => {
+    commit('setHeroOnWater', isHeroOnDamage);
+  },
+
   setHeroOnWater: ({ commit }, isHeroOnWater) => {
     commit('setHeroOnWater', isHeroOnWater);
   },
@@ -60,6 +66,10 @@ const actions = {
 };
 
 const mutations = {
+  setHeroOnDamage: (state, isHeroOnDamage) => {
+    state.isHeroOnDamage = isHeroOnDamage;
+  },
+
   setHeroOnWater: (state, isHeroOnWater) => {
     state.isHeroOnWater = isHeroOnWater;
   },
@@ -78,7 +88,7 @@ const mutations = {
 
   setScale: (state, payload) => {
     if (payload.field === DESIGN.HERO.scales.health.name
-      && state[payload.field] + payload.value > 99) {
+      && state[payload.field] + payload.value > 99.999999) {
       state[payload.field] = 100;
     } else if (payload.field === DESIGN.HERO.scales.endurance.name
             && state[payload.field] + payload.value > 99){

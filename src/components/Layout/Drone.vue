@@ -53,6 +53,13 @@
         </div>
         <div class="drone__circle" />
       </div>
+      <div class="drone__block drone--robot">
+        <div class="drone__text">
+          {{ $t(`enemies.robot.name`) }}
+          {{ $t(`enemies.robot.text`) }}
+        </div>
+        <div class="drone__circle" />
+      </div>
     </div>
   </div>
 </template>
@@ -156,6 +163,12 @@ export default {
   &--parrot {
     .drone__circle {
       background: $colors__triade1--light;
+    }
+  }
+
+  &--robot {
+    .drone__circle {
+      background: $colors__robots;
     }
   }
 

@@ -178,9 +178,7 @@ function Waters(scope) {
   };
 
   this.animate = () => {
-    waters.forEach((water) => {
-      water.material.uniforms.time.value += 1.0 / 60.0;
-    });
+    waters.forEach(water => water.material.uniforms.time.value += 1.0 / 60.0);
   };
 }
 

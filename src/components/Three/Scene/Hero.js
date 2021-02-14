@@ -30,6 +30,7 @@ function Hero() {
 
   let delta;
 
+  let onLargeWater = false;
   let damageClock;
   let damageTime = 0;
   let damageSoundTime = 0;
@@ -291,8 +292,8 @@ function Hero() {
               || (scope.layersNew.includes(OBJECTS.LAKES.name)
                 && !scope.layersNew.includes(OBJECTS.SANDS.name)))
           ) {
-            scope.onLargeWater = true;
-          } else scope.onLargeWater = false;
+            onLargeWater = true;
+          } else onLargeWater = false;
 
           // На камне
           if (scope.layersNew.includes(OBJECTS.STONES.name)) {
@@ -323,7 +324,7 @@ function Hero() {
           if (damageTime > 0.05) {
             scope.setScale({
               field: DESIGN.HERO.scales.health.name,
-              value: -1
+              value: DESIGN.HERO.damage.water,
             });
             damageTime = 0;
           }
@@ -464,7 +465,7 @@ function Hero() {
 
       scope.controls.getObject().position.y += (scope.velocity.y * scope.delta);
 
-      if (scope.moveHidden || scope.onLargeWater) {
+      if (scope.moveHidden || onLargeWater) {
         scope.height = DESIGN.HERO.height / 2;
       } else scope.height = DESIGN.HERO.height;
 

@@ -180,9 +180,7 @@ function Ammo() {
       inEnemy = scope.intersections.length > 0;
       if (inEnemy) enemy = scope.objectsEnemies.find(enemy => enemy.pseudoMesh.id === scope.intersections[0].object.id);
 
-      if (scope.onBackward || inEnemy) {
-        block(scope, ammo);
-      }
+      if (scope.onBackward || inEnemy) block(scope, ammo);
     }
 
     if (enemy &&
@@ -194,10 +192,13 @@ function Ammo() {
 
       if (enemy.health < 0) {
         enemy.mode = DESIGN.ENEMIES.mode.drunk;
-        enemy.accelerationVelocity = 1;
-        enemy.accelerationBend = 1;
+
+        if (enemy.pseudoMesh === OBJECTS.HORSES.name || enemy.pseudoMesh === OBJECTS.PARROTS.name) {
+          enemy.accelerationVelocity = 1;
+          enemy.accelerationBend = 1;
+        }
       }
-      console.log('Попал!!!', enemy.health);
+      // console.log('Попал!!!', enemy, enemy.health);
     }
   };
 
