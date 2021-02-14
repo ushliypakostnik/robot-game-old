@@ -374,6 +374,11 @@ function Things() {
             scope.setScale({ field: DESIGN.HERO.scales.power.name, value: DESIGN.EFFECTS.parrot.power });
             messagesByIdDispatchHelper(scope, 2, 'pickAnimal', OBJECTS.PARROTS.name);
             break;
+          case OBJECTS.ROBOTS.name:
+            messagesByIdDispatchHelper(scope, 2, 'pickRobot', OBJECTS.ROBOTS.name);
+
+            scope.setScale({ field: DESIGN.HERO.scales.details.name, value: 1 });
+            break;
         }
       }
     }

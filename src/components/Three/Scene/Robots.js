@@ -27,26 +27,31 @@ function Robots() {
   let skeleton;
   let mixer;
 
+  // Острова без стартового
+  const sands = OBJECTS.SANDS.position.slice(1);
+
   let directionOnHero = new Three.Vector3();
   const y = new Three.Vector3( 0, 1, 0 );
   let angle;
   let rotate;
   let bend;
-  let decision;
   let dictance;
   let rotateCooeficient = 1;
-
 
   let intoxication;
   let speed;
 
+  /* Для тестирования - выставить всех роботов на стартовый остров:
   const test = [
     [DESIGN.HERO.start[0] + 10, DESIGN.HERO.start[1] + 10],
     [DESIGN.HERO.start[0] + 20, DESIGN.HERO.start[1] + 25],
-  ];
+    [DESIGN.HERO.start[0] + 30, DESIGN.HERO.start[1] - 35],
+    [DESIGN.HERO.start[0] - 20, DESIGN.HERO.start[1] - 25],
+  ]; */
 
   const fakeMaterial = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.robot0x });
   fakeMaterial.blending = Three.NoBlending;
+  fakeMaterial.side = Three.DoubleSide;
   const fakeGeometry = new Three.SphereBufferGeometry(OBJECTS.ROBOTS.scale * 5, 32, 32);
   let pseudoMesh;
 
@@ -62,11 +67,11 @@ function Robots() {
 
         robot.scale.set(OBJECTS.ROBOTS.scale, OBJECTS.ROBOTS.scale, OBJECTS.ROBOTS.scale);
         robot.rotateY(Math.PI / 7);
-        robot.position.set(test[i][0], OBJECTS.ROBOTS.positionY, test[i][1]);
+        robot.position.set(sands[i][0], OBJECTS.ROBOTS.positionY, sands[i][1]);
 
         mixer = new Three.AnimationMixer(robot);
         mixer.clipAction(animations[0]).setDuration(1).setEffectiveTimeScale(1).setEffectiveWeight(1);
-        mixer.clipAction(animations[1]).setEffectiveTimeScale(1).setEffectiveWeight(1);
+        mixer.clipAction(animations[1]).setDuration(3).setEffectiveTimeScale(1).setEffectiveWeight(1);
         mixer.clipAction(animations[5]).setDuration(1).setEffectiveTimeScale(1).setEffectiveWeight(1);
         mixer.clipAction(animations[6]).setDuration(1).setEffectiveTimeScale(1).setEffectiveWeight(1);
 
@@ -82,7 +87,7 @@ function Robots() {
         pseudoMesh.name = OBJECTS.ROBOTS.name;
 
         pseudoMesh.scale.set(0.5, 1, 0.5);
-        pseudoMesh.position.set(test[i][0], OBJECTS.ROBOTS.positionY, test[i][1]);
+        pseudoMesh.position.set(sands[i][0], OBJECTS.ROBOTS.positionY, sands[i][1]);
         pseudoMesh.visible = false;
 
         robots.push({
@@ -96,6 +101,7 @@ function Robots() {
           side: null,
           distanceToHero: null,
           isPunch: false,
+          isDrunk: false,
         });
         scope.scene.add(robot);
         scope.scene.add(skeleton);
@@ -148,8 +154,6 @@ function Robots() {
           if (robot.mixer.clipAction(animations[5]).isRunning()) robot.mixer.clipAction(animations[5]).fadeOut(1).stop();
           if (robot.mixer.clipAction(animations[6]).isRunning()) robot.mixer.clipAction(animations[6]).fadeOut(1).stop();
           if (!robot.mixer.clipAction(animations[0]).isRunning()) robot.mixer.clipAction(animations[0]).fadeIn(1).play();
-
-          // sober(robot, scope);
           break;
 
         // Aктивный режим
@@ -195,7 +199,8 @@ function Robots() {
             dictance = scope.controls.getObject().position.distanceTo(robot.mesh.position);
             rotateCooeficient = dictance - robot.distanceToHero < 1 ? dictance * 2.5 / robot.distanceToHero : 1;
 
-            if (dictance < OBJECTS.ROBOTS.distance[robot.mode] / 1.5) {
+            // Удар?
+            if (dictance < OBJECTS.ROBOTS.distance[robot.mode] / 1.75) {
               robot.isPunch = true;
               if (!scope.isNotDamaged) {
                 scope.setHeroOnDamage(true);
@@ -234,14 +239,23 @@ function Robots() {
         // Опьянел
         case DESIGN.ENEMIES.mode.drunk:
           stop(robot);
+          if (robot.isPunch) robot.isPunch = false;
+          scope.setHeroOnDamage(false);
           if (robot.mixer.clipAction(animations[0]).isRunning()) robot.mixer.clipAction(animations[0]).fadeOut(1).stop();
           if (robot.mixer.clipAction(animations[5]).isRunning()) robot.mixer.clipAction(animations[5]).fadeOut(1).stop();
           if (robot.mixer.clipAction(animations[6]).isRunning()) robot.mixer.clipAction(animations[6]).fadeOut(1).stop();
-          if (!robot.mixer.clipAction(animations[1]).isRunning()) {
+          if (!robot.isDrunk) {
+            robot.isDrunk = true;
             robot.mixer.clipAction(animations[1]).loop = Three.LoopOnce;
             robot.mixer.clipAction(animations[1]).clampWhenFinished = true;
-            robot.mixer.clipAction(animations[1]).setDuration(5).fadeIn(1).play();
-            console.log(robot.mixer);
+            robot.mixer.clipAction(animations[1]).fadeIn(1).play();
+
+            robot.mixer.addEventListener( 'finished', (e) => {
+              robot.mode = DESIGN.ENEMIES.mode.thing;
+              robot.pseudoMesh.userData = { isThing: true };
+              robot.pseudoMesh.position.y -= 1;
+              robot.pseudoMesh.scale.set(0.5, 0.5, 0.5);
+            });
           }
           break;
       }

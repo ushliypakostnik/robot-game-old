@@ -1,24 +1,5 @@
 <template>
   <div class="game">
-    <div
-      class="game__overlay"
-      :class="[
-        (isHeroOnWater || isHeroOnDamage) && !isNotDamaged && !isGameOver && `game__overlay--damage damage`,
-        isGameOver && `game__overlay--gameover`,
-      ]"
-    >
-      <h1
-        v-if="isGameOver"
-        class="game__gameover"
-      >{{ $t('layout.gameover') }}</h1>
-      <button
-        class="button"
-        type="button"
-        v-if="isGameOver"
-        @click.prevent.stop="reload()"
-      >{{ $t('layout.gameovebutton') }}</button>
-    </div>
-
     <div class="game__things">
       <div class="game__thing game__thing--daffodils">
         <div class="game__thing-circle" />{{ flower(daffodil) }}
@@ -64,24 +45,25 @@
         :key="index"
         class="game__message-wrapper"
       >
-        <!-- Подобрать предмет / поверженого врага (в дальнейшем)? -->
+        <!-- Подобрать предмет / поверженого врага -->
         <div
           v-if="message[1] === 1"
           class="game__message"
         >{{ $t(`messages.message${message[1]}`) }} {{ getMessageByName(message[2]) }}</div>
 
-        <!-- Нумерованные сообщения о режимах, применении предметов, конце действия эффектов  -->
+        <!-- Нумерованные сообщения о режимах, подборе и применении предметов, конце действия эффектов  -->
         <div
           v-if="message[1] === 2"
           class="game__message game__message--small"
         >
           {{message[0]}}: <span v-html="$t(`messages.message2.${message[2]}`)" />
           <span v-if="message[3]"> {{ getMessageByName(message[3]) }}</span>
+          <span v-if="message[2] === 'pickRobot' && needMore > 0"><br />({{ $t(`messages.message2.pickRobotMore`) }}: {{ needMore }})</span>
         </div>
 
         <!-- Стартовое сообщение - реплика подруги -->
         <div
-          v-if="message[1] === 3 && message[2] === 'start'"
+          v-if="message[1] === 3"
           class="game__message game__message--xsmall"
         >
           <div v-html="$t(`messages.message3.${message[2]}`)" />
@@ -95,7 +77,15 @@
           <div v-html="$t(`messages.message4.${message[2]}`)" />
         </div>
 
-        <!-- Нумерованные сообщения связанные с врагами  -->
+        <!-- Когда разобрал всех роботов-танцоров -->
+        <div
+          v-if="message[1] === 6"
+          class="game__message game__message--small"
+        >
+          <div v-html="$t(`messages.message6.${message[2]}`)" />
+        </div>
+
+        <!-- Нумерованные сообщения связанные с положением в мире и врагами  -->
         <div
           v-if="message[1] === 5"
           class="game__message game__message--small"
@@ -103,8 +93,29 @@
           {{message[0]}}: <span v-html="$t(`messages.message5.${message[2]}`)" />
           <span v-if="message[3]"> {{ $t(`enemies.${message[3]}.declination`) }}</span>
         </div>
-
       </div>
+    </div>
+
+    <div
+      class="game__overlay"
+      :class="[
+        (isHeroOnWater || isHeroOnDamage)
+        && !isNotDamaged && !isGameOver && `game__overlay--damage damage`,
+        isGameOver && !isWin && `game__overlay--gameover game__overlay--fail`,
+        isGameOver && isWin && `game__overlay--gameover game__overlay--win`,
+      ]"
+    >
+      <h1 v-if="isGameOver && !isWin">{{ $t('layout.gameover') }}</h1>
+      <h1
+        v-else-if="isGameOver && isWin"
+        v-html="$t('layout.win')"
+      />
+      <button
+        class="button"
+        type="button"
+        v-if="isGameOver"
+        @click.prevent.stop="reload()"
+      >{{ $t('layout.gameovebutton') }}</button>
     </div>
   </div>
 </template>
@@ -135,19 +146,27 @@ export default {
       daffodil: 'hero/daffodil',
       tulip: 'hero/tulip',
 
-      isHeroOnDamage: 'hero/isHeroOnWater',
+      details: 'hero/details',
+
+      isHeroOnDamage: 'hero/isHeroOnDamage',
       isHeroOnWater: 'hero/isHeroOnWater',
       isHeroTired: 'hero/isHeroTired',
       isNotDamaged: 'hero/isNotDamaged',
       isNotTired: 'hero/isNotTired',
 
       messages: 'layout/messages',
+
       isGameOver: 'layout/isGameOver',
+      isWin: 'layout/isWin',
     }),
 
     ammoMagazine() {
       const magazine = Math.floor((this.ammo - 1) / DESIGN.EFFECTS.bottle.ammo) + 1;
       return magazine < 10 ? '0' + magazine : magazine;
+    },
+
+    needMore() {
+      return OBJECTS.ROBOTS.quantity - this.details;
     },
   },
 
@@ -178,6 +197,7 @@ export default {
           return this.$t(`things.${name}.declination`);
         case OBJECTS.HORSES.name:
         case OBJECTS.PARROTS.name:
+        case OBJECTS.ROBOTS.name:
           return this.$t(`enemies.${name}.declination`);
       }
     },
@@ -212,14 +232,22 @@ export default {
       background: $colors__primary-light--transparent;
     }
 
+    &--fail {
+      background: $colors__primary-light--transparent;
+    }
+
+    &--win {
+      background: $colors__crocus--transparent;
+    }
+
     &--gameover {
       display: flex;
       justify-content: center;
       align-items: center;
       flex-direction: column;
-      background: $colors__primary-light--transparent2;
 
       h1 {
+        text-align: center;
         margin-top: $gutter * 2;
         color: $colors__white;
         @include text($font-size--large * 2);

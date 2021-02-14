@@ -26,6 +26,7 @@ function Parrots() {
 
   const fakeMaterial = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.parrot0x });
   fakeMaterial.blending = Three.NoBlending;
+  fakeMaterial.side = Three.DoubleSide;
   const fakeGeometry = new Three.SphereBufferGeometry(OBJECTS.PARROTS.scale * 60, 32, 32);
   let pseudoMesh;
 
@@ -88,7 +89,7 @@ function Parrots() {
         Z = randomInteger(-1 * DESIGN.GROUND_SIZE / 2, DESIGN.GROUND_SIZE / 2);
 
         [x, z] = fixEnemyPosition(
-          PARROTS_RADIUS,
+          PARROTS_RADIUS * 0.9,
           scope.objectsStoneData,
           scope.objectsTreesData, X, Z);
 
@@ -265,7 +266,7 @@ function Parrots() {
 
             parrot.mesh.position.y -= scope.delta * 10;
             parrot.pseudoMesh.position.y = parrot.mesh.position.y;
-            if (onDown < 0.5) {
+            if (onDown < 1) {
               parrot.mode = DESIGN.ENEMIES.mode.thing;
               parrot.pseudoMesh.userData = { isThing: true };
               parrot.pseudoMesh.position.y -= 0.5;

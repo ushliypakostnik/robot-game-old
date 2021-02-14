@@ -28,6 +28,7 @@ function Horses() {
 
   const fakeMaterial = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.horse0x });
   fakeMaterial.blending = Three.NoBlending;
+  fakeMaterial.side = Three.DoubleSide;
   const fakeGeometry = new Three.SphereBufferGeometry(OBJECTS.HORSES.scale * 220, 32, 32);
   let pseudoMesh;
 
@@ -94,7 +95,7 @@ function Horses() {
         Z = randomInteger(-1 * DESIGN.GROUND_SIZE / 2, DESIGN.GROUND_SIZE / 2);
 
         [x, z] = fixEnemyPosition(
-          HORSES_RADIUS,
+          HORSES_RADIUS * 0.9,
           scope.objectsStoneData,
           scope.objectsTreesData, X, Z);
 

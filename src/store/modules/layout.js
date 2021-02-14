@@ -6,9 +6,12 @@ const initialState = {
   language: null,
   isPause: true,
   isDrone: false,
+
   messages: [],
   message: 0,
+
   isGameOver: false,
+  isWin: false,
 };
 
 const state = initialState;
@@ -20,6 +23,7 @@ const getters = {
   messages: state => state.messages,
   message: state => state.message,
   isGameOver: state => state.isGameOver,
+  isWin: state => state.isWin,
 };
 
 let messages;
@@ -57,6 +61,10 @@ const actions = {
 
   setGameOver: ({ commit }, isGameOver) => {
     commit('setGameOver', isGameOver);
+  },
+
+  setWin: ({ commit }, isWin) => {
+    commit('setWin', isWin);
   },
 };
 
@@ -99,6 +107,10 @@ const mutations = {
 
   setGameOver: (state, isGameOver) => {
     state.isGameOver = isGameOver;
+  },
+
+  setWin: ({ commit }, isWin) => {
+    state.isWin = isWin;
   },
 };
 

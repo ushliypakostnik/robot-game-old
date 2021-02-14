@@ -29,12 +29,14 @@ const size = (size) => {
 const ammo = 25;
 
 export const DESIGN = {
-  V: 0.2,
+  V: 0.3,
   BREAKPOINTS: {
     desktop: 1025,
   },
   COLORS: {
     primary0x: 0x621211,
+    fog0x: 0x615ebc,
+    background0x: 0x4542a0,
     anemone0x: 0xffffff,
     crocus0x: 0x8267bf,
     daffodil0x: 0xf0cf08,
@@ -100,6 +102,9 @@ export const DESIGN = {
         start: ammo * 100,
         objects: ammo,
       },
+      details: {
+        name: 'details',
+      }
     },
   },
   ENEMIES: {
@@ -134,10 +139,10 @@ export const DESIGN = {
       ammo: ammo * 4,
     },
     horse: {
-      power: 10,
+      power: 11,
     },
     parrot: {
-      power: 7,
+      power: 9,
     },
   },
 };
@@ -149,7 +154,7 @@ export const OBJECTS = {
   ROBOTS: {
     name: 'robot',
     scale: 1.75,
-    quantity: 2,
+    quantity: 4,
     positionY: 0.3,
     velocityMove: {
       [DESIGN.ENEMIES.mode.idle]: 1,
@@ -161,7 +166,7 @@ export const OBJECTS = {
     distance: {
       [DESIGN.ENEMIES.mode.active]: 18,
     },
-    damage: 1, // 0.005
+    damage: 0.005,
   },
   HORSES: {
     name: 'horse',
@@ -258,25 +263,27 @@ export const OBJECTS = {
       // Стартовый остров - рядом с отдельным заливом 2, который дальше и меньше
       [DESIGN.HERO.start[0] + size(-0.01), DESIGN.HERO.start[1] - size(-0.01), size(0.045)],
 
-      // В 1
+      // В озере рядом с центром
+      [size(0.15), size(0.19), size(0.04)],
+
+      // В озере 1 - дальше в море большой
+      [size(-0.67), size(-0.23), size(0.05)],
+
+      // Рядом с отдельным заливом 2 - рядом и большой
+      [size(-0.55), size(0.35), size(0.07)],
+
+      // В море между предыдущим и заливом
+      [size(0.225), size(-0.625), size(0.065)],
+
+      // В озере 1
       [size(-0.31), size(-0.375), size(0.08)],
 
       // В море рядом с 1
       [size(-0.5), size(-0.33), size(0.09)], // соединенный с сушей (чаще всего - зависит от рандомной корректировки)
-      [size(-0.67), size(-0.23), size(0.05)], // дальше в море больший
       [size(-0.63), size(-0.13), size(0.027)], // ближе к берегу меньший
-
-      // В озере рядом с центром
-      [size(0.15), size(0.19), size(0.04)],
-
-      // Рядом с отдельным заливом 2
-      [size(-0.55), size(0.35), size(0.07)], // рядом и больший
 
       // Рядом с отдельным заливом 1
       [size(0.45), size(-0.45), size(0.05)],
-
-      // В море между предыдущим и заливом
-      [size(0.225), size(-0.625), size(0.065)],
     ],
   },
   MOUNTAINS: {
@@ -404,6 +411,7 @@ export const LOCALES = {
       gadgetsgate: 'You need a PC keyboard to play',
       chromegate: 'In order to play, open in the Google Chrome (or Yandex) browser',
       gameover: 'GAME OVER',
+      win: `MISSION<br />COMPLETED`,
       gameovebutton: 'Replay',
     },
     messages: {
@@ -422,6 +430,8 @@ export const LOCALES = {
         pickBottle: 'The wine tank has been refilled!',
         pickFlower: 'Robot plucked a:',
         pickAnimal: 'Robot reworked:',
+        pickRobot: 'Disassemble for parts: ',
+        pickRobotMore: 'need more',
       },
       message3: {
         start: `The drinking robot-woman says:<br />««When we get off this atoll?<br />'It\'s full of dancing yellow robots,<br />which can be drunk<br />and disassembled for spare parts,<br />to fix our boat?»`,
@@ -433,6 +443,9 @@ export const LOCALES = {
         enemiesBeside: `Enemies spotted nearby!<br />The robot should be careful!`,
         notEnemiesBeside: 'No one around...',
         discovered: 'The robot disturbed '
+      },
+      message6: {
+        end: `Robot collected enough parts,<br />and must return to a friend and a broken boat`,
       },
     },
     things: {
@@ -496,6 +509,7 @@ export const LOCALES = {
       gadgetstext: 'Для того чтобы играть нужна клавиатура персонального компьютера',
       chromegate: 'Для того чтобы играть откройте в браузере Google Chrome (или Яндекс)',
       gameover: 'КОНЕЦ ИГРЫ',
+      win: `МИССИЯ<br />ВЫПОЛНЕННА`,
       gameovebutton: 'Играть заново',
     },
     messages: {
@@ -514,6 +528,8 @@ export const LOCALES = {
         pickBottle: 'Бак с вином пополнен!',
         pickFlower: 'Робот сорвал:',
         pickAnimal: 'Робот переработал:',
+        pickRobot: 'Разобрать на запчасти: ',
+        pickRobotMore: 'нужно еще',
       },
       message3: {
         start: `Робот-собутыльница говорит:<br />«Когда мы уже свалим с этого атолла?<br />Здесь полно танцующих желтых роботов,<br />которых можно опоить<br />и разобрать на запчасти,<br />чтобы починить наш катер?»`,
@@ -525,6 +541,9 @@ export const LOCALES = {
         enemiesBeside: `Рядом замечены враги!<br/>Роботу стоит быть осторожнее!`,
         notEnemiesBeside: 'Рядом никого...',
         discovered: 'Робот потревожил'
+      },
+      message6: {
+        end: `Робот собрал достаточно деталей,<br />и должкен вернутся к подруге и сломанному катеру!`,
       },
     },
     things: {

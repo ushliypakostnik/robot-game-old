@@ -14,6 +14,8 @@ function Plot() {
   let animations;
   let mixer;
 
+  let toWin = false;
+
   this.init = (scope) => {
     // Boat
     OBJLoader.load('./images/models/tekne.obj', (boat) => {
@@ -40,7 +42,8 @@ function Plot() {
       woman = gltf.scene;
       animations = gltf.animations;
 
-      // woman.rotation.x = -Math.PI / 2;
+      console.log(animations);
+
       woman.scale.set(1.9, 1.9, 1.9);
       woman.rotateY(Math.PI / 7);
       woman.position.set(DESIGN.HERO.start[0] - 7, 0.3, DESIGN.HERO.start[1] - 20);
@@ -60,7 +63,14 @@ function Plot() {
   };
 
   this.animate = (scope) => {
-    if (mixer) mixer.update(scope.delta / 2);
+    if (mixer) {
+      mixer.update(scope.delta / 2);
+
+      if (scope.isWin && !toWin) {
+        toWin = true;
+        if (mixer.clipAction(animations[1]).isRunning()) mixer.clipAction(animations[1]).stop();
+      }
+    }
   };
 }
 

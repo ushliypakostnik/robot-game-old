@@ -37,7 +37,7 @@ function Atmosphere() {
   const geometry = new Three.SphereBufferGeometry(1, 1, 1);
   const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
 
-  let isStart = false;
+  let isStart = false;;
 
   this.init = (scope) => {
     const sun = new Three.Vector3();
@@ -238,7 +238,15 @@ function Atmosphere() {
         // Стартовая позиция
         if (distance2D(DESIGN.HERO.start[0], DESIGN.HERO.start[1], newX, newZ) < OBJECTS.SANDS.position[0][2]) {
           scope.isOnStart = true;
-          messagesByViewDispatchHelper(scope, 3, 'start');
+          if (scope.details !== OBJECTS.ROBOTS.quantity) messagesByViewDispatchHelper(scope, 3, 'start');
+          else {
+            scope.hideMessageByView(6);
+
+            setTimeout(() => {
+              scope.setWin(true);
+              scope.setGameOver(true);
+            }, DESIGN.MESSAGES_TIMEOUT);
+          }
         } else {
           scope.isOnStart = false;
           scope.hideMessageByView(3);

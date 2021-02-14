@@ -17,11 +17,6 @@
   animation: spin linear $animation-duration infinite;
 }
 
-.hit {
-  will-change: opacity;
-  animation: hit $animation-duration 1;
-}
-
 .damage {
   will-change: opacity;
   animation: hit $animation-duration infinite;

@@ -23,7 +23,7 @@ import { FilmPass } from '@/components/Three/Modules/Postprocessing/FilmPass';
 import Stats from '@/components/Three/Modules/Utils/Stats';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
-import { messagesByIdDispatchHelper } from '@/utils/utilities';
+import { messagesByIdDispatchHelper, messagesByViewDispatchHelper } from '@/utils/utilities';
 
 import Atmosphere from './Atmosphere';
 import Grass from './Grass';
@@ -179,8 +179,11 @@ export default {
 
       isPause: 'layout/isPause',
       isDrone: 'layout/isDrone',
+
       messages: 'layout/messages',
       message: 'layout/message',
+
+      isWin: 'layout/isWin',
       isGameOver: 'layout/isGameOver',
 
       power: 'hero/power',
@@ -191,6 +194,8 @@ export default {
       crocus: 'hero/crocus',
       daffodil: 'hero/daffodil',
       tulip: 'hero/tulip',
+
+      details: 'hero/details',
 
       isHeroOnDamage: 'hero/isHeroOnDamage',
       isHeroOnWater: 'hero/isHeroOnWater',
@@ -208,15 +213,6 @@ export default {
       }
     },
 
-    heroOnDamage: {
-      get() {
-        return this.isHeroOnDamage;
-      },
-      set(value) {
-        this.setHeroOnDamage(value);
-      }
-    },
-
     isKeysLock() {
       return this.isPause || this.isDrone;
     },
@@ -230,6 +226,8 @@ export default {
       addMessage: 'layout/addMessage',
       showMessage: 'layout/showMessage',
       hideMessageByView: 'layout/hideMessageByView',
+
+      setWin: 'layout/setWin',
       setGameOver: 'layout/setGameOver',
 
       setHeroOnDamage: 'hero/setHeroOnDamage',
@@ -254,10 +252,10 @@ export default {
       // Scene
 
       this.scene = new Three.Scene();
-      this.scene.background = new Three.Color(0x4542a0);
+      this.scene.background = new Three.Color(DESIGN.COLORS.background0x);
 
       // Туман
-      this.scene.fog = new Three.Fog(0x615ebc, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE);
+      this.scene.fog = new Three.Fog(DESIGN.COLORS.fog0x, DESIGN.GROUND_SIZE / 10, DESIGN.GROUND_SIZE / 2);
 
       // Cameras
 
@@ -682,6 +680,10 @@ export default {
 
         this.controls.lock();
       }
+    },
+
+    details(value) {
+      if (value === OBJECTS.ROBOTS.quantity) messagesByViewDispatchHelper(this, 6, 'end');
     },
 
     isGameOver(value) {

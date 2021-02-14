@@ -307,34 +307,33 @@ function Hero() {
 
       // Урон персонажу
       if (!scope.isNotDamaged) {
-        // Урон от воды
-        if (scope.heroOnWater && scope.canJump) {
+        // Урон от воды или персонажей
+        if ((scope.heroOnWater && scope.canJump) || scope.isHeroOnDamage) {
           if (!damageClock.running) {
             damageClock.start();
 
-            if (damage && damage.children[0]) {
-              damage.children[0].play();
+            if (damage && damage.children[0]) damage.children[0].play();
+          }
+
+          delta = damageClock.getDelta();;
+
+          // Урон от воды
+          if (scope.heroOnWater && scope.canJump) {
+            damageTime += delta
+            if (damageTime > 0.05) {
+              scope.setScale({
+                field: DESIGN.HERO.scales.health.name,
+                value: DESIGN.HERO.damage.water,
+              });
+              damageTime = 0;
             }
           }
 
-          delta = damageClock.getDelta();
-          damageTime += delta;
           damageSoundTime += delta;
-
-          if (damageTime > 0.05) {
-            scope.setScale({
-              field: DESIGN.HERO.scales.health.name,
-              value: DESIGN.HERO.damage.water,
-            });
-            damageTime = 0;
-          }
-
           if (damageSoundTime > 0.5) {
             damageSoundTime = 0;
 
-            if (damage && damage.children[0]) {
-              damage.children[0].play();
-            }
+            if (damage && damage.children[0]) damage.children[0].play();
           }
         } else {
           if (damageClock.running) damageClock.stop();

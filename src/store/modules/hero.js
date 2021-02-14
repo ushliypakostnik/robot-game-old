@@ -12,6 +12,8 @@ const initialState = {
   daffodil: 0,
   tulip: 0,
 
+  details: 0,
+
   isHeroOnDamage: false,
   isHeroOnWater: false,
   isHeroTired: false,
@@ -32,6 +34,8 @@ const getters = {
   daffodil: state => state.daffodil,
   tulip: state => state.tulip,
 
+  details: state => state.details,
+
   isHeroOnDamage: state => state.isHeroOnDamage,
   isHeroOnWater: state => state.isHeroOnWater,
   isHeroTired: state => state.isHeroTired,
@@ -41,7 +45,7 @@ const getters = {
 
 const actions = {
   setHeroOnDamage: ({ commit }, isHeroOnDamage) => {
-    commit('setHeroOnWater', isHeroOnDamage);
+    commit('setHeroOnDamage', isHeroOnDamage);
   },
 
   setHeroOnWater: ({ commit }, isHeroOnWater) => {
