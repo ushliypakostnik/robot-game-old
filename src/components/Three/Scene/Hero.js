@@ -417,10 +417,8 @@ function Hero() {
       scope.direction.x = Number(scope.moveRight) - Number(scope.moveLeft);
       scope.direction.normalize(); // this ensures consistent movements in all directions
 
-      // eslint-disable-next-line max-len
-      if (scope.moveForward || scope.moveBackward) scope.velocity.z -= scope.direction.z * DESIGN.HERO.speed * scope.delta;
-      // eslint-disable-next-line max-len
-      if (scope.moveLeft || scope.moveRight) scope.velocity.x -= scope.direction.x * DESIGN.HERO.speed * scope.delta;
+      if (scope.moveForward || scope.moveBackward) scope.velocity.z -= scope.direction.z * DESIGN.HERO.speed * scope.delta * (!scope.canJump + 1);
+      if (scope.moveLeft || scope.moveRight) scope.velocity.x -= scope.direction.x * DESIGN.HERO.speed * scope.delta * (!scope.canJump + 1);
 
       // Скорость движения в зависимости от режима
       if (scope.moveHidden) {

@@ -42,8 +42,6 @@ function Plot() {
       woman = gltf.scene;
       animations = gltf.animations;
 
-      console.log(animations);
-
       woman.scale.set(1.9, 1.9, 1.9);
       woman.rotateY(Math.PI / 7);
       woman.position.set(DESIGN.HERO.start[0] - 7, 0.3, DESIGN.HERO.start[1] - 20);

@@ -186,7 +186,7 @@ function Parrots() {
       decision = randomInteger(1, 50) === 1;
       if (decision) parrot.accelerationBend = Math.random();
 
-      parrot.mesh.rotateY(degreesToRadians((parrot.bend + parrot.accelerationBend) * OBJECTS.PARROTS.velocityBend[parrot.mode] * intoxication * scope.delta));
+      parrot.mesh.rotateY(degreesToRadians(parrot.bend * parrot.accelerationBend * OBJECTS.PARROTS.velocityBend[parrot.mode] * intoxication * scope.delta));
 
       decision = randomInteger(1, 50) === 1;
       if (decision) parrot.accelerationVelocity = Math.random() + 0.5;

@@ -36,6 +36,7 @@ function Robots() {
   let rotate;
   let bend;
   let dictance;
+  let decision;
   let rotateCooeficient = 1;
 
   let intoxication;
@@ -97,7 +98,6 @@ function Robots() {
           mesh: robot,
           pseudoMesh,
           mixer,
-          bend,
           side: null,
           distanceToHero: null,
           isPunch: false,
@@ -177,19 +177,23 @@ function Robots() {
           scope.raycasterForward.set(robot.mesh.position, scope.directionForward);
           scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical);
 
-          // Объект спереди - поворачиваем
+          // Позиция
           if (scope.intersections.length > 0) {
-            // Позиция
-            // console.log('Отбрасываем!!!');
-            if (scope.intersections[0].distance < 1) {
-              robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta * 10));
-              robot.pseudoMesh.position.add(robot.pseudoMesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta * 10));
+            // Объект спереди
+            console.log('Спереди!!!');
+            if (scope.intersections[0].distance < 2) {
+              // Слишком близко - отбрасываем
+              console.log('Отбрасываем!!!');
+              robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.ROBOTS.distance[robot.mode] * 2 * scope.delta));
+              robot.pseudoMesh.position.add(robot.pseudoMesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.ROBOTS.distance[robot.mode] * 2 * scope.delta));
             } else {
+              console.log('Не отбрасываем!!!');
               robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
               robot.pseudoMesh.position.add(robot.pseudoMesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
             }
 
             // Поворот
+            console.log('Поворачиваем!!!');
             robot.side = yesOrNo();
             robot.mesh.rotateY(robot.side * Math.PI / 4);
           } else {

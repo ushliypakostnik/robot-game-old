@@ -218,7 +218,7 @@ function Horses() {
       decision = randomInteger(1, 50) === 1;
       if (decision) horse.accelerationBend = Math.random();
 
-      horse.mesh.rotateY(degreesToRadians((horse.bend + horse.accelerationBend) * OBJECTS.HORSES.velocityBend[horse.mode] * intoxication * scope.delta));
+      horse.mesh.rotateY(degreesToRadians(horse.bend * horse.accelerationBend * OBJECTS.HORSES.velocityBend[horse.mode] * intoxication * scope.delta));
 
       decision = randomInteger(1, 50) === 1;
       if (decision) {
