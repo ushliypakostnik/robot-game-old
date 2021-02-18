@@ -180,20 +180,16 @@ function Robots() {
           // Позиция
           if (scope.intersections.length > 0) {
             // Объект спереди
-            console.log('Спереди!!!');
+            // Слишком близко - отбрасываем сильнее
             if (scope.intersections[0].distance < 2) {
-              // Слишком близко - отбрасываем
-              console.log('Отбрасываем!!!');
               robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.ROBOTS.distance[robot.mode] * 2 * scope.delta));
               robot.pseudoMesh.position.add(robot.pseudoMesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.ROBOTS.distance[robot.mode] * 2 * scope.delta));
             } else {
-              console.log('Не отбрасываем!!!');
               robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
               robot.pseudoMesh.position.add(robot.pseudoMesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
             }
 
             // Поворот
-            console.log('Поворачиваем!!!');
             robot.side = yesOrNo();
             robot.mesh.rotateY(robot.side * Math.PI / 4);
           } else {
