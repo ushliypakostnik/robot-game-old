@@ -256,7 +256,7 @@ function Hero() {
       if (scope.onBackward) scope.object = scope.intersections[0].object;
 
       // Right
-      scope.directionRight = new Three.Vector3(0, 0, 0).crossVectors(scope.directionForward, scope.y);
+      scope.directionRight = new Three.Vector3(0, 0, 0).crossVectors(scope.directionForward, scope.yN);
       scope.raycasterRight.set(scope.camera.getWorldPosition(scope.position), scope.directionRight);
       scope.intersections = scope.raycasterRight.intersectObjects(scope.objectsVertical);
       scope.onRight = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;

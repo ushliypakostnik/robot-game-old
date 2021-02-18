@@ -73,6 +73,7 @@ export default {
 
       x: null,
       y: null,
+      y2: null,
       z: null,
 
       moveSpeed: null,
@@ -138,6 +139,17 @@ export default {
       parrots: null,
 
       isOnStart: true, // Для стартовой позиции, см. Atmosphere.js
+
+      // рабочие-переменные для анимационных циклов ПНС
+      decision: null,
+      intoxication: null,
+      speed: null,
+      directionOnHero: null,
+      angle: null,
+      rotate: null,
+      rotateCooeficient: 1,
+      bend: null,
+      distance: null,
     };
   },
 
@@ -148,9 +160,11 @@ export default {
     this.directionStore = this.startDirection;
     this.position = new Three.Vector3();
     this.x = new Three.Vector3(1, 0, 0);
-    this.y = new Three.Vector3(0, -1, 0);
+    this.y = new Three.Vector3(0, 1, 0);
+    this.yN = new Three.Vector3(0, -1, 0);
     this.z = new Three.Vector3(0, 0, 1);
     // this.mouse = new Three.Vector2();
+    this.directionOnHero = new Three.Vector3();
 
     this.listener = new Three.AudioListener();
 

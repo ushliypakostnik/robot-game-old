@@ -38,16 +38,7 @@ function Horses() {
   let Z;
   let x;
   let z;
-  let rotate;
-  let bend;
-  let accelerationVelocity;
-  let accelerationBend;
-
   let mixer;
-  let decision;
-
-  let intoxication;
-  let speed;
 
   const HORSES_RADIUS = DESIGN.GROUND_SIZE * 0.49;
 
@@ -101,12 +92,8 @@ function Horses() {
 
         horse.position.set(x, 0, z);
 
-        rotate = randomInteger(-180, 180);
-        bend = yesOrNo();
-        horse.rotateY(degreesToRadians(rotate));
-
-        accelerationVelocity = Math.random();
-        accelerationBend = Math.random();
+        scope.rotate = randomInteger(-180, 180);
+        horse.rotateY(degreesToRadians(scope.rotate));
 
         mixer = new Three.AnimationMixer(horse);
         mixer.clipAction(gltf.animations[0]).setDuration(1).play();
@@ -125,9 +112,9 @@ function Horses() {
           mesh: horse,
           pseudoMesh,
           mixer,
-          bend,
-          accelerationVelocity,
-          accelerationBend,
+          bend: yesOrNo(),
+          accelerationVelocity: Math.random(),
+          accelerationBend: Math.random(),
           onForward: false,
           side: null,
           isOnWater: null,
@@ -160,14 +147,14 @@ function Horses() {
     }
 
     // Скорость
-    intoxication = getMinIntoxication(horse.health);
-    speed = horse.accelerationVelocity * OBJECTS.HORSES.velocityMove[horse.mode] * intoxication;
+    scope.intoxication = getMinIntoxication(horse.health);
+    scope.speed = horse.accelerationVelocity * OBJECTS.HORSES.velocityMove[horse.mode] * scope.intoxication;
 
     // Скорость аудио
     if (horse.mesh.children[0] && horse.mesh.children[0].isPlaying)
-      horse.mesh.children[0].setPlaybackRate( speed / 1.5);
+      horse.mesh.children[0].setPlaybackRate( scope.speed / 1.5);
     if (horse.mesh.children[1] && horse.mesh.children[1].isPlaying)
-      horse.mesh.children[1].setPlaybackRate(speed / 1.5);
+      horse.mesh.children[1].setPlaybackRate(scope.speed / 1.5);
 
     // Raycast
     // Спереди
@@ -206,22 +193,22 @@ function Horses() {
       horse.mesh.rotateY(horse.side * Math.PI / 4);
 
       // Позиция
-      horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta));
+      horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta));
     } else {
       // Вперед!!!
       horse.onForward = false;
       horse.side = null;
 
-      decision = randomInteger(1, 25) === 1;
-      if (decision) horse.bend = yesOrNo();
+      scope.decision = randomInteger(1, 25) === 1;
+      if (scope.decision) horse.bend = yesOrNo();
 
-      decision = randomInteger(1, 50) === 1;
-      if (decision) horse.accelerationBend = Math.random();
+      scope.decision = randomInteger(1, 50) === 1;
+      if (scope.decision) horse.accelerationBend = Math.random();
 
-      horse.mesh.rotateY(degreesToRadians(horse.bend * horse.accelerationBend * OBJECTS.HORSES.velocityBend[horse.mode] * intoxication * scope.delta));
+      horse.mesh.rotateY(degreesToRadians(horse.bend * horse.accelerationBend * OBJECTS.HORSES.velocityBend[horse.mode] * scope.intoxication * scope.delta));
 
-      decision = randomInteger(1, 50) === 1;
-      if (decision) {
+      scope.decision = randomInteger(1, 50) === 1;
+      if (scope.decision) {
         horse.accelerationVelocity = Math.random() + 0.5;
         if (horse.mode === DESIGN.ENEMIES.mode.idle && horse.accelerationVelocity < 0.75) horse.accelerationVelocity = 0.75;
         else if (horse.mode === DESIGN.ENEMIES.mode.active && horse.accelerationVelocity > 1.25) horse.accelerationVelocity = 1.25;
@@ -232,12 +219,12 @@ function Horses() {
         horse.mesh.rotateY(horse.side * Math.PI / 4);
 
       // Позиция
-      horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).multiplyScalar(speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta));
+      horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta));
     }
 
     // Позиция
     horse.pseudoMesh.position.set(horse.mesh.position.x, 0, horse.mesh.position.z);
-    if (horse.mixer) horse.mixer.update(speed * scope.delta);
+    if (horse.mixer) horse.mixer.update(scope.speed * scope.delta);
   };
 
   this.animate = (scope) => {
@@ -246,8 +233,8 @@ function Horses() {
         // Cпокойный режим
         case DESIGN.ENEMIES.mode.idle:
           // Фыркание
-          decision = randomInteger(1, OBJECTS.HORSES.frequency.fr) === 1;
-          if (decision) {
+          scope.decision = randomInteger(1, OBJECTS.HORSES.frequency.fr) === 1;
+          if (scope.decision) {
             if (horse.pseudoMesh.children[1] && horse.pseudoMesh.children[1].isPlaying) horse.pseudoMesh.children[1].stop();
             if (horse.pseudoMesh.children[0] && !horse.pseudoMesh.children[0].isPlaying) horse.pseudoMesh.children[0].play();
           }
@@ -258,8 +245,8 @@ function Horses() {
         // Aктивный режим
         case DESIGN.ENEMIES.mode.active:
           // Ржание
-          decision = randomInteger(1, OBJECTS.HORSES.frequency.cry) === 1;
-          if (decision) {
+          scope.decision = randomInteger(1, OBJECTS.HORSES.frequency.cry) === 1;
+          if (scope.decision) {
             if (horse.pseudoMesh.children[0] && horse.pseudoMesh.children[0].isPlaying) horse.pseudoMesh.children[0].stop();
             if (horse.pseudoMesh.children[1] && !horse.pseudoMesh.children[1].isPlaying) horse.pseudoMesh.children[1].play();
           }
@@ -274,9 +261,9 @@ function Horses() {
             horse.isStop = true;
           }
 
-          speed = OBJECTS.HORSES.velocityBend[DESIGN.ENEMIES.mode.idle] * horse.stopSide * scope.delta / 20;
-          horse.stopAngle += Math.abs(speed);
-          if (horse.stopAngle < Math.PI / 2) horse.mesh.rotateZ(speed);
+          scope.speed = OBJECTS.HORSES.velocityBend[DESIGN.ENEMIES.mode.idle] * horse.stopSide * scope.delta / 20;
+          horse.stopAngle += Math.abs(scope.speed);
+          if (horse.stopAngle < Math.PI / 2) horse.mesh.rotateZ(scope.speed);
           else {
             horse.mode = DESIGN.ENEMIES.mode.thing;
             horse.pseudoMesh.userData = { isThing: true };

@@ -30,18 +30,6 @@ function Robots() {
   // Острова без стартового
   const sands = OBJECTS.SANDS.position.slice(1);
 
-  let directionOnHero = new Three.Vector3();
-  const y = new Three.Vector3( 0, 1, 0 );
-  let angle;
-  let rotate;
-  let bend;
-  let dictance;
-  let decision;
-  let rotateCooeficient = 1;
-
-  let intoxication;
-  let speed;
-
   /* Для тестирования - выставить всех роботов на стартовый остров:
   const test = [
     [DESIGN.HERO.start[0] + 10, DESIGN.HERO.start[1] + 10],
@@ -79,9 +67,8 @@ function Robots() {
         robot.updateMatrix();
         robot.matrixAutoUpdate = true;
 
-        rotate = randomInteger(-180, 180);
-        bend = yesOrNo();
-        robot.rotateY(degreesToRadians(rotate));
+        scope.rotate = randomInteger(-180, 180);
+        robot.rotateY(degreesToRadians(scope.rotate));
 
         pseudoMesh = new Three.Mesh(fakeGeometry, fakeMaterial);
 
@@ -134,14 +121,14 @@ function Robots() {
     robots.filter(robot => robot.mode !== DESIGN.ENEMIES.mode.thing).forEach((robot) => {
       if (robot.mode === DESIGN.ENEMIES.mode.idle || robot.mode === DESIGN.ENEMIES.mode.active) {
         // Скорость
-        intoxication = getMinIntoxication(robot.health);
-        speed = OBJECTS.ROBOTS.velocityMove[robot.mode] * intoxication;
+        scope.intoxication = getMinIntoxication(robot.health);
+        scope.speed = OBJECTS.ROBOTS.velocityMove[robot.mode] * scope.intoxication;
 
         // Скорость аудио
         if (robot.pseudoMesh.children[0] && robot.pseudoMesh.children[0].isPlaying)
-          robot.pseudoMesh.children[0].setPlaybackRate(speed / 1.5);
+          robot.pseudoMesh.children[0].setPlaybackRate(scope.speed / 1.5);
         if (robot.pseudoMesh.children[1] && robot.pseudoMesh.children[1].isPlaying)
-          robot.pseudoMesh.children[1].setPlaybackRate(speed / 1.5);
+          robot.pseudoMesh.children[1].setPlaybackRate(scope.speed / 1.5);
       }
 
       switch (robot.mode) {
@@ -182,11 +169,11 @@ function Robots() {
             // Объект спереди
             // Слишком близко - отбрасываем сильнее
             if (scope.intersections[0].distance < 2) {
-              robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.ROBOTS.distance[robot.mode] * 2 * scope.delta));
-              robot.pseudoMesh.position.add(robot.pseudoMesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.ROBOTS.distance[robot.mode] * 2 * scope.delta));
+              robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * 2 * scope.delta));
+              robot.pseudoMesh.position.add(robot.pseudoMesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * 2 * scope.delta));
             } else {
-              robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
-              robot.pseudoMesh.position.add(robot.pseudoMesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
+              robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
+              robot.pseudoMesh.position.add(robot.pseudoMesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
             }
 
             // Поворот
@@ -196,11 +183,11 @@ function Robots() {
             // Вперед!!!
             robot.side = null;
 
-            dictance = scope.controls.getObject().position.distanceTo(robot.mesh.position);
-            rotateCooeficient = dictance - robot.distanceToHero < 1 ? dictance * 2.5 / robot.distanceToHero : 1;
+            scope.dictance = scope.controls.getObject().position.distanceTo(robot.mesh.position);
+            scope.rotateCooeficient = scope.dictance - robot.distanceToHero < 1 ? scope.dictance * 2.5 / robot.distanceToHero : 1;
 
             // Удар?
-            if (dictance < OBJECTS.ROBOTS.distance[robot.mode] / 1.75) {
+            if (scope.dictance < OBJECTS.ROBOTS.distance[robot.mode] / 1.75) {
               robot.isPunch = true;
               if (!scope.isNotDamaged) {
                 scope.setHeroOnDamage(true);
@@ -217,18 +204,18 @@ function Robots() {
 
             scope.direction.copy(robot.mesh.getWorldDirection(scope.direction).normalize());
             scope.direction.y = 0;
-            directionOnHero.subVectors(scope.controls.getObject().position, robot.mesh.position).normalize();
-            directionOnHero.y = 0;
-            angle = directionOnHero.angleTo(scope.direction.applyAxisAngle(y, Math.PI / 2));
-            rotate = angle - Math.PI / 2 <= 0 ? rotateCooeficient : -1 * rotateCooeficient;
-            robot.mesh.rotateY(rotate * intoxication * scope.delta);
+            scope.directionOnHero.subVectors(scope.controls.getObject().position, robot.mesh.position).normalize();
+            scope.directionOnHero.y = 0;
+            scope.angle = scope.directionOnHero.angleTo(scope.direction.applyAxisAngle(scope.y, Math.PI / 2));
+            scope.rotate = scope.angle - Math.PI / 2 <= 0 ? scope.rotateCooeficient : -1 * scope.rotateCooeficient;
+            robot.mesh.rotateY(scope.rotate * scope.intoxication * scope.delta);
 
             if (!robot.isPunch) {
               // Позиция
-              robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).multiplyScalar(speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
-              robot.pseudoMesh.position.add(robot.mesh.getWorldDirection(scope.direction).multiplyScalar(speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
+              robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
+              robot.pseudoMesh.position.add(robot.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
 
-              robot.distanceToHero = dictance;
+              robot.distanceToHero = scope.dictance;
             }
           }
 
@@ -260,7 +247,7 @@ function Robots() {
           break;
       }
 
-      if (robot.mixer) robot.mixer.update(speed * scope.delta);
+      if (robot.mixer) robot.mixer.update(scope.speed * scope.delta);
     });
   };
 

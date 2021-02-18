@@ -37,18 +37,9 @@ function Parrots() {
   let x;
   let z;
   let y;
-  let rotate;
-  let bend;
-  let accelerationVelocity;
-  let accelerationBend;
-  let velocityVertical;
-  let onDown;
-
   let mixer;
-  let decision;
 
-  let intoxication;
-  let speed;
+  let onDown; // попугаям нужно кастить вниз
 
   const PARROTS_RADIUS = DESIGN.GROUND_SIZE * 0.525;
 
@@ -95,13 +86,8 @@ function Parrots() {
 
         parrot.position.set(x, y, z);
 
-        rotate = randomInteger(-180, 180);
-        bend = yesOrNo();
-        parrot.rotateY(degreesToRadians(rotate));
-
-        accelerationVelocity = Math.random() + 0.5;
-        accelerationBend = Math.random();
-        velocityVertical = Math.random() + 2.5;
+        scope.rotate = randomInteger(-180, 180);
+        parrot.rotateY(degreesToRadians(scope.rotate));
 
         mixer = new Three.AnimationMixer(parrot);
         mixer.clipAction(gltf.animations[0]).setDuration(1).play();
@@ -120,10 +106,10 @@ function Parrots() {
           mesh: parrot,
           pseudoMesh,
           mixer,
-          bend,
-          accelerationVelocity,
-          accelerationBend,
-          velocityVertical,
+          bend: yesOrNo(),
+          accelerationVelocity: Math.random() + 0.5,
+          accelerationBend: Math.random(),
+          velocityVertical: Math.random() + 2.5,
           beforeObject: false,
           side: null,
           isStop: false,
@@ -146,12 +132,12 @@ function Parrots() {
     if (parrot.mesh.children[0] && !parrot.mesh.children[0].isPlaying) parrot.mesh.children[0].play();
 
     // Скорость
-    intoxication = getMinIntoxication(parrot.health);
-    speed = parrot.accelerationVelocity * OBJECTS.PARROTS.velocityMove[parrot.mode] * intoxication;
+    scope.intoxication = getMinIntoxication(parrot.health);
+    scope.speed = parrot.accelerationVelocity * OBJECTS.PARROTS.velocityMove[parrot.mode] * scope.intoxication;
 
     // Скорость аудио
     if (parrot.mesh.children[0] && parrot.mesh.children[0].isPlaying)
-      parrot.mesh.children[0].setPlaybackRate(speed / 1.25);
+      parrot.mesh.children[0].setPlaybackRate(scope.speed / 1.25);
 
     // Raycast
     // Спереди
@@ -174,26 +160,26 @@ function Parrots() {
       parrot.mesh.rotateY(parrot.side * Math.PI / 4);
 
       // Позиция
-      parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta));
+      parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta));
     } else {
       // Вперед!!!
       parrot.beforeObject = false;
       parrot.side = null;
 
-      decision = randomInteger(1, 25) === 1;
-      if (decision) parrot.bend = yesOrNo();
+      scope.decision = randomInteger(1, 25) === 1;
+      if (scope.decision) parrot.bend = yesOrNo();
 
-      decision = randomInteger(1, 50) === 1;
-      if (decision) parrot.accelerationBend = Math.random();
+      scope.decision = randomInteger(1, 50) === 1;
+      if (scope.decision) parrot.accelerationBend = Math.random();
 
-      parrot.mesh.rotateY(degreesToRadians(parrot.bend * parrot.accelerationBend * OBJECTS.PARROTS.velocityBend[parrot.mode] * intoxication * scope.delta));
+      parrot.mesh.rotateY(degreesToRadians(parrot.bend * parrot.accelerationBend * OBJECTS.PARROTS.velocityBend[parrot.mode] * scope.intoxication * scope.delta));
 
-      decision = randomInteger(1, 50) === 1;
-      if (decision) parrot.accelerationVelocity = Math.random() + 0.5;
+      scope.decision = randomInteger(1, 50) === 1;
+      if (scope.decision) parrot.accelerationVelocity = Math.random() + 0.5;
 
       // Высота
-      decision = randomInteger(1, 50) === 1;
-      if (decision) parrot.velocityVertical = (Math.random() + 2.5) * yesOrNo();
+      scope.decision = randomInteger(1, 50) === 1;
+      if (scope.decision) parrot.velocityVertical = (Math.random() + 2.5) * yesOrNo();
 
       if (onDown && parrot.mesh.position.y > OBJECTS.PARROTS.maxHeight) {
         parrot.velocityVertical = 0;
@@ -208,12 +194,12 @@ function Parrots() {
         parrot.mesh.rotateY(parrot.side * Math.PI / 4);
 
       // Позиция
-      parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).multiplyScalar(speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta));
+      parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta));
     }
 
     // Позиция
     parrot.pseudoMesh.position.set(parrot.mesh.position.x, parrot.mesh.position.y, parrot.mesh.position.z);
-    if (parrot.mixer) parrot.mixer.update(speed * scope.delta);
+    if (parrot.mixer) parrot.mixer.update(scope.speed * scope.delta);
   };
 
   this.animate = (scope) => {
@@ -222,8 +208,8 @@ function Parrots() {
         // Cпокойный режим
         case DESIGN.ENEMIES.mode.idle:
           // Крики 2
-          decision = randomInteger(1, OBJECTS.PARROTS.frequency.cry) === 1;
-          if (decision) {
+          scope.decision = randomInteger(1, OBJECTS.PARROTS.frequency.cry) === 1;
+          if (scope.decision) {
             if (parrot.pseudoMesh.children[1] && parrot.pseudoMesh.children[1].isPlaying) parrot.pseudoMesh.children[1].stop();
             if (parrot.pseudoMesh.children[0] && !parrot.pseudoMesh.children[0].isPlaying) parrot.pseudoMesh.children[0].play();
           }
@@ -234,8 +220,8 @@ function Parrots() {
         // Aктивный режим
         case DESIGN.ENEMIES.mode.active:
           // Крики
-          decision = randomInteger(1, OBJECTS.PARROTS.frequency.cry2) === 1;
-          if (decision) {
+          scope.decision = randomInteger(1, OBJECTS.PARROTS.frequency.cry2) === 1;
+          if (scope.decision) {
             if (parrot.pseudoMesh.children[0] && parrot.pseudoMesh.children[0].isPlaying) parrot.pseudoMesh.children[0].stop();
             if (parrot.pseudoMesh.children[1] && !parrot.pseudoMesh.children[1].isPlaying) parrot.pseudoMesh.children[1].play();
           }
@@ -251,9 +237,9 @@ function Parrots() {
           }
 
           if (!parrot.isFall) {
-            speed = OBJECTS.PARROTS.velocityBend[DESIGN.ENEMIES.mode.idle] * parrot.stopSide * scope.delta / 30;
-            parrot.mesh.rotateZ(speed);
-            parrot.stopAngle += Math.abs(speed);
+            scope.speed = OBJECTS.PARROTS.velocityBend[DESIGN.ENEMIES.mode.idle] * parrot.stopSide * scope.delta / 30;
+            parrot.mesh.rotateZ(scope.speed);
+            parrot.stopAngle += Math.abs(scope.speed);
             if (parrot.stopAngle > Math.PI) parrot.isFall = true;
           } else {
             // Снизу distance
