@@ -512,7 +512,7 @@ export const LOCALES = {
     },
     mine: {
       name: 'Infantry mine',
-      text: `: upon stepping, the robot loses half of its health at once, and if the health is less than ${DESIGN.EFFECTS.mine.min}% - it is destroyed, they do not work when walking stealthily`,
+      text: `: upon stepping, the robot loses half of its health at once, and if the health is less than ${DESIGN.EFFECTS.mine.min}% - it is destroyed, does not work when walking stealthily`,
     },
   },
   [LANGUAGES[1].name]: {
@@ -616,7 +616,7 @@ export const LOCALES = {
       },
       mine: {
         name: 'Пехотная мина',
-        text: `: наступив, робот теряет сразу половину здоровья, а если здоровье меньше ${DESIGN.EFFECTS.mine.min}% - разрушается, не срабатывают при скрытной ходьбе`,
+        text: `: наступив, робот теряет сразу половину здоровья, а если здоровье меньше ${DESIGN.EFFECTS.mine.min}% - разрушается, не срабатывает при скрытной ходьбе`,
       },
     },
   },
