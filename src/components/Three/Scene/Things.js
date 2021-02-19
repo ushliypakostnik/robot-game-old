@@ -45,7 +45,6 @@ function Things() {
   const pseudoGeometry = new Three.SphereBufferGeometry(DESIGN.HERO.height / 2, 32, 32);
   let material;
   let pseudoThing;
-  let pseudoMesh;
   let isBottles;
 
   const THINGS_RADIUS = DESIGN.GROUND_SIZE * 0.545;

@@ -37,7 +37,9 @@ export const DESIGN = {
     primary0x: 0x621211,
     fog0x: 0x615ebc,
     background0x: 0x4542a0,
-    anemone0x: 0xffffff,
+    white0x: 0xffffff,
+    black0x: 0x111111,
+    explosion0x: 0xff5733,
     crocus0x: 0x8267bf,
     daffodil0x: 0xf0cf08,
     tulip0x: 0xcf3326,
@@ -116,6 +118,13 @@ export const DESIGN = {
     },
     minIntoxication: 25,
   },
+  MINES: {
+    mode: {
+      idle: 'idle',
+      active: 'active',
+      exploded: 'exploded',
+    },
+  },
   MESSAGES_TIMEOUT: 3000,
   EFFECTS: {
     time: {
@@ -143,6 +152,9 @@ export const DESIGN = {
     },
     parrot: {
       power: 9,
+    },
+    mine: {
+      min: 10,
     },
   },
 };
@@ -213,6 +225,13 @@ export const OBJECTS = {
     minHeight: 2,
     maxHeight: 20,
     damage: 0.03,
+  },
+  MINES: {
+    name: 'mine',
+    radius: 1,
+    height: 0.6,
+    quantity: 1,
+    positionY: 0.45,
   },
   OCEAN: {
     name: 'ocean',
@@ -447,6 +466,9 @@ export const LOCALES = {
       message6: {
         end: `Robot collected enough parts,<br />and must return to a friend and a broken boat`,
       },
+      message7: {
+        mineExplosion: 'The robot stepped on a mine!'
+      },
     },
     things: {
       anemone: {
@@ -487,6 +509,10 @@ export const LOCALES = {
         declination: ': the robot dancer',
         text: `: powerful health, you need to disassemble ${OBJECTS.ROBOTS.quantity} pieces to fix the boat`,
       },
+    },
+    mine: {
+      name: 'Infantry mine',
+      text: `: upon stepping, the robot loses half of its health at once, and if the health is less than ${DESIGN.EFFECTS.mine.min}% - it is destroyed, they do not work when walking stealthily`,
     },
   },
   [LANGUAGES[1].name]: {
@@ -545,6 +571,9 @@ export const LOCALES = {
       message6: {
         end: `Робот собрал достаточно деталей,<br />и должкен вернутся к подруге и сломанному катеру!`,
       },
+      message7: {
+        mineExplosion: 'Робот наступил на мину!'
+      },
     },
     things: {
       anemone: {
@@ -584,6 +613,10 @@ export const LOCALES = {
         name: 'Робот-танцор',
         declination: ': робота-танцора',
         text: `: мощнейшее здоровье, нужно разобрать на детали ${OBJECTS.ROBOTS.quantity} штуки чтобы починить катер`,
+      },
+      mine: {
+        name: 'Пехотная мина',
+        text: `: наступив, робот теряет сразу половину здоровья, а если здоровье меньше ${DESIGN.EFFECTS.mine.min}% - разрушается, не срабатывают при скрытной ходьбе`,
       },
     },
   },

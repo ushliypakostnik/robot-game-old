@@ -18,6 +18,7 @@ const initialState = {
   isBoatLoaded: false,
   isWomanLoaded: false,
   isRobotsLoaded: false,
+  isMetalLoaded: false,
 
   isMashaComplete: false,
   isStepComplete: false,

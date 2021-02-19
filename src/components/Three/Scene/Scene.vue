@@ -38,6 +38,7 @@ import Plot from './Plot';
 import Horses from './Horses';
 import Parrots from './Parrots';
 import Robots from './Robots';
+import Mines from './Mines';
 
 export default {
   name: 'Scene',
@@ -104,6 +105,7 @@ export default {
       layersNew: [],
       object: null,
       thing: null,
+      mine: null,
       collision: null,
       height: DESIGN.HERO.height,
       onObjectHeight: 0,
@@ -123,6 +125,7 @@ export default {
       objectsStoneData: [], // все камни и горы - данные - [x, z, r]
       objectsWaterData: [], // все озера и лужи - данные - [x, z, r]
       objectsTreesData: [], // все деревья - данные - [x, z]
+      objectsPseudoMines: [], // все мины
 
       atmosphere: null,
       grass: null,
@@ -361,6 +364,9 @@ export default {
       this.robots = new Robots();
       this.robots.init(this);
 
+      this.mines = new Mines();
+      this.mines.init(this);
+
       // Raycasters
       this.raycasterUp = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 1, 0), 0, 100);
       this.raycasterDown = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, -1, 0), 0, 100);
@@ -598,6 +604,8 @@ export default {
         this.parrots.animate(this);
 
         this.robots.animate(this);
+
+        this.mines.animate(this);
       } else {
         this.atmosphere.stop();
         this.hero.stop();
@@ -675,6 +683,7 @@ export default {
         this.robot.visible = true;
 
         this.things.toggle(this);
+        this.mines.toggle(this);
         this.toggle();
 
         // Controls
@@ -687,6 +696,7 @@ export default {
         this.robot.visible = false;
 
         this.things.toggle(this);
+        this.mines.toggle(this);
         this.toggle();
 
         // Controls

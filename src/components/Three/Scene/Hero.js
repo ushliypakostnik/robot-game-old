@@ -284,6 +284,16 @@ function Hero() {
         if (scope.layersNew.length !== scope.layers.length) {
           // Посмотреть слои под персонажем
           // console.log(scope.layers, scope.layersNew, scope.heroOnWater);
+
+          // На мине - если не скрытный шаг
+          if (!scope.moveHidden && scope.layersNew.includes(OBJECTS.MINES.name)) {
+            // TODO: продолжить здесь - если здоровье меньше минимального для мин - GAME OVER
+            scope.mine = scope.intersections.filter(object => object.object.name === OBJECTS.MINES.name)[0].object.id;
+            scope.velocity.y += DESIGN.HERO.jumpspeed * 2;
+            scope.canJump = false;
+            messagesByIdDispatchHelper(scope, 7, 'mineExplosion');
+          }
+
           // На большой воде
           if (
             ((scope.layersNew.includes(OBJECTS.OCEAN.name)

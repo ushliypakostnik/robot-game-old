@@ -41,13 +41,13 @@ function Grass() {
     const { position } = geometry.attributes;
     for (let i = 0, l = position.count; i < l; i++) {
       vertex.fromBufferAttribute(position, i);
-
       vertex.x += Math.random() * yesOrNo() * 2;
-
       vertex.y += Math.random() * yesOrNo() * 2;
-
       vertex.z += Math.random() * yesOrNo();
+
+      // Опускаем на краях
       if (distance2D(0, 0, vertex.x, vertex.y) > (DESIGN.GROUND_SIZE * 0.975) / 2) vertex.z = -2;
+
       if ((distance2D(0, 0, vertex.x, vertex.y) < (DESIGN.GROUND_SIZE * 0.975) / (4 + Math.random() * yesOrNo())) && vertex.z < -0.1) vertex.z = -0.01;
 
       // Меньше травы внутри озер
