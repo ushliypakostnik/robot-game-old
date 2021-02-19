@@ -178,7 +178,7 @@ export const OBJECTS = {
     distance: {
       [DESIGN.ENEMIES.mode.active]: 18,
     },
-    damage: 1, // 0.005,
+    damage: 0.005,
   },
   HORSES: {
     name: 'horse',
