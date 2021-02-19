@@ -287,11 +287,15 @@ function Hero() {
 
           // На мине - если не скрытный шаг
           if (!scope.moveHidden && scope.layersNew.includes(OBJECTS.MINES.name)) {
-            // TODO: продолжить здесь - если здоровье меньше минимального для мин - GAME OVER
             scope.mine = scope.intersections.filter(object => object.object.name === OBJECTS.MINES.name)[0].object.id;
             scope.velocity.y += DESIGN.HERO.jumpspeed * 2;
-            scope.canJump = false;
+            scope.isCanJump = false;
+            scope.isOnMine = true;
             messagesByIdDispatchHelper(scope, 7, 'mineExplosion');
+            scope.setScale({
+              field: DESIGN.HERO.scales.health.name,
+              value: scope.health / -2,
+            });
           }
 
           // На большой воде
@@ -317,19 +321,19 @@ function Hero() {
 
       // Урон персонажу
       if (!scope.isNotDamaged) {
-        // Урон от воды или персонажей
-        if ((scope.heroOnWater && scope.canJump) || scope.isHeroOnDamage) {
+        // Урон от воды, персонажей и мин
+        if ((scope.heroOnWater && scope.isCanJump) || scope.isHeroOnDamage || scope.isOnMine) {
           if (!damageClock.running) {
             damageClock.start();
 
             if (damage && damage.children[0]) damage.children[0].play();
           }
 
-          delta = damageClock.getDelta();;
+          delta = damageClock.getDelta();
 
           // Урон от воды
-          if (scope.heroOnWater && scope.canJump) {
-            damageTime += delta
+          if (scope.heroOnWater && scope.isCanJump) {
+            damageTime += delta;
             if (damageTime > 0.05) {
               scope.setScale({
                 field: DESIGN.HERO.scales.health.name,
@@ -427,10 +431,10 @@ function Hero() {
       scope.direction.x = Number(scope.moveRight) - Number(scope.moveLeft);
       scope.direction.normalize(); // this ensures consistent movements in all directions
 
-      if (scope.moveForward || scope.moveBackward) scope.velocity.z -= scope.direction.z * DESIGN.HERO.speed * scope.delta * (!scope.canJump + 1);
-      if (scope.moveLeft || scope.moveRight) scope.velocity.x -= scope.direction.x * DESIGN.HERO.speed * scope.delta * (!scope.canJump + 1);
+      if (scope.moveForward || scope.moveBackward) scope.velocity.z -= scope.direction.z * DESIGN.HERO.speed * scope.delta * (!scope.isCanJump + 1);
+      if (scope.moveLeft || scope.moveRight) scope.velocity.x -= scope.direction.x * DESIGN.HERO.speed * scope.delta * (!scope.isCanJump + 1);
 
-      // Скорость движения в зависимости от режима
+      // Скорость движения в зависимости от способа перемещения
       if (scope.moveHidden) {
         scope.moveSpeed = 0.25;
       } else if (scope.moveRun) {
@@ -442,7 +446,7 @@ function Hero() {
       } else scope.moveSpeed = 1;
 
       // Прыжок в гору!!
-      if (scope.collision && !scope.canJump && scope.object && scope.object.name === OBJECTS.MOUNTAINS.name) {
+      if (scope.collision && !scope.isCanJump && scope.object && scope.object.name === OBJECTS.MOUNTAINS.name) {
         if ((scope.onForward && scope.moveForward)
           || (scope.onBackward && scope.moveBackward)
           || (scope.onLeft && scope.moveLeft)
@@ -479,7 +483,7 @@ function Hero() {
       if (scope.controls.getObject().position.y < scope.height + scope.onObjectHeight) {
         scope.velocity.y = 0;
         scope.controls.getObject().position.y = scope.height + scope.onObjectHeight;
-        scope.canJump = true;
+        scope.isCanJump = true;
 
         //  Сейчас можем проверить урон на любой воде
         if (((scope.layersNew.includes(OBJECTS.OCEAN.name)
@@ -487,14 +491,14 @@ function Hero() {
           || scope.layersNew.includes(OBJECTS.LAKES.name)
           || scope.layersNew.includes(OBJECTS.PUDDLES.name))
           && !scope.layersNew.includes(OBJECTS.SANDS.name)) {
-          if (scope.canJump && scope.onObjectHeight === 0) scope.heroOnWater = true;
+          if (scope.isCanJump && scope.onObjectHeight === 0) scope.heroOnWater = true;
           else scope.heroOnWater = false;
         } else scope.heroOnWater = false;
       }
 
-      if (scope.canJump !== onFly) {
+      if (scope.isCanJump !== onFly) {
         if (!onFly) jumps(scope);
-        onFly = scope.canJump;
+        onFly = scope.isCanJump;
       } else if (scope.onObjectHeight !== onFloor) {
         jumps(scope);
         onFloor = scope.onObjectHeight;

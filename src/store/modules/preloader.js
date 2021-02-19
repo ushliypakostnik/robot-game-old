@@ -42,6 +42,7 @@ const initialState = {
   isParrotCry2Complete: false,
   isRobotsRunComplete: false,
   isRobotsNoizeComplete: false,
+  isBoomComplete: false,
 
   isAmmoBuilt: false,
   isGrassBuilt: false,
@@ -59,6 +60,7 @@ const initialState = {
   isHorsesBuilt: false,
   isParrotsBuilt: false,
   isRobotsBuilt: false,
+  isMinesBuilt: false,
 };
 
 const state = initialState;

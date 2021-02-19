@@ -28,6 +28,8 @@ function Trees() {
   let point;
   let counter;
 
+  const TREES_RADIUS = DESIGN.GROUND_SIZE * 0.6;
+
   const fixTreePosition = (x, z) => {
     let newX = x;
     let newZ = z;
@@ -89,7 +91,7 @@ function Trees() {
   const buitRandomTrees = (scope, plant, plantType, mode, quantity, heightMin, heightMax) => {
     if (mode === 'math') {
       for (let i = 0; i < quantity; i++) {
-        point = randomPointInCircle(DESIGN.GROUND_SIZE * 0.6, 0, 0);
+        point = randomPointInCircle(TREES_RADIUS, 0, 0);
         randomX = point[0];
         randomZ = point[1];
 

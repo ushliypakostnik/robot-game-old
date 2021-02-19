@@ -94,6 +94,22 @@ export const fixEnemyPosition = (raduis, stones, trees, x, z) => {
   return [newX, newZ];
 };
 
+export const fixMinePosition = (raduis, waters, stones, trees, x, z) => {
+  let counter = 0;
+  let newX = x;
+  let newZ = z;
+  while (isInRoundObjectsWithCoefficient(waters, newX, newZ, 1.25) ||
+  isInPointObjectsWithDistance(trees, newX, newZ, 3) ||
+  isInRoundObjectsWithCoefficient(stones, newX, newZ, 2) ||
+  distance2D(0, 0, newX, newZ) > raduis) {
+    counter++;
+    newX = randomInteger(raduis * -1, raduis);
+    newZ = randomInteger(raduis * -1, raduis);
+    if (counter > 50) break;
+  }
+  return [newX, newZ];
+};
+
 export const addImmediateAudioToObjects = (scope, objects, buffer, volume, isRobots) => {
   let audio;
   objects.forEach((object) => {

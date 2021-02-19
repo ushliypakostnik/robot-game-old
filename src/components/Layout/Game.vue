@@ -69,20 +69,16 @@
           <div v-html="$t(`messages.message3.${message[2]}`)" />
         </div>
 
-        <!-- Предупреждение об утоплении!!! -->
+        <!-- Предупреждение об скором утоплении или наступил на мину!!! -->
         <div
-          v-if="message[1] === 4 && message[2] === 'ocean'"
-          class="game__message game__message--small game__message--warning blink"
+          v-if="message[1] === 4 || message[1] === 7"
+          class="game__message game__message--warning blink"
+          :class="[
+            message[1] === 4 && 'game__message--small',
+            message[1] === 7 && 'game__message--normal',
+          ]"
         >
-          <div v-html="$t(`messages.message4.${message[2]}`)" />
-        </div>
-
-        <!-- Когда разобрал всех роботов-танцоров -->
-        <div
-          v-if="message[1] === 6"
-          class="game__message game__message--small"
-        >
-          <div v-html="$t(`messages.message6.${message[2]}`)" />
+          <div v-html="$t(`messages.message${message[1]}.${message[2]}`)" />
         </div>
 
         <!-- Нумерованные сообщения связанные с положением в мире и врагами  -->
@@ -92,6 +88,14 @@
         >
           {{message[0]}}: <span v-html="$t(`messages.message5.${message[2]}`)" />
           <span v-if="message[3]"> {{ $t(`enemies.${message[3]}.declination`) }}</span>
+        </div>
+
+        <!-- Когда разобрал всех роботов-танцоров -->
+        <div
+          v-if="message[1] === 6"
+          class="game__message game__message--small"
+        >
+          <div v-html="$t(`messages.message6.${message[2]}`)" />
         </div>
       </div>
     </div>

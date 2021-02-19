@@ -84,7 +84,7 @@ export default {
       moveRight: false,
       moveRun: false,
       moveHidden: false,
-      canJump: true,
+      isCanJump: true,
 
       raycasterUp: null,
       raycasterDown: null,
@@ -142,6 +142,7 @@ export default {
       parrots: null,
 
       isOnStart: true, // Для стартовой позиции, см. Atmosphere.js
+      isOnMine: false, // Для стартовой позиции, см. Atmosphere.js
 
       // рабочие-переменные для анимационных циклов ПНС
       decision: null,
@@ -203,6 +204,7 @@ export default {
       isWin: 'layout/isWin',
       isGameOver: 'layout/isGameOver',
 
+      health: 'hero/health',
       power: 'hero/power',
       endurance: 'hero/endurance',
       ammo: 'hero/ammo',
@@ -549,9 +551,9 @@ export default {
           break;
 
         case 32: // Space
-          if (!this.isKeysLock && !this.moveHidden && this.canJump) {
+          if (!this.isKeysLock && !this.moveHidden && this.isCanJump) {
             this.velocity.y += DESIGN.HERO.jumpspeed;
-            this.canJump = false;
+            this.isCanJump = false;
           }
           break;
 
@@ -612,6 +614,7 @@ export default {
         this.horses.stop();
         this.parrots.stop();
         this.robots.stop();
+        this.mines.stop();
       }
 
       if (!this.isPause && this.isDrone) {
@@ -664,6 +667,19 @@ export default {
       if (value && this.moveRun) this.moveRun = false;
       if (value) messagesByIdDispatchHelper(this, 2, 'tired');
       else messagesByIdDispatchHelper(this, 2, 'recovered');
+    },
+
+    // Приземление после подрыва на мине
+    isCanJump(value) {
+      if (value && this.isOnMine) {
+        this.isOnMine = false;
+        if (this.health <= DESIGN.EFFECTS.mine.min / 2) {
+          this.setScale({
+            field: DESIGN.HERO.scales.health.name,
+            value: -1 * (this.health + 1),
+          });
+        }
+      }
     },
 
     isDrone(value) {

@@ -125,7 +125,7 @@ function Waters(scope) {
         randomX = (x * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2);
         randomZ = (z * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2);
 
-        // Не внутри другого озера, луши или острова
+        // Не внутри другого озера, лужи или острова
         counter = 0;
         while (isInLakeOrPuddle(scope.objectsWaterData, randomX, randomZ, radius)
               || isInSands(OBJECTS.SANDS.position, randomX, randomZ, radius)) {

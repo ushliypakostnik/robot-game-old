@@ -246,13 +246,13 @@ function Parrots() {
             scope.directionDown = new Three.Vector3(0, 0, 0).crossVectors(scope.x, scope.z);
             scope.raycasterDown.set(parrot.mesh.position, scope.directionDown);
             scope.intersections = scope.raycasterDown.intersectObjects(scope.objectsGround.concat(scope.objectsVertical));
-            onDown = scope.intersections[0].distance ? scope.intersections[0].distance : 0.5;
+            onDown = scope.intersections[0].distance ? scope.intersections[0].distance : 1;
 
             console.log(onDown);
 
             parrot.mesh.position.y -= scope.delta * 10;
             parrot.pseudoMesh.position.y = parrot.mesh.position.y;
-            if (onDown < 1) {
+            if (onDown < 1.5) {
               parrot.mode = DESIGN.ENEMIES.mode.thing;
               parrot.pseudoMesh.userData = { isThing: true };
               parrot.pseudoMesh.position.y -= 0.5;

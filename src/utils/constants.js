@@ -29,7 +29,7 @@ const size = (size) => {
 const ammo = 25;
 
 export const DESIGN = {
-  V: 0.3,
+  V: 0.4,
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -101,7 +101,7 @@ export const DESIGN = {
       },
       ammo: {
         name: 'ammo',
-        start: ammo * 100,
+        start: ammo * 200,
         objects: ammo,
       },
       details: {
@@ -122,7 +122,6 @@ export const DESIGN = {
     mode: {
       idle: 'idle',
       active: 'active',
-      exploded: 'exploded',
     },
   },
   MESSAGES_TIMEOUT: 3000,
@@ -197,8 +196,8 @@ export const OBJECTS = {
       [DESIGN.ENEMIES.mode.active]: 22.5,
     },
     frequency: {
-      fr: 300,
-      cry: 300,
+      fr: 400, // Пассивный режим
+      cry: 250, // Активный режим
     },
     damage: 0.02,
   },
@@ -219,8 +218,8 @@ export const OBJECTS = {
       [DESIGN.ENEMIES.mode.active]: 17.5,
     },
     frequency: {
-      cry: 250,
-      cry2: 250,
+      cry: 400, // Пассивный режим
+      cry2: 250, // Активный режим
     },
     minHeight: 2,
     maxHeight: 20,
@@ -229,8 +228,8 @@ export const OBJECTS = {
   MINES: {
     name: 'mine',
     radius: 1,
-    height: 0.6,
-    quantity: 1,
+    height: 0.66,
+    quantity: 49,
     positionY: 0.45,
   },
   OCEAN: {
