@@ -10,7 +10,7 @@ import {
   yesOrNo,
   distance2D,
   addImmediateAudioToObjects,
-  addAudioToPseudoObjects,
+  addAudioToObjects,
   getMinIntoxication,
   degreesToRadians,
 } from '@/utils/utilities';
@@ -45,7 +45,7 @@ function Horses() {
   this.init = (scope) => {
     managerAudio3.onLoad = () => {
       audioLoader4.load('./audio/horsecry.mp3', (buffer) => {
-        addAudioToPseudoObjects(scope, horses, buffer, DESIGN.VOLUME.horses.fr);
+        addAudioToObjects(scope, horses, buffer, DESIGN.VOLUME.horses.cry);
 
         loaderDispatchHelper(scope.$store, 'isHorseCryComplete');
       });
@@ -53,7 +53,7 @@ function Horses() {
 
     managerAudio2.onLoad = () => {
       audioLoader3.load('./audio/horsefr.mp3', (buffer) => {
-        addAudioToPseudoObjects(scope, horses, buffer, DESIGN.VOLUME.horses.fr);
+        addAudioToObjects(scope, horses, buffer, DESIGN.VOLUME.horses.fr);
 
         loaderDispatchHelper(scope.$store, 'isHorseFrComplete');
       });

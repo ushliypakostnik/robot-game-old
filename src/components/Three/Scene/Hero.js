@@ -285,8 +285,8 @@ function Hero() {
           // Посмотреть слои под персонажем
           // console.log(scope.layers, scope.layersNew, scope.heroOnWater);
 
-          // На мине - если не скрытный шаг
-          if (!scope.moveHidden && scope.layersNew.includes(OBJECTS.MINES.name)) {
+          // На мине - если не скрытный шаг или неуязвимость
+          if (!scope.moveHidden && !scope.isNotDamaged && scope.layersNew.includes(OBJECTS.MINES.name)) {
             scope.mine = scope.intersections.filter(object => object.object.name === OBJECTS.MINES.name)[0].object.id;
             scope.velocity.y += DESIGN.HERO.jumpspeed * 2;
             scope.isCanJump = false;

@@ -9,15 +9,18 @@ import {
   getMinIntoxication,
   yesOrNo,
   addImmediateAudioToObjects,
+  addAudioToObjects,
   degreesToRadians,
   randomInteger,
 } from '@/utils/utilities';
 
 function Robots() {
   const manager = new Three.LoadingManager();
-  const managerAudio = new Three.LoadingManager();
-  const audioLoader1 = new Three.AudioLoader(managerAudio);
-  const audioLoader2 = new Three.AudioLoader();
+  const managerAudio1 = new Three.LoadingManager();
+  const managerAudio2 = new Three.LoadingManager();
+  const audioLoader1 = new Three.AudioLoader(managerAudio1);
+  const audioLoader2 = new Three.AudioLoader(managerAudio2);
+  const audioLoader3 = new Three.AudioLoader();
   const OBJLoader = new Three.OBJLoader();
   const loader = new GLTFLoader(manager);
 
@@ -99,19 +102,24 @@ function Robots() {
     loaderDispatchHelper(scope.$store, 'isRobotsBuilt');
 
     manager.onLoad = () => {
-      managerAudio.onLoad = () => {
-        audioLoader2.load('./audio/robotsnoize.mp3', (buffer) => {
-          addImmediateAudioToObjects(scope, robots, buffer, DESIGN.VOLUME.robots.noize, true);
+      managerAudio2.onLoad = () => {
+        audioLoader3.load('./audio/danceroff.mp3', (buffer) => {
+          addAudioToObjects(scope, robots, buffer, DESIGN.VOLUME.robots.off);
+          loaderDispatchHelper(scope.$store, 'isDancerOffComplete');
 
           robots.forEach((robot) => {if (!scope.objectsEnemies.includes(robot)) scope.objectsEnemies.push(robot)});
+        });
+      };
 
+      managerAudio1.onLoad = () => {
+        audioLoader2.load('./audio/robotsnoize.mp3', (buffer) => {
+          addImmediateAudioToObjects(scope, robots, buffer, DESIGN.VOLUME.robots.noize, true);
           loaderDispatchHelper(scope.$store, 'isRobotsNoizeComplete');
         });
       };
 
       audioLoader1.load('./audio/robotsrun.mp3', (buffer) => {
         addImmediateAudioToObjects(scope, robots, buffer, DESIGN.VOLUME.robots.run, true);
-
         loaderDispatchHelper(scope.$store, 'isRobotsRunComplete');
       });
     };
@@ -236,6 +244,7 @@ function Robots() {
             robot.mixer.clipAction(animations[1]).loop = Three.LoopOnce;
             robot.mixer.clipAction(animations[1]).clampWhenFinished = true;
             robot.mixer.clipAction(animations[1]).fadeIn(1).play();
+            if (robot.pseudoMesh.children[2] && !robot.pseudoMesh.children[2].isPlaying) robot.pseudoMesh.children[2].play();
 
             robot.mixer.addEventListener( 'finished', (e) => {
               robot.mode = DESIGN.ENEMIES.mode.thing;
@@ -260,6 +269,7 @@ function Robots() {
     robots.forEach((robot) => {
       if (robot.pseudoMesh.children[0] && robot.pseudoMesh.children[0].isPlaying) robot.pseudoMesh.children[0].stop();
       if (robot.pseudoMesh.children[1] && robot.pseudoMesh.children[1].isPlaying) robot.pseudoMesh.children[1].stop();
+      if (robot.pseudoMesh.children[2] && robot.pseudoMesh.children[2].isPlaying) robot.pseudoMesh.children[2].stop();
     });
   };
 }

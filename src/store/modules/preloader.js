@@ -42,6 +42,7 @@ const initialState = {
   isParrotCry2Complete: false,
   isRobotsRunComplete: false,
   isRobotsNoizeComplete: false,
+  isDancerOffComplete: false,
   isBoomComplete: false,
 
   isAmmoBuilt: false,

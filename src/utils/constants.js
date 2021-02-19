@@ -29,7 +29,7 @@ const size = (size) => {
 const ammo = 25;
 
 export const DESIGN = {
-  V: 0.4,
+  V: 0.5,
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -72,6 +72,7 @@ export const DESIGN = {
     robots: {
       run: 0.8,
       noize: 1,
+      off: 1,
     },
   },
   HERO: {
@@ -144,7 +145,7 @@ export const DESIGN = {
       health: 40,
     },
     bottle: {
-      ammo: ammo * 4,
+      ammo: ammo * 8,
     },
     horse: {
       power: 11,
@@ -177,7 +178,7 @@ export const OBJECTS = {
     distance: {
       [DESIGN.ENEMIES.mode.active]: 18,
     },
-    damage: 0.005,
+    damage: 1, // 0.005,
   },
   HORSES: {
     name: 'horse',

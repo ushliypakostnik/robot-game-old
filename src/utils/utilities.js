@@ -128,7 +128,7 @@ export const addImmediateAudioToObjects = (scope, objects, buffer, volume, isRob
   });
 };
 
-export const addAudioToPseudoObjects = (scope, objects, buffer, volume) => {
+export const addAudioToObjects = (scope, objects, buffer, volume) => {
   let audio;
   objects.forEach((object) => {
     audio = new Three.PositionalAudio(scope.listener);

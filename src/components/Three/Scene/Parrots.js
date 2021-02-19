@@ -10,7 +10,7 @@ import {
   distance2D,
   loaderDispatchHelper,
   addImmediateAudioToObjects,
-  addAudioToPseudoObjects,
+  addAudioToObjects,
   getMinIntoxication,
   degreesToRadians,
 } from '@/utils/utilities';
@@ -46,7 +46,7 @@ function Parrots() {
   this.init = (scope) => {
     managerAudio2.onLoad = () => {
       audioLoader3.load('./audio/parrotcry.mp3', (buffer) => {
-        addAudioToPseudoObjects(scope, parrots, buffer, DESIGN.VOLUME.parrots.cry);
+        addAudioToObjects(scope, parrots, buffer, DESIGN.VOLUME.parrots.cry);
 
         loaderDispatchHelper(scope.$store, 'isParrotCryComplete');
       });
@@ -54,7 +54,7 @@ function Parrots() {
 
     managerAudio1.onLoad = () => {
       audioLoader2.load('./audio/parrotcry2.mp3', (buffer) => {
-        addAudioToPseudoObjects(scope, parrots, buffer, DESIGN.VOLUME.parrots.cry2);
+        addAudioToObjects(scope, parrots, buffer, DESIGN.VOLUME.parrots.cry2);
 
         loaderDispatchHelper(scope.$store, 'isParrotCry2Complete');
       });
