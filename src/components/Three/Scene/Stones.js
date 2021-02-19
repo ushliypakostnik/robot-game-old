@@ -46,8 +46,8 @@ function Stones() {
       stone.updateMatrix();
       stone.matrixAutoUpdate = false;
 
-      scope.objectsVertical.push(stone);
       scope.scene.add(stone);
+      scope.objectsVertical.push(stone);
       scope.objectsStoneData.push([stone.position.x, stone.position.z, bottom]);
     }
 

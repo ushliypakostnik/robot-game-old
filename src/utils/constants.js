@@ -119,7 +119,7 @@ export const DESIGN = {
     },
     minIntoxication: 25,
   },
-  MINES: {
+  STAFF: {
     mode: {
       idle: 'idle',
       active: 'active',
@@ -178,7 +178,12 @@ export const OBJECTS = {
     distance: {
       [DESIGN.ENEMIES.mode.active]: 18,
     },
-    damage: 1, // 0.005,
+    damage: 0.005,
+  },
+  CANNONS: {
+    quantity: 1,
+    size: 10,
+    positionY: -0.4,
   },
   HORSES: {
     name: 'horse',

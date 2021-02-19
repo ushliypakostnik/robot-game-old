@@ -60,6 +60,7 @@ function Plot() {
     });
   };
 
+  // Работает только при близости к стартовой позиции (см. Scene.vue animate())
   this.animate = (scope) => {
     if (mixer) {
       mixer.update(scope.delta / 2);

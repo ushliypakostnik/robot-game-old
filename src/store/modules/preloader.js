@@ -19,6 +19,7 @@ const initialState = {
   isWomanLoaded: false,
   isRobotsLoaded: false,
   isMetalLoaded: false,
+  isMetal2Loaded: false,
 
   isMashaComplete: false,
   isStepComplete: false,
@@ -62,6 +63,7 @@ const initialState = {
   isParrotsBuilt: false,
   isRobotsBuilt: false,
   isMinesBuilt: false,
+  isCannonsBuilt: false,
 };
 
 const state = initialState;
