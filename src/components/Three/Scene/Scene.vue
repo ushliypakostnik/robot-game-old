@@ -255,6 +255,7 @@ export default {
       setScale: 'hero/setScale',
       setNotDamaged: 'hero/setNotDamaged',
       setNotTired: 'hero/setNotTired',
+      setHeroTired: 'hero/setHeroTired',
     }),
 
     init() {
@@ -488,6 +489,7 @@ export default {
               field: DESIGN.HERO.scales.health.name,
               value: DESIGN.EFFECTS.anemone.health
             });
+            if (this.isHeroTired) this.setHeroTired(false);
             this.setNotTired(true);
             messagesByIdDispatchHelper(this, 2, 'startNoTired');
           }
@@ -541,7 +543,7 @@ export default {
           break;
 
         case 16: // Shift
-          if (!this.isKeysLock && this.moveRun && this.moveRun) this.moveRun = false;
+          if (!this.isKeysLock && this.moveRun) this.moveRun = false;
           break;
 
         case 67: // C

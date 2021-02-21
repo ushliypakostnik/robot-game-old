@@ -40,7 +40,7 @@ function Horses() {
   let z;
   let mixer;
 
-  const HORSES_RADIUS = DESIGN.GROUND_SIZE * 0.49;
+  const HORSES_RADIUS = DESIGN.GROUND_SIZE * 0.57;
 
   this.init = (scope) => {
     managerAudio3.onLoad = () => {
@@ -214,12 +214,14 @@ function Horses() {
         else if (horse.mode === DESIGN.ENEMIES.mode.active && horse.accelerationVelocity > 1.25) horse.accelerationVelocity = 1.25;
       }
 
-      // Не слишком далеко
-      if (distance2D(0, 0, horse.mesh.position.x, horse.mesh.position.z) > HORSES_RADIUS)
-        horse.mesh.rotateY(horse.side * Math.PI / 4);
+      // Не слишком далеко: либо сильнее поворачиваем и продвигаем в правильную сторону либо продвигаем
+      if (distance2D(0, 0, horse.mesh.position.x, horse.mesh.position.z) > HORSES_RADIUS) {
+        horse.mesh.rotateY(degreesToRadians(horse.bend * horse.accelerationBend * OBJECTS.HORSES.velocityBend[horse.mode] * scope.intoxication * scope.delta * 2));
 
-      // Позиция
-      horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta));
+        scope.distance = horse.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta);
+        if (distance2D(0, 0, scope.distance.x, scope.distance.z) < distance2D(0, 0, horse.mesh.position.x, horse.mesh.position.z))
+          horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta * 2));
+      } else horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta));
     }
 
     // Позиция
