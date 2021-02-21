@@ -41,7 +41,7 @@ function Parrots() {
 
   let onDown; // попугаям нужно кастить вниз
 
-  const PARROTS_RADIUS = DESIGN.GROUND_SIZE * 0.525;
+  const PARROTS_RADIUS = DESIGN.GROUND_SIZE * 0.58;
 
   this.init = (scope) => {
     managerAudio2.onLoad = () => {
@@ -189,12 +189,14 @@ function Parrots() {
 
       parrot.mesh.position.y += parrot.velocityVertical * scope.delta;
 
-      // Не слишком далеко
-      if (distance2D(0, 0, parrot.mesh.position.x, parrot.mesh.position.z) > PARROTS_RADIUS)
-        parrot.mesh.rotateY(parrot.side * Math.PI / 4);
+      // Не слишком далеко: либо сильнее поворачиваем и продвигаем в правильную сторону либо продвигаем
+      if (distance2D(0, 0, parrot.mesh.position.x, parrot.mesh.position.z) > PARROTS_RADIUS) {
+        parrot.mesh.rotateY(degreesToRadians(parrot.bend * parrot.accelerationBend * OBJECTS.PARROTS.velocityBend[parrot.mode] * scope.intoxication * scope.delta * 2));
 
-      // Позиция
-      parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta));
+        scope.distance = parrot.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta);
+        if (distance2D(0, 0, scope.distance.x, scope.distance.z) < distance2D(0, 0, parrot.mesh.position.x, parrot.mesh.position.z))
+          parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta * 2));
+      } else parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta));
     }
 
     // Позиция

@@ -39,6 +39,7 @@ import Horses from './Horses';
 import Parrots from './Parrots';
 import Robots from './Robots';
 import Mines from './Mines';
+import Cannons from './Cannons';
 
 export default {
   name: 'Scene',
@@ -254,6 +255,7 @@ export default {
       setScale: 'hero/setScale',
       setNotDamaged: 'hero/setNotDamaged',
       setNotTired: 'hero/setNotTired',
+      setHeroTired: 'hero/setHeroTired',
     }),
 
     init() {
@@ -368,6 +370,9 @@ export default {
 
       this.mines = new Mines();
       this.mines.init(this);
+
+      this.cannons = new Cannons();
+      this.cannons.init(this);
 
       // Raycasters
       this.raycasterUp = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 1, 0), 0, 100);
@@ -484,6 +489,7 @@ export default {
               field: DESIGN.HERO.scales.health.name,
               value: DESIGN.EFFECTS.anemone.health
             });
+            if (this.isHeroTired) this.setHeroTired(false);
             this.setNotTired(true);
             messagesByIdDispatchHelper(this, 2, 'startNoTired');
           }
@@ -537,7 +543,7 @@ export default {
           break;
 
         case 16: // Shift
-          if (!this.isKeysLock && this.moveRun && this.moveRun) this.moveRun = false;
+          if (!this.isKeysLock && this.moveRun) this.moveRun = false;
           break;
 
         case 67: // C
@@ -602,12 +608,10 @@ export default {
 
         // Enemies
         this.horses.animate(this);
-
         this.parrots.animate(this);
-
         this.robots.animate(this);
-
         this.mines.animate(this);
+        this.cannons.animate(this);
       } else {
         this.atmosphere.stop();
         this.hero.stop();
@@ -615,6 +619,7 @@ export default {
         this.parrots.stop();
         this.robots.stop();
         this.mines.stop();
+        this.cannons.stop();
       }
 
       if (!this.isPause && this.isDrone) {

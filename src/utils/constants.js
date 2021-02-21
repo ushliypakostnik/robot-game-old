@@ -25,7 +25,7 @@ const size = (size) => {
   return size * 2000;
 };
 
-// Количество реальных объектов-капель в обойме вино-оружия
+// Количество реальных объектов-капель в обойме вино-оружия (не менять - оптимально для скорости)
 const ammo = 25;
 
 export const DESIGN = {
@@ -102,7 +102,7 @@ export const DESIGN = {
       },
       ammo: {
         name: 'ammo',
-        start: ammo * 200,
+        start: ammo * 100,
         objects: ammo,
       },
       details: {
@@ -119,7 +119,7 @@ export const DESIGN = {
     },
     minIntoxication: 25,
   },
-  MINES: {
+  STAFF: {
     mode: {
       idle: 'idle',
       active: 'active',
@@ -145,7 +145,7 @@ export const DESIGN = {
       health: 40,
     },
     bottle: {
-      ammo: ammo * 8,
+      ammo: ammo * 4,
     },
     horse: {
       power: 11,
@@ -179,6 +179,11 @@ export const OBJECTS = {
       [DESIGN.ENEMIES.mode.active]: 18,
     },
     damage: 0.005,
+  },
+  CANNONS: {
+    quantity: 0,
+    size: 10,
+    positionY: -0.4,
   },
   HORSES: {
     name: 'horse',
@@ -527,7 +532,7 @@ export const LOCALES = {
       text7: 'Взять предмет: Е',
       text8: 'Применить цветок: 1234',
       text9: 'Запустить дрон: TAB',
-      text10: 'Pause: P',
+      text10: 'Пауза: P',
       music: 'Музыка: ',
       musiclink: 'Kafedra',
       startbutton: 'Играть',

@@ -149,7 +149,7 @@ function Mines() {
         explosionCLone.matrixAutoUpdate = false;
 
         mines.push({
-          mode: DESIGN.MINES.mode.idle,
+          mode: DESIGN.STAFF.mode.idle,
           mesh: mineClone,
           meshTop: mineTopClone,
           meshAsh: ashClone,
@@ -192,7 +192,7 @@ function Mines() {
   };
 
   this.animate = (scope) => {
-    mines.filter(mine => mine.meshAsh.id === scope.mine && mine.mode === DESIGN.MINES.mode.idle).forEach((mine) => {
+    mines.filter(mine => mine.meshAsh.id === scope.mine && mine.mode === DESIGN.STAFF.mode.idle).forEach((mine) => {
       if (!mine.isBoom) {
         mine.isBoom = true;
         if (boom && boom.children[0] && !boom.children[0].isPlaying) boom.children[0].play();
@@ -216,10 +216,10 @@ function Mines() {
       meshAsh.geometry = ashGeometry;
       meshAsh.visible = true;
       meshExplosion.visible = true;
-      mine.mode = DESIGN.MINES.mode.active;
+      mine.mode = DESIGN.STAFF.mode.active;
     });
 
-    mines.filter(mine => mine.mode === DESIGN.MINES.mode.active).forEach((mine) => {
+    mines.filter(mine => mine.mode === DESIGN.STAFF.mode.active).forEach((mine) => {
       if (mine.scale > 10 && !mine.off) mine.off = true;
 
       if (mine.off) {
