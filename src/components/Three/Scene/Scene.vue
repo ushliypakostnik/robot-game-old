@@ -218,6 +218,7 @@ export default {
       details: 'hero/details',
 
       isHeroOnDamage: 'hero/isHeroOnDamage',
+      isHeroOnFire: 'hero/isHeroOnFire',
       isHeroOnWater: 'hero/isHeroOnWater',
       isHeroTired: 'hero/isHeroTired',
       isNotDamaged: 'hero/isNotDamaged',
@@ -251,6 +252,7 @@ export default {
       setGameOver: 'layout/setGameOver',
 
       setHeroOnDamage: 'hero/setHeroOnDamage',
+      setHeroOnFire: 'hero/setHeroOnFire',
       setHeroOnWater: 'hero/setHeroOnWater',
       setScale: 'hero/setScale',
       setNotDamaged: 'hero/setNotDamaged',

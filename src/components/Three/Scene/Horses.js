@@ -40,7 +40,7 @@ function Horses() {
   let z;
   let mixer;
 
-  const HORSES_RADIUS = DESIGN.GROUND_SIZE * 0.57;
+  const HORSES_RADIUS = DESIGN.GROUND_SIZE * 0.50;
 
   this.init = (scope) => {
     managerAudio3.onLoad = () => {

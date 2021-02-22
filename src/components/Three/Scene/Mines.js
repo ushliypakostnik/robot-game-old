@@ -7,8 +7,7 @@ import {
   yesOrNo,
   randomInteger,
   degreesToRadians,
-  distance2D,
-  fixMinePosition,
+  fixStaffPosition,
 } from '@/utils/utilities';
 
 function Mines() {
@@ -50,7 +49,7 @@ function Mines() {
   let ashClone;
 
   let materialExplosion;
-  const materialExplosionDrone = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.black0x });
+  const materialExplosionDrone = new Three.MeshPhongMaterial({ color: 0x111111 });
   const explosionGeometry = new Three.SphereBufferGeometry(OBJECTS.MINES.radius * 4, 32, 32);
   let explosion;
   let explosionCLone;
@@ -112,7 +111,7 @@ function Mines() {
         randomX = (x * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2);
         randomZ = (z * step + randomInteger(step / -2, step / 2) - DESIGN.GROUND_SIZE / 2);
 
-        [fixX, fixZ] = fixMinePosition(
+        [fixX, fixZ] = fixStaffPosition(
           MINES_RADIUS,
           scope.objectsWaterData,
           scope.objectsStoneData,
@@ -236,6 +235,10 @@ function Mines() {
       }
 
       mine.meshExplosion.scale.set(mine.scale, mine.scale, mine.scale);
+      mine.meshExplosion.rotateX(scope.delta * 2);
+      mine.meshExplosion.rotateZ(scope.delta * 2);
+      mine.meshExplosion.rotateY(scope.delta * 2);
+
       mine.meshExplosion.position.y += scope.delta * 5;
       mine.meshExplosion.updateMatrix();
     });

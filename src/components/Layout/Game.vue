@@ -103,7 +103,7 @@
     <div
       class="game__overlay"
       :class="[
-        (isHeroOnWater || isHeroOnDamage)
+        (isHeroOnWater || isHeroOnDamage || isHeroOnFire)
         && !isNotDamaged && !isGameOver && `game__overlay--damage damage`,
         isGameOver && !isWin && `game__overlay--gameover game__overlay--fail`,
         isGameOver && isWin && `game__overlay--gameover game__overlay--win`,
@@ -151,8 +151,10 @@ export default {
       tulip: 'hero/tulip',
 
       details: 'hero/details',
+      bottles: 'hero/bottles',
 
       isHeroOnDamage: 'hero/isHeroOnDamage',
+      isHeroOnFire: 'hero/isHeroOnFire',
       isHeroOnWater: 'hero/isHeroOnWater',
       isHeroTired: 'hero/isHeroTired',
       isNotDamaged: 'hero/isNotDamaged',
@@ -215,6 +217,10 @@ export default {
     endurance(value) {
       if (value < 0) this.setHeroTired(true);
     },
+
+    ammoMagazine(value) {
+      if (value === '00' && this.bottles === OBJECTS.BOTTLES.quantity) this.setGameOver(true);
+    }
   }
 };
 </script>

@@ -209,7 +209,7 @@ function Things() {
     audioLoader.load('./audio/pick.mp3', (buffer) => {
       audio = new Three.Audio(scope.listener);
       audio.setBuffer(buffer);
-      audio.setVolume(DESIGN.VOLUME.normal);
+      audio.setVolume(DESIGN.VOLUME.max);
       audio.setLoop(false);
 
       pick.add(audio);
@@ -352,6 +352,7 @@ function Things() {
           break;
         case OBJECTS.BOTTLES.name:
           scope.setScale({ field: DESIGN.HERO.scales.ammo.name, value: DESIGN.EFFECTS.bottle.ammo });
+          scope.setScale({ field: DESIGN.HERO.scales.bottles.name, value: 1 });
           messagesByIdDispatchHelper(scope, 2, 'pickBottle');
           break;
       }

@@ -13,8 +13,10 @@ const initialState = {
   tulip: 0,
 
   details: 0,
+  bottles: 0,
 
   isHeroOnDamage: false,
+  isHeroOnFire: false,
   isHeroOnWater: false,
   isHeroTired: false,
   isNotDamaged: false,
@@ -35,8 +37,10 @@ const getters = {
   tulip: state => state.tulip,
 
   details: state => state.details,
+  bottles: state => state.bottles,
 
   isHeroOnDamage: state => state.isHeroOnDamage,
+  isHeroOnFire: state => state.isHeroOnFire,
   isHeroOnWater: state => state.isHeroOnWater,
   isHeroTired: state => state.isHeroTired,
   isNotDamaged: state => state.isNotDamaged,
@@ -46,6 +50,10 @@ const getters = {
 const actions = {
   setHeroOnDamage: ({ commit }, isHeroOnDamage) => {
     commit('setHeroOnDamage', isHeroOnDamage);
+  },
+
+  setHeroOnFire: ({ commit }, isHeroOnFire) => {
+    commit('setHeroOnFire', isHeroOnFire);
   },
 
   setHeroOnWater: ({ commit }, isHeroOnWater) => {
@@ -72,6 +80,10 @@ const actions = {
 const mutations = {
   setHeroOnDamage: (state, isHeroOnDamage) => {
     state.isHeroOnDamage = isHeroOnDamage;
+  },
+
+  setHeroOnFire: (state, isHeroOnFire) => {
+    state.isHeroOnFire = isHeroOnFire;
   },
 
   setHeroOnWater: (state, isHeroOnWater) => {
