@@ -193,7 +193,7 @@ function Horses() {
       horse.mesh.rotateY(horse.side * Math.PI / 4);
 
       // Позиция
-      horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta));
+      horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta * 2));
     } else {
       // Вперед!!!
       horse.onForward = false;
@@ -213,6 +213,8 @@ function Horses() {
         if (horse.mode === DESIGN.ENEMIES.mode.idle && horse.accelerationVelocity < 0.75) horse.accelerationVelocity = 0.75;
         else if (horse.mode === DESIGN.ENEMIES.mode.active && horse.accelerationVelocity > 1.25) horse.accelerationVelocity = 1.25;
       }
+
+      console.log(distance2D(0, 0, horse.mesh.position.x, horse.mesh.position.z, HORSES_RADIUS));
 
       // Не слишком далеко: либо сильнее поворачиваем и продвигаем в правильную сторону либо продвигаем
       if (distance2D(0, 0, horse.mesh.position.x, horse.mesh.position.z) > HORSES_RADIUS) {

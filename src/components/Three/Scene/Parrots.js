@@ -160,7 +160,7 @@ function Parrots() {
       parrot.mesh.rotateY(parrot.side * Math.PI / 4);
 
       // Позиция
-      parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta));
+      parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta * 2));
     } else {
       // Вперед!!!
       parrot.beforeObject = false;
@@ -188,6 +188,8 @@ function Parrots() {
       else if (parrot.mesh.position.y > OBJECTS.PARROTS.maxHeight) parrot.velocityVertical = -1 * Math.abs(parrot.velocityVertical);
 
       parrot.mesh.position.y += parrot.velocityVertical * scope.delta;
+
+      console.log(distance2D(0, 0, parrot.mesh.position.x, parrot.mesh.position.z));
 
       // Не слишком далеко: либо сильнее поворачиваем и продвигаем в правильную сторону либо продвигаем
       if (distance2D(0, 0, parrot.mesh.position.x, parrot.mesh.position.z) > PARROTS_RADIUS) {

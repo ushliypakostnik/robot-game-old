@@ -178,7 +178,7 @@ export const OBJECTS = {
     distance: {
       [DESIGN.ENEMIES.mode.active]: 18,
     },
-    damage: 0.005,
+    damage: 0.015,
   },
   CANNONS: {
     quantity: 0,
@@ -205,7 +205,7 @@ export const OBJECTS = {
       fr: 400, // Пассивный режим
       cry: 250, // Активный режим
     },
-    damage: 0.02,
+    damage: 0.035,
   },
   PARROTS: {
     name: 'parrot',
@@ -229,7 +229,7 @@ export const OBJECTS = {
     },
     minHeight: 2,
     maxHeight: 20,
-    damage: 0.03,
+    damage: 0.05,
   },
   MINES: {
     name: 'mine',
@@ -346,8 +346,8 @@ export const OBJECTS = {
     name: 'stone',
     quantityMin: 5,
     quantityMax: 10,
-    largeMin: DESIGN.HERO.jumpheight / 2,
-    largeMax: DESIGN.HERO.jumpheight,
+    largeMin: DESIGN.HERO.jumpheight * 0.5,
+    largeMax: DESIGN.HERO.jumpheight * 0.75,
     smallMin: size(0.0066),
     smallMax: size(0.01),
     position: [
