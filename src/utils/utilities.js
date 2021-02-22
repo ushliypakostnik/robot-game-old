@@ -94,7 +94,7 @@ export const fixEnemyPosition = (raduis, stones, trees, x, z) => {
   return [newX, newZ];
 };
 
-export const fixMinePosition = (raduis, waters, stones, trees, x, z) => {
+export const fixStaffPosition = (raduis, waters, stones, trees, x, z) => {
   let counter = 0;
   let newX = x;
   let newZ = z;

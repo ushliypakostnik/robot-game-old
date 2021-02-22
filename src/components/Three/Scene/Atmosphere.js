@@ -37,7 +37,7 @@ function Atmosphere() {
   const geometry = new Three.SphereBufferGeometry(1, 1, 1);
   const material = new Three.MeshStandardMaterial({ color: 0xff0000 });
 
-  let isStart = false;;
+  let isStart = false;
 
   this.init = (scope) => {
     const sun = new Three.Vector3();
@@ -187,6 +187,15 @@ function Atmosphere() {
     }
   };
 
+  // Громкость шума океана
+  const setOceanVolume = (x, y) => {
+    let oceanVolume = distance2D(0, 0, x, y) / OBJECTS.BEACH.size;
+    if (oceanVolume > 1) oceanVolume = 1;
+    else if (oceanVolume < 0) oceanVolume = 0;
+
+    if (ocean && ocean.children[0] && ocean.children[0]) ocean.children[0].setVolume(oceanVolume);
+  };
+
   this.animate = (scope) => {
     if (!scope.isPause && !scope.isDrone) {
       newX = scope.controls.getObject().position.x;
@@ -214,6 +223,7 @@ function Atmosphere() {
       // Проверки привязанные к позиции персонажа в мире
 
       if (!isStart) {
+        setOceanVolume(newX, newZ);
         messagesByViewDispatchHelper(scope, 3, 'start');
         checkEnemies(scope, newX, newZ);
         isStart = true;
@@ -221,12 +231,7 @@ function Atmosphere() {
 
       if (Math.abs(x - newX) > DESIGN.checkDistance || Math.abs(z - newZ) > DESIGN.checkDistance) {
 
-        // Громкость шума океана
-        oceanVolume = distance2D(0, 0, newX, newZ) / OBJECTS.BEACH.size;
-        if (oceanVolume > 1) oceanVolume = 1;
-        else if (oceanVolume < 0) oceanVolume = 0;
-
-        if (ocean && ocean.children[0] && ocean.children[0]) ocean.children[0].setVolume(oceanVolume);
+        setOceanVolume(newX, newZ);
 
         // Утопление
         if (distance2D(0, 0, newX, newZ) > DESIGN.GROUND_SIZE * 0.75 && scope.heroOnWater) messagesByViewDispatchHelper(scope, 4, 'ocean');

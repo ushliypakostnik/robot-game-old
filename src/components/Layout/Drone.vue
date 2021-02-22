@@ -60,6 +60,13 @@
         </div>
         <div class="drone__circle" />
       </div>
+      <div class="drone__block drone--cannon">
+        <div class="drone__text">
+          {{ $t(`enemies.cannon.name`) }}
+          {{ $t(`enemies.cannon.text`) }}
+        </div>
+        <div class="drone__circle" />
+      </div>
       <div class="drone__block drone--mine">
         <div class="drone__text">
           {{ $t(`enemies.mine.name`) }}
@@ -176,6 +183,12 @@ export default {
   &--robot {
     .drone__circle {
       background: $colors__robots;
+    }
+  }
+
+  &--cannon {
+    .drone__circle {
+      background: $colors__cannons;
     }
   }
 

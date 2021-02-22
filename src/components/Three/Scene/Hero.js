@@ -322,7 +322,7 @@ function Hero() {
       // Урон персонажу
       if (!scope.isNotDamaged) {
         // Урон от воды, персонажей и мин
-        if ((scope.heroOnWater && scope.isCanJump) || scope.isHeroOnDamage || scope.isOnMine) {
+        if ((scope.heroOnWater && scope.isCanJump) || scope.isHeroOnDamage || scope.isHeroOnFire || scope.isOnMine) {
           if (!damageClock.running) {
             damageClock.start();
 

@@ -29,7 +29,7 @@ const size = (size) => {
 const ammo = 25;
 
 export const DESIGN = {
-  V: 0.5,
+  V: 0.6,
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -39,6 +39,7 @@ export const DESIGN = {
     background0x: 0x4542a0,
     white0x: 0xffffff,
     black0x: 0x111111,
+    cannons0x: 0x221e12,
     explosion0x: 0xff5733,
     crocus0x: 0x8267bf,
     daffodil0x: 0xf0cf08,
@@ -85,7 +86,8 @@ export const DESIGN = {
     start: [size(-0.33), size(0.53)],
     damage: {
       water: -1,
-      robot: -0.25,
+      robot: -0.5,
+      сannon: -5,
     },
     scales: {
       health: {
@@ -102,11 +104,14 @@ export const DESIGN = {
       },
       ammo: {
         name: 'ammo',
-        start: ammo * 100,
+        start: ammo * 40,
         objects: ammo,
       },
       details: {
         name: 'details',
+      },
+      bottles: {
+        name: 'bottles',
       }
     },
   },
@@ -126,6 +131,7 @@ export const DESIGN = {
     },
   },
   MESSAGES_TIMEOUT: 3000,
+  ANIMATION_TIMEOUT: 600,
   EFFECTS: {
     time: {
       health: 20,
@@ -136,22 +142,22 @@ export const DESIGN = {
     },
     crocus: {
       health: 30,
-      power: 2,
+      power: 4,
     },
     daffodil: {
       health: 10,
     },
     tulip: {
-      health: 40,
+      health: 60,
     },
     bottle: {
       ammo: ammo * 4,
     },
     horse: {
-      power: 11,
+      power: 10,
     },
     parrot: {
-      power: 9,
+      power: 8,
     },
     mine: {
       min: 10,
@@ -181,9 +187,28 @@ export const OBJECTS = {
     damage: 0.005,
   },
   CANNONS: {
-    quantity: 0,
+    name: 'cannon',
+    quantity: 16,
     size: 10,
     positionY: -0.4,
+    position: [
+      // Рядом с отдельным заливом 1
+      [size(0.37), size(-0.49)],
+      [size(0.23), size(-0.43)],
+      [size(0.15), size(-0.52)],
+
+      // В центре
+      [size(0.08), size(0.29)],
+      [size(0.07), size(0.13)],
+      [size(0.25), size(0.15)],
+
+      // В море рядом с 1
+      [size(-0.52), size(-0.27)],
+      [size(-0.59), size(-0.12)],
+
+      // На острове с ближайшим роботом
+      [size(-0.43), size(0.33)],
+    ]
   },
   HORSES: {
     name: 'horse',
@@ -514,10 +539,15 @@ export const LOCALES = {
         declination: ': the robot dancer',
         text: `: powerful health, you need to disassemble ${OBJECTS.ROBOTS.quantity} pieces to fix the boat`,
       },
-    },
-    mine: {
-      name: 'Infantry mine',
-      text: `: upon stepping, the robot loses half of its health at once, and if the health is less than ${DESIGN.EFFECTS.mine.min}% - it is destroyed, does not work when walking stealthily`,
+      cannon: {
+        name: 'Heavy cannon',
+        declination: ': a heavy cannon',
+        text: `: impossible to destroy, guard the peace of the Robot Dancers`,
+      },
+      mine: {
+        name: 'Infantry mine',
+        text: `: upon stepping, the robot loses half of its health at once, and if the health is less than ${DESIGN.EFFECTS.mine.min}% - it is destroyed, does not work when walking stealthily`,
+      },
     },
   },
   [LANGUAGES[1].name]: {
@@ -618,6 +648,11 @@ export const LOCALES = {
         name: 'Робот-танцор',
         declination: ': робота-танцора',
         text: `: мощнейшее здоровье, нужно разобрать на детали ${OBJECTS.ROBOTS.quantity} штуки чтобы починить катер`,
+      },
+      cannon: {
+        name: 'Тяжелые пушки',
+        declination: ': тяжелую пушку',
+        text: `: невозможно уничтожить, охраняют покой Роботов-танцоров`,
       },
       mine: {
         name: 'Пехотная мина',

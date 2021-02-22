@@ -19,7 +19,7 @@ const initialState = {
   isWomanLoaded: false,
   isRobotsLoaded: false,
   isMetalLoaded: false,
-  isMetal2Loaded: false,
+  isFireLoaded: false,
 
   isMashaComplete: false,
   isStepComplete: false,
@@ -45,6 +45,8 @@ const initialState = {
   isRobotsNoizeComplete: false,
   isDancerOffComplete: false,
   isBoomComplete: false,
+  isRotateComplete: false,
+  isFireComplete: false,
 
   isAmmoBuilt: false,
   isGrassBuilt: false,

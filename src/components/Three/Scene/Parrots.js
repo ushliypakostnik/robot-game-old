@@ -41,7 +41,7 @@ function Parrots() {
 
   let onDown; // попугаям нужно кастить вниз
 
-  const PARROTS_RADIUS = DESIGN.GROUND_SIZE * 0.58;
+  const PARROTS_RADIUS = DESIGN.GROUND_SIZE * 0.50;
 
   this.init = (scope) => {
     managerAudio2.onLoad = () => {
