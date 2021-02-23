@@ -29,7 +29,7 @@ const size = (size) => {
 const ammo = 25;
 
 export const DESIGN = {
-  V: 0.6,
+  V: 0.7,
   BREAKPOINTS: {
     desktop: 1025,
   },
