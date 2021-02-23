@@ -40,7 +40,7 @@ function Horses() {
   let z;
   let mixer;
 
-  const HORSES_RADIUS = DESIGN.GROUND_SIZE * 0.50;
+  const HORSES_RADIUS = DESIGN.GROUND_SIZE * 0.56;
 
   this.init = (scope) => {
     managerAudio3.onLoad = () => {
@@ -115,8 +115,6 @@ function Horses() {
           bend: yesOrNo(),
           accelerationVelocity: Math.random(),
           accelerationBend: Math.random(),
-          onForward: false,
-          side: null,
           isOnWater: null,
           layers: [],
           layersNew: [],
@@ -187,43 +185,40 @@ function Horses() {
 
     // Объект спереди - поворачиваем
     if (scope.onForward) {
-      horse.onForward = true;
-
-      horse.side = yesOrNo();
-      horse.mesh.rotateY(horse.side * Math.PI / 4);
+      horse.bend = yesOrNo();
+      horse.mesh.rotateY(horse.bend * Math.PI / 4);
 
       // Позиция
       horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta * 2));
     } else {
-      // Вперед!!!
-      horse.onForward = false;
-      horse.side = null;
-
-      scope.decision = randomInteger(1, 25) === 1;
-      if (scope.decision) horse.bend = yesOrNo();
-
-      scope.decision = randomInteger(1, 50) === 1;
-      if (scope.decision) horse.accelerationBend = Math.random();
-
-      horse.mesh.rotateY(degreesToRadians(horse.bend * horse.accelerationBend * OBJECTS.HORSES.velocityBend[horse.mode] * scope.intoxication * scope.delta));
-
-      scope.decision = randomInteger(1, 50) === 1;
-      if (scope.decision) {
-        horse.accelerationVelocity = Math.random() + 0.5;
-        if (horse.mode === DESIGN.ENEMIES.mode.idle && horse.accelerationVelocity < 0.75) horse.accelerationVelocity = 0.75;
-        else if (horse.mode === DESIGN.ENEMIES.mode.active && horse.accelerationVelocity > 1.25) horse.accelerationVelocity = 1.25;
-      }
-
-      console.log(distance2D(0, 0, horse.mesh.position.x, horse.mesh.position.z, HORSES_RADIUS));
-
-      // Не слишком далеко: либо сильнее поворачиваем и продвигаем в правильную сторону либо продвигаем
+      // Не слишком далеко: либо сильнее поворачиваем и продвигаем в правильную сторону либо отбрасываем
       if (distance2D(0, 0, horse.mesh.position.x, horse.mesh.position.z) > HORSES_RADIUS) {
-        horse.mesh.rotateY(degreesToRadians(horse.bend * horse.accelerationBend * OBJECTS.HORSES.velocityBend[horse.mode] * scope.intoxication * scope.delta * 2));
+        horse.mesh.rotateY(degreesToRadians(horse.bend * horse.accelerationBend * OBJECTS.HORSES.velocityBend[horse.mode] * scope.intoxication * scope.delta * 5));
 
-        scope.distance = horse.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta);
-        if (distance2D(0, 0, scope.distance.x, scope.distance.z) < distance2D(0, 0, horse.mesh.position.x, horse.mesh.position.z))
+        scope.directionOnHero.copy(horse.mesh.position);
+        scope.directionOnHero.add(horse.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta));
+
+        if (distance2D(0, 0, scope.directionOnHero.x, scope.directionOnHero.z) < distance2D(0, 0, horse.mesh.position.x, horse.mesh.position.z))
           horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta * 2));
-      } else horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta));
+      } else {
+        // Вперед!!!
+        scope.decision = randomInteger(1, 25) === 1;
+        if (scope.decision) horse.bend = yesOrNo();
+
+        scope.decision = randomInteger(1, 50) === 1;
+        if (scope.decision) horse.accelerationBend = Math.random();
+
+        horse.mesh.rotateY(degreesToRadians(horse.bend * horse.accelerationBend * OBJECTS.HORSES.velocityBend[horse.mode] * scope.intoxication * scope.delta));
+
+        scope.decision = randomInteger(1, 50) === 1;
+        if (scope.decision) {
+          horse.accelerationVelocity = Math.random() + 0.5;
+          if (horse.mode === DESIGN.ENEMIES.mode.idle && horse.accelerationVelocity < 0.75) horse.accelerationVelocity = 0.75;
+          else if (horse.mode === DESIGN.ENEMIES.mode.active && horse.accelerationVelocity > 1.25) horse.accelerationVelocity = 1.25;
+        }
+
+        horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta));
+      }
     }
 
     // Позиция

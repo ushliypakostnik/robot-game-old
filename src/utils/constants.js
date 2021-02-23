@@ -154,13 +154,13 @@ export const DESIGN = {
       ammo: ammo * 4,
     },
     horse: {
-      power: 10,
+      power: 12,
     },
     parrot: {
-      power: 8,
+      power: 9,
     },
     mine: {
-      min: 10,
+      min: 25,
     },
   },
 };
@@ -184,7 +184,7 @@ export const OBJECTS = {
     distance: {
       [DESIGN.ENEMIES.mode.active]: 18,
     },
-    damage: 0.015,
+    damage: 0.01,
   },
   CANNONS: {
     name: 'cannon',
@@ -230,7 +230,7 @@ export const OBJECTS = {
       fr: 400, // Пассивный режим
       cry: 250, // Активный режим
     },
-    damage: 0.035,
+    damage: 0.04,
   },
   PARROTS: {
     name: 'parrot',
@@ -254,7 +254,7 @@ export const OBJECTS = {
     },
     minHeight: 2,
     maxHeight: 20,
-    damage: 0.05,
+    damage: 0.06,
   },
   MINES: {
     name: 'mine',
@@ -472,7 +472,7 @@ export const LOCALES = {
         hiddenMoveDisabled: 'Stealth mode disabled',
         startNoDamaged: `The robot is invulnerable for ${DESIGN.EFFECTS.time.health} seconds!`,
         startNoTired: `The robot will not get tired of running ${DESIGN.EFFECTS.time.endurance} seconds!`,
-        endNoDamaged: 'The invulnerability effect is over',
+        endNoDamaged: 'The invulnerability effeect is over',
         endNoTired: 'The robot gets tired of running again',
         appliedСrocus: `The robot used a crocus!<br />Strength has grown by ${DESIGN.EFFECTS.crocus.power}%`,
         appliedTulip: `The robot used a tulip!<br />It feels so much better!`,
@@ -503,19 +503,19 @@ export const LOCALES = {
     things: {
       anemone: {
         name: 'Anemone',
-        text: `: gives ${DESIGN.EFFECTS.anemone.health}% health and ${DESIGN.EFFECTS.time.endurance} seconds the robot does not get tired of running`,
+        text: `: gives up to ${DESIGN.EFFECTS.anemone.health}% health and ${DESIGN.EFFECTS.time.endurance} seconds the robot does not get tired of running`,
       },
       crocus: {
         name: 'Crocus',
-        text: `: grants ${DESIGN.EFFECTS.crocus.health}% health and ${DESIGN.EFFECTS.crocus.power}% damage power`,
+        text: `: gives up to ${DESIGN.EFFECTS.crocus.health}% health and ${DESIGN.EFFECTS.crocus.power}% damage power`,
       },
       daffodil: {
         name: 'Daffodil',
-        text: `: gives ${DESIGN.EFFECTS.daffodil.health}% health and ${DESIGN.EFFECTS.time.health} seconds time the robot is invulnerable`,
+        text: `: gives up to ${DESIGN.EFFECTS.daffodil.health}% health and ${DESIGN.EFFECTS.time.health} seconds time the robot is invulnerable`,
       },
       tulip: {
         name: 'Tulip',
-        text: `: grants ${DESIGN.EFFECTS.tulip.health}% health`,
+        text: `: gives up to ${DESIGN.EFFECTS.tulip.health}% health`,
       },
       bottle: {
         name: 'Bottle of wine',
@@ -613,19 +613,19 @@ export const LOCALES = {
     things: {
       anemone: {
         name: 'Анемон',
-        text: `: дает ${DESIGN.EFFECTS.anemone.health}% здоровья и ${DESIGN.EFFECTS.time.endurance} секунд робот не устает от бега`,
+        text: `: дает до ${DESIGN.EFFECTS.anemone.health}% здоровья и ${DESIGN.EFFECTS.time.endurance} секунд робот не устает от бега`,
       },
       crocus: {
         name: 'Крокус',
-        text: `: дает ${DESIGN.EFFECTS.crocus.health}% здоровья и ${DESIGN.EFFECTS.crocus.power}% к силе урона`,
+        text: `: дает до ${DESIGN.EFFECTS.crocus.health}% здоровья и ${DESIGN.EFFECTS.crocus.power}% к силе урона`,
       },
       daffodil: {
         name: 'Нарцисс',
-        text: `: дает ${DESIGN.EFFECTS.daffodil.health}% здоровья и ${DESIGN.EFFECTS.time.health} cекунд робот неуязвим`,
+        text: `: дает до  ${DESIGN.EFFECTS.daffodil.health}% здоровья и ${DESIGN.EFFECTS.time.health} cекунд робот неуязвим`,
       },
       tulip: {
         name: 'Тюльпан',
-        text: `: дает ${DESIGN.EFFECTS.tulip.health}% здоровья`,
+        text: `: дает до  ${DESIGN.EFFECTS.tulip.health}% здоровья`,
       },
       bottle: {
         name: 'Бутылка вина',

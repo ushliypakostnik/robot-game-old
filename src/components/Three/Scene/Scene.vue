@@ -476,7 +476,7 @@ export default {
           break;
 
         case 49: // 1
-          if (!this.isKeysLock && this.daffodil > 0) {
+          if (!this.isKeysLock && this.daffodil > 0 && !this.isNotDamaged) {
             this.setScale({ field: OBJECTS.FLOWERS.daffodil.name, value: -1 });
             this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.daffodil.health });
             this.setNotDamaged(true);
@@ -485,7 +485,7 @@ export default {
           break;
 
         case 50: // 2
-          if (!this.isKeysLock && this.anemone > 0) {
+          if (!this.isKeysLock && this.anemone > 0 && !this.isNotTired) {
             this.setScale({ field: OBJECTS.FLOWERS.anemone.name, value: -1 });
             this.setScale({
               field: DESIGN.HERO.scales.health.name,

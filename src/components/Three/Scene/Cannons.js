@@ -39,7 +39,7 @@ function Cannons() {
   const holeMaterial = new Three.MeshPhongMaterial({ color: 0x000000 });
 
   const extrudeSettings = {
-    amount : 6,
+    depth : 6,
     steps : 1,
     bevelEnabled: false,
     curveSegments: 32
@@ -258,7 +258,7 @@ function Cannons() {
 
         // Перед вертикальным объектом
         scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical);
-        scope.onForward = scope.intersections.length > 0 ? scope.intersections[0].distance < cannon.fire.geometry.parameters.radius * cannon.scale : false;
+        scope.onForward = scope.intersections.length > 0 ? scope.intersections[0].distance < cannon.fire.geometry.parameters.radius * cannon.scale * 1.5 : false;
 
         // Cтреляем только на 250 метров или перед вертикальным объектом
         if (scope.dictance > DESIGN.checkDistance * 5 || scope.onForward) {
