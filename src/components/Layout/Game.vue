@@ -314,7 +314,8 @@ export default {
   &__things {
     position: absolute;
     top: $gutter / 2;
-    left: $gutter * 3;
+    // left: $gutter * 3; // для статс
+    left: $gutter / 2;
     display: flex;
   }
 

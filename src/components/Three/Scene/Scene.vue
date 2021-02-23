@@ -20,7 +20,7 @@ import { RenderPass } from '@/components/Three/Modules/Postprocessing/RenderPass
 import { FilmPass } from '@/components/Three/Modules/Postprocessing/FilmPass';
 
 // Stats
-import Stats from '@/components/Three/Modules/Utils/Stats';
+// import Stats from '@/components/Three/Modules/Utils/Stats';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
 import { messagesByIdDispatchHelper, messagesByViewDispatchHelper } from '@/utils/utilities';
@@ -64,7 +64,7 @@ export default {
 
       listener: null,
 
-      stats: null,
+      // stats: null,
 
       velocity: null,
       direction: null,
@@ -400,8 +400,8 @@ export default {
       this.composer.addPass(effectFilm);
 
       // Stats
-      this.stats = new Stats();
-      container.appendChild(this.stats.dom);
+      // this.stats = new Stats();
+      // container.appendChild(this.stats.dom);
 
       // First render
       this.render();
@@ -632,7 +632,7 @@ export default {
 
       if (!this.isPause) this.render();
 
-      this.stats.update();
+      // this.stats.update();
     },
 
     onWindowResize() {

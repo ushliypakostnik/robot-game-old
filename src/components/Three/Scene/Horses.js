@@ -40,7 +40,7 @@ function Horses() {
   let z;
   let mixer;
 
-  const HORSES_RADIUS = DESIGN.GROUND_SIZE * 0.56;
+  const HORSES_RADIUS = DESIGN.GROUND_SIZE * 0.57;
 
   this.init = (scope) => {
     managerAudio3.onLoad = () => {
@@ -191,9 +191,9 @@ function Horses() {
       // Позиция
       horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta * 2));
     } else {
-      // Не слишком далеко: либо сильнее поворачиваем и продвигаем в правильную сторону либо отбрасываем
+      // Не слишком далеко: сильнее поворачиваем и продвигаем в правильную сторону
       if (distance2D(0, 0, horse.mesh.position.x, horse.mesh.position.z) > HORSES_RADIUS) {
-        horse.mesh.rotateY(degreesToRadians(horse.bend * horse.accelerationBend * OBJECTS.HORSES.velocityBend[horse.mode] * scope.intoxication * scope.delta * 5));
+        horse.mesh.rotateY(degreesToRadians(horse.bend * horse.accelerationBend * OBJECTS.HORSES.velocityBend[horse.mode] * scope.intoxication * scope.delta * 10));
 
         scope.directionOnHero.copy(horse.mesh.position);
         scope.directionOnHero.add(horse.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta));
