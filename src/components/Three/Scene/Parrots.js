@@ -246,8 +246,6 @@ function Parrots() {
             scope.intersections = scope.raycasterDown.intersectObjects(scope.objectsGround.concat(scope.objectsVertical));
             onDown = scope.intersections[0].distance ? scope.intersections[0].distance : 1;
 
-            console.log(onDown);
-
             parrot.mesh.position.y -= scope.delta * 10;
             parrot.pseudoMesh.position.y = parrot.mesh.position.y;
             if (onDown < 1.5) {
