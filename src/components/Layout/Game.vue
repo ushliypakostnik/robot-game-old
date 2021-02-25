@@ -221,7 +221,7 @@ export default {
     },
 
     ammoMagazine(value) {
-      if (value === '00' && this.bottles === OBJECTS.BOTTLES.quantity) this.setGameOver(true);
+      if (value === '00' && this.bottles === OBJECTS.BOTTLES.quantity && this.details !== OBJECTS.ROBOTS.quantity) this.setGameOver(true);
     }
   }
 };
