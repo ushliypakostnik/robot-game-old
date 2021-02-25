@@ -483,7 +483,7 @@ export const LOCALES = {
         pickRobotMore: 'need more',
       },
       message3: {
-        start: `The drinking robot-woman says:<br />««When we get off this atoll?<br />'It\'s full of dancing yellow robots,<br />which can be drunk<br />and disassembled for spare parts,<br />to fix our boat?»`,
+        start: `The drinking robot-woman says:<br />«When we get off this atoll?<br />'It\'s full of dancing yellow robots,<br />which can be drunk<br />and disassembled for spare parts,<br />to fix our boat?»`,
       },
       message4: {
         ocean: `The robot has climbed too far into the ocean!<br />He\'s going to drown now!`
