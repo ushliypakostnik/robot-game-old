@@ -155,12 +155,6 @@ function Horses() {
       horse.mesh.children[1].setPlaybackRate(scope.speed / 1.5);
 
     // Raycast
-    // Спереди
-    scope.directionForward = horse.mesh.getWorldDirection(scope.direction);
-    scope.raycasterForward.set(horse.mesh.position, scope.directionForward);
-    scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical);
-    scope.onForward = scope.intersections.length > 0;
-
     // Снизу
     scope.directionDown = new Three.Vector3(0, 0, 0).crossVectors(scope.x, scope.z);
     scope.raycasterDown.set(horse.mesh.position, scope.directionDown);
@@ -183,13 +177,20 @@ function Horses() {
       }
     }
 
+    // Спереди
+    scope.directionForward = horse.mesh.getWorldDirection(scope.direction);
+    scope.raycasterForward.set(horse.mesh.position, scope.directionForward);
+    scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical);
+
     // Объект спереди - поворачиваем
-    if (scope.onForward) {
+    if (scope.intersections.length > 0) {
       horse.bend = yesOrNo();
       horse.mesh.rotateY(horse.bend * Math.PI / 4);
 
-      // Позиция
-      horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta * 2));
+      // Слишком близко - отбрасываем сильнее
+      if (scope.intersections[0].distance < 5) {
+        horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta * 5));
+      } else horse.mesh.position.add(horse.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.HORSES.distance[horse.mode] * scope.delta * 2.5));
     } else {
       scope.decision = randomInteger(1, 25) === 1;
       if (scope.decision) horse.bend = yesOrNo();

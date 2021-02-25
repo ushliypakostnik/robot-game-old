@@ -176,12 +176,12 @@ function Robots() {
           if (scope.intersections.length > 0) {
             // Объект спереди
             // Слишком близко - отбрасываем сильнее
-            if (scope.intersections[0].distance < 2) {
-              robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * 2 * scope.delta));
-              robot.pseudoMesh.position.add(robot.pseudoMesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * 2 * scope.delta));
+            if (scope.intersections[0].distance < 5) {
+              robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * 5 * scope.delta));
+              robot.pseudoMesh.position.add(robot.pseudoMesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * 5 * scope.delta));
             } else {
-              robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
-              robot.pseudoMesh.position.add(robot.pseudoMesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
+              robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * 2.5 * scope.delta));
+              robot.pseudoMesh.position.add(robot.pseudoMesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * 2.5 * scope.delta));
             }
 
             // Поворот
@@ -243,7 +243,7 @@ function Robots() {
             robot.isDrunk = true;
             robot.mixer.clipAction(animations[1]).loop = Three.LoopOnce;
             robot.mixer.clipAction(animations[1]).clampWhenFinished = true;
-            robot.mixer.clipAction(animations[1]).fadeIn(1).play();
+            robot.mixer.clipAction(animations[1]).play();
             if (robot.pseudoMesh.children[2] && !robot.pseudoMesh.children[2].isPlaying) robot.pseudoMesh.children[2].play();
 
             robot.mixer.addEventListener( 'finished', (e) => {

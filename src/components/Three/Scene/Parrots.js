@@ -143,21 +143,16 @@ function Parrots() {
     scope.directionForward = parrot.mesh.getWorldDirection(scope.direction);
     scope.raycasterForward.set(parrot.mesh.position, scope.directionForward);
     scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical);
-    scope.onForward = scope.intersections.length > 0;
-
-    // Снизу
-    scope.directionDown = new Three.Vector3(0, 0, 0).crossVectors(scope.x, scope.z);
-    scope.raycasterDown.set(parrot.mesh.position, scope.directionDown);
-    scope.intersections = scope.raycasterDown.intersectObjects(scope.objectsVertical);
-    onDown = scope.intersections.length > 0;
 
     // Объект спереди - поворачиваем
-    if (scope.onForward) {
+    if (scope.intersections.length > 0) {
       parrot.bend = yesOrNo();
       parrot.mesh.rotateY(parrot.bend * Math.PI / 4);
 
-      // Позиция
-      parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta * 2));
+      // Слишком близко - отбрасываем сильнее
+      if (scope.intersections[0].distance < 5) {
+        parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta * 5));
+      } else parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta * 2.5));
     } else {
       scope.decision = randomInteger(1, 25) === 1;
       if (scope.decision) parrot.bend = yesOrNo();
@@ -173,6 +168,12 @@ function Parrots() {
       // Высота
       scope.decision = randomInteger(1, 50) === 1;
       if (scope.decision) parrot.velocityVertical = (Math.random() + 2.5) * yesOrNo();
+
+      // Снизу
+      scope.directionDown = new Three.Vector3(0, 0, 0).crossVectors(scope.x, scope.z);
+      scope.raycasterDown.set(parrot.mesh.position, scope.directionDown);
+      scope.intersections = scope.raycasterDown.intersectObjects(scope.objectsVertical);
+      onDown = scope.intersections.length > 0;
 
       if (onDown && parrot.mesh.position.y > OBJECTS.PARROTS.maxHeight) {
         parrot.velocityVertical = 0;
