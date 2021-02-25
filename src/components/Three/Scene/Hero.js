@@ -285,8 +285,8 @@ function Hero() {
           // Посмотреть слои под персонажем
           // console.log(scope.layers, scope.layersNew, scope.heroOnWater);
 
-          // На мине - если не скрытный шаг или неуязвимость
-          if (!scope.moveHidden && !scope.isNotDamaged && scope.layersNew.includes(OBJECTS.MINES.name)) {
+          // На мине - если не скрытный шаг или неуязвимость или не в прыжке
+          if (scope.isCanJump && !scope.moveHidden && !scope.isNotDamaged && scope.layersNew.includes(OBJECTS.MINES.name)) {
             scope.mine = scope.intersections.filter(object => object.object.name === OBJECTS.MINES.name)[0].object.id;
             scope.velocity.y += DESIGN.HERO.jumpspeed * 2;
             scope.isCanJump = false;
@@ -304,7 +304,7 @@ function Hero() {
               && !scope.layersNew.includes(OBJECTS.BEACH.name)
               && !scope.layersNew.includes(OBJECTS.SANDS.name))
               || (scope.layersNew.includes(OBJECTS.LAKES.name)
-                && !scope.layersNew.includes(OBJECTS.SANDS.name)))
+              && !scope.layersNew.includes(OBJECTS.SANDS.name)))
           ) {
             onLargeWater = true;
           } else onLargeWater = false;
@@ -486,11 +486,13 @@ function Hero() {
         scope.isCanJump = true;
 
         //  Сейчас можем проверить урон на любой воде
-        if (((scope.layersNew.includes(OBJECTS.OCEAN.name)
-          && !scope.layersNew.includes(OBJECTS.BEACH.name))
-          || scope.layersNew.includes(OBJECTS.LAKES.name)
-          || scope.layersNew.includes(OBJECTS.PUDDLES.name))
-          && !scope.layersNew.includes(OBJECTS.SANDS.name)) {
+        if ((scope.layersNew.includes(OBJECTS.OCEAN.name)
+            && !scope.layersNew.includes(OBJECTS.BEACH.name)
+            && !scope.layersNew.includes(OBJECTS.SANDS.name))
+            ||
+            (scope.layersNew.includes(OBJECTS.LAKES.name)
+            && !scope.layersNew.includes(OBJECTS.SANDS.name))
+            || scope.layersNew.includes(OBJECTS.PUDDLES.name)) {
           if (scope.isCanJump && scope.onObjectHeight === 0) scope.heroOnWater = true;
           else scope.heroOnWater = false;
         } else scope.heroOnWater = false;

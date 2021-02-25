@@ -9,6 +9,7 @@ import {
   randomPointInCircle,
 } from '@/utils/utilities';
 import * as Three from 'three';
+import { isInRoundObjectsWithCoefficient } from '../../../utils/utilities';
 
 function Trees() {
   const loader = new FBXLoader();
@@ -30,12 +31,13 @@ function Trees() {
 
   const TREES_RADIUS = DESIGN.GROUND_SIZE * 0.6;
 
-  const fixTreePosition = (x, z) => {
+  const fixTreePosition = (scope, x, z) => {
     let newX = x;
     let newZ = z;
 
-    // Не слишком далеко
-    while (distance2D(0, 0, newX, newZ) > DESIGN.GROUND_SIZE * 0.525) {
+    // Не слишком далеко и не в камне
+    while (distance2D(0, 0, newX, newZ) > DESIGN.GROUND_SIZE * 0.525 &&
+          isInRoundObjectsWithCoefficient(scope.objectsStoneData, newX, newZ, 1)) {
       counter++;
       newX = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
       newZ = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
@@ -59,7 +61,7 @@ function Trees() {
   };
 
   const builtTree = (scope, plant, plantType, scale, x, y, z, heightMin, heightMax) => {
-    [x, z] = fixTreePosition(randomX, randomZ);
+    [x, z] = fixTreePosition(scope, randomX, randomZ);
 
     scale = getRandomScale(heightMin, heightMax);
     y = plantType === 1 ? scale * -30 : -0.4;
