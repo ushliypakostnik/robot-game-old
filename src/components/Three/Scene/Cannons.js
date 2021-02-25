@@ -56,7 +56,7 @@ function Cannons() {
 
   const fireGeometry = new Three.SphereBufferGeometry(OBJECTS.CANNONS.size / 10 * 0.8, 32, 32);
 
-  const pseudoGeometry = new Three.SphereBufferGeometry(OBJECTS.CANNONS.size, 32, 32);
+  const pseudoGeometry = new Three.SphereBufferGeometry(OBJECTS.CANNONS.size * 1.25, 32, 32);
 
   const material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.cannons0x });
   material.side = Three.DoubleSide;
@@ -280,7 +280,7 @@ function Cannons() {
             });
             setTimeout(() => {
               scope.setHeroOnFire(false);
-            }, DESIGN.ANIMATION_TIMEOUT);
+            }, DESIGN.ANIMATION_TIMEOUT * 2);
           }
         }
         cannon.fire.scale.set(cannon.scale, cannon.scale, cannon.scale);

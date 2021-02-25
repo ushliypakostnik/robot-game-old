@@ -86,8 +86,8 @@ export const DESIGN = {
     start: [size(-0.33), size(0.53)],
     damage: {
       water: -1,
-      robot: -0.5,
-      сannon: -5,
+      robot: -2,
+      сannon: -10,
     },
     scales: {
       health: {
@@ -104,7 +104,7 @@ export const DESIGN = {
       },
       ammo: {
         name: 'ammo',
-        start: ammo * 40,
+        start: ammo * 25,
         objects: ammo,
       },
       details: {
@@ -131,7 +131,7 @@ export const DESIGN = {
     },
   },
   MESSAGES_TIMEOUT: 3000,
-  ANIMATION_TIMEOUT: 600,
+  ANIMATION_TIMEOUT: 300,
   EFFECTS: {
     time: {
       health: 20,

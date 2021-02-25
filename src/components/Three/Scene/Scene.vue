@@ -23,7 +23,11 @@ import { FilmPass } from '@/components/Three/Modules/Postprocessing/FilmPass';
 // import Stats from '@/components/Three/Modules/Utils/Stats';
 
 import { DESIGN, OBJECTS } from '@/utils/constants';
-import { messagesByIdDispatchHelper, messagesByViewDispatchHelper } from '@/utils/utilities';
+import {
+  messagesByIdDispatchHelper,
+  messagesByViewDispatchHelper,
+  onUpgradeDispatchHelper,
+} from '@/utils/utilities';
 
 import Atmosphere from './Atmosphere';
 import Grass from './Grass';
@@ -258,6 +262,7 @@ export default {
       setNotDamaged: 'hero/setNotDamaged',
       setNotTired: 'hero/setNotTired',
       setHeroTired: 'hero/setHeroTired',
+      setOnUpgrade: 'hero/setOnUpgrade',
     }),
 
     init() {
@@ -481,6 +486,7 @@ export default {
             this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.daffodil.health });
             this.setNotDamaged(true);
             messagesByIdDispatchHelper(this, 2, 'startNoDamaged');
+            onUpgradeDispatchHelper(this);
           }
           break;
 
@@ -494,6 +500,7 @@ export default {
             if (this.isHeroTired) this.setHeroTired(false);
             this.setNotTired(true);
             messagesByIdDispatchHelper(this, 2, 'startNoTired');
+            onUpgradeDispatchHelper(this);
           }
           break;
 
@@ -503,6 +510,7 @@ export default {
             this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.crocus.health });
             this.setScale({ field: DESIGN.HERO.scales.power.name, value: DESIGN.EFFECTS.crocus.power });
             messagesByIdDispatchHelper(this, 2, 'appliedСrocus');
+            onUpgradeDispatchHelper(this);
           }
           break;
 
@@ -511,6 +519,7 @@ export default {
             this.setScale({ field: OBJECTS.FLOWERS.tulip.name, value: -1 });
             this.setScale({ field: DESIGN.HERO.scales.health.name, value: DESIGN.EFFECTS.tulip.health });
             messagesByIdDispatchHelper(this, 2, 'appliedTulip');
+            onUpgradeDispatchHelper(this);
           }
           break;
 

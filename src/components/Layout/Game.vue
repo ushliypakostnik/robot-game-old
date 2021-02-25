@@ -105,6 +105,7 @@
       :class="[
         (isHeroOnWater || isHeroOnDamage || isHeroOnFire)
         && !isNotDamaged && !isGameOver && `game__overlay--damage damage`,
+        isOnUpgrade && `game__overlay--upgrade upgrade`,
         isGameOver && !isWin && `game__overlay--gameover game__overlay--fail`,
         isGameOver && isWin && `game__overlay--gameover game__overlay--win`,
       ]"
@@ -159,6 +160,7 @@ export default {
       isHeroTired: 'hero/isHeroTired',
       isNotDamaged: 'hero/isNotDamaged',
       isNotTired: 'hero/isNotTired',
+      isOnUpgrade: 'hero/isOnUpgrade',
 
       messages: 'layout/messages',
 
@@ -244,6 +246,10 @@ export default {
 
     &--fail {
       background: $colors__primary-light--transparent;
+    }
+
+    &--upgrade {
+      background: $colors__white--transparent2;
     }
 
     &--win {

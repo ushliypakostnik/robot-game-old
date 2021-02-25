@@ -31,3 +31,8 @@
   will-change: opacity;
   animation: blink $animation-duration infinite;
 }
+
+.upgrade {
+  will-change: opacity;
+  animation: upgrade $animation-duration infinite;
+}

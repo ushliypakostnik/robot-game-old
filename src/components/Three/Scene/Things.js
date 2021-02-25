@@ -13,6 +13,7 @@ import {
   isInPointObjectsWithDistance,
   isInRoundObjectsWithCoefficient,
   messagesByIdDispatchHelper,
+  onUpgradeDispatchHelper,
 } from '@/utils/utilities';
 
 function Things() {
@@ -354,6 +355,7 @@ function Things() {
           scope.setScale({ field: DESIGN.HERO.scales.ammo.name, value: DESIGN.EFFECTS.bottle.ammo });
           scope.setScale({ field: DESIGN.HERO.scales.bottles.name, value: 1 });
           messagesByIdDispatchHelper(scope, 2, 'pickBottle');
+          onUpgradeDispatchHelper(scope);
           break;
       }
     } else {
@@ -369,14 +371,16 @@ function Things() {
           case OBJECTS.HORSES.name:
             scope.setScale({ field: DESIGN.HERO.scales.power.name, value: DESIGN.EFFECTS.horse.power });
             messagesByIdDispatchHelper(scope, 2, 'pickAnimal', OBJECTS.HORSES.name);
+            onUpgradeDispatchHelper(scope);
             break;
           case OBJECTS.PARROTS.name:
             scope.setScale({ field: DESIGN.HERO.scales.power.name, value: DESIGN.EFFECTS.parrot.power });
             messagesByIdDispatchHelper(scope, 2, 'pickAnimal', OBJECTS.PARROTS.name);
+            onUpgradeDispatchHelper(scope);
             break;
           case OBJECTS.ROBOTS.name:
             messagesByIdDispatchHelper(scope, 2, 'pickRobot', OBJECTS.ROBOTS.name);
-
+            onUpgradeDispatchHelper(scope);
             scope.setScale({ field: DESIGN.HERO.scales.details.name, value: 1 });
             break;
         }

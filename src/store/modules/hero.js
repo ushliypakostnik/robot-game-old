@@ -21,6 +21,7 @@ const initialState = {
   isHeroTired: false,
   isNotDamaged: false,
   isNotTired: false,
+  isOnUpgrade: false,
 };
 
 const state = initialState;
@@ -45,6 +46,7 @@ const getters = {
   isHeroTired: state => state.isHeroTired,
   isNotDamaged: state => state.isNotDamaged,
   isNotTired: state => state.isNotTired,
+  isOnUpgrade: state => state.isOnUpgrade,
 };
 
 const actions = {
@@ -70,6 +72,10 @@ const actions = {
 
   setNotTired: ({ commit }, isNotTired) => {
     commit('setNotTired', isNotTired);
+  },
+
+  setOnUpgrade: ({ commit }, isOnUpgrade) => {
+    commit('setOnUpgrade', isOnUpgrade);
   },
 
   setScale: ({ commit }, payload) => {
@@ -100,6 +106,10 @@ const mutations = {
 
   setNotTired: (state, isNotTired) => {
     state.isNotTired = isNotTired;
+  },
+
+  setOnUpgrade: (state, isOnUpgrade) => {
+    state.isOnUpgrade = isOnUpgrade;
   },
 
   setScale: (state, payload) => {

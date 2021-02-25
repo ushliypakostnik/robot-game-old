@@ -42,6 +42,14 @@ export const messagesByIdDispatchHelper = (scope, view, name, data) => {
   }).catch((error) => { console.log(error); });
 };
 
+export const onUpgradeDispatchHelper = (scope) => {
+  scope.$store.dispatch('hero/setOnUpgrade', true).then(() => {
+    delay(DESIGN.ANIMATION_TIMEOUT).then(() => {
+      scope.$store.dispatch('hero/setOnUpgrade', false);
+    }).catch((error) => { console.log(error); });
+  }).catch((error) => { console.log(error); });
+};
+
 export const messagesByViewDispatchHelper = (scope, view, name) => {
   if (!scope.messages.some(message => message[1] === view))
     scope.showMessage({ id: null, view, name });
