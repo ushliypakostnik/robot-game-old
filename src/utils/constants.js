@@ -640,8 +640,8 @@ export const LOCALES = {
         text: `: хорошее здоровье, переработка животного дает ${DESIGN.EFFECTS.horse.power}% к силе урона`,
       },
       parrot: {
-        name: 'Гигансткий попугай',
-        declination: ': гигансткого попугая',
+        name: 'Гигантcкий попугай',
+        declination: ': гигантcкого попугая',
         text: `: слабое здоровье, переработка животного дает ${DESIGN.EFFECTS.parrot.power}% к силе урона`,
       },
       robot: {
