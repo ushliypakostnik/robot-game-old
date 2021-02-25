@@ -159,6 +159,27 @@ function Parrots() {
       // Позиция
       parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta * 2));
     } else {
+      scope.decision = randomInteger(1, 25) === 1;
+      if (scope.decision) parrot.bend = yesOrNo();
+
+      scope.decision = randomInteger(1, 50) === 1;
+      if (scope.decision) parrot.accelerationBend = Math.random();
+
+      parrot.mesh.rotateY(degreesToRadians(parrot.bend * parrot.accelerationBend * OBJECTS.PARROTS.velocityBend[parrot.mode] * scope.intoxication * scope.delta));
+
+      scope.decision = randomInteger(1, 50) === 1;
+      if (scope.decision) parrot.accelerationVelocity = Math.random() + 0.5;
+
+      // Высота
+      scope.decision = randomInteger(1, 50) === 1;
+      if (scope.decision) parrot.velocityVertical = (Math.random() + 2.5) * yesOrNo();
+
+      if (onDown && parrot.mesh.position.y > OBJECTS.PARROTS.maxHeight) {
+        parrot.velocityVertical = 0;
+        parrot.accelerationVelocity = 1.5;
+      } else if (onDown || parrot.mesh.position.y < OBJECTS.PARROTS.minHeight) parrot.velocityVertical = Math.abs(parrot.velocityVertical);
+      else if (parrot.mesh.position.y > OBJECTS.PARROTS.maxHeight) parrot.velocityVertical = -1 * Math.abs(parrot.velocityVertical);
+
       // Не слишком далеко: сильнее поворачиваем и продвигаем в правильную сторону
       if (distance2D(0, 0, parrot.mesh.position.x, parrot.mesh.position.z) > PARROTS_RADIUS) {
         parrot.mesh.rotateY(degreesToRadians(parrot.bend * parrot.accelerationBend * OBJECTS.PARROTS.velocityBend[parrot.mode] * scope.intoxication * scope.delta * 10));
@@ -170,27 +191,6 @@ function Parrots() {
           parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta * 2));
       } else {
         // Вперед!!!
-        scope.decision = randomInteger(1, 25) === 1;
-        if (scope.decision) parrot.bend = yesOrNo();
-
-        scope.decision = randomInteger(1, 50) === 1;
-        if (scope.decision) parrot.accelerationBend = Math.random();
-
-        parrot.mesh.rotateY(degreesToRadians(parrot.bend * parrot.accelerationBend * OBJECTS.PARROTS.velocityBend[parrot.mode] * scope.intoxication * scope.delta));
-
-        scope.decision = randomInteger(1, 50) === 1;
-        if (scope.decision) parrot.accelerationVelocity = Math.random() + 0.5;
-
-        // Высота
-        scope.decision = randomInteger(1, 50) === 1;
-        if (scope.decision) parrot.velocityVertical = (Math.random() + 2.5) * yesOrNo();
-
-        if (onDown && parrot.mesh.position.y > OBJECTS.PARROTS.maxHeight) {
-          parrot.velocityVertical = 0;
-          parrot.accelerationVelocity = 1.5;
-        } else if (onDown || parrot.mesh.position.y < OBJECTS.PARROTS.minHeight) parrot.velocityVertical = Math.abs(parrot.velocityVertical);
-        else if (parrot.mesh.position.y > OBJECTS.PARROTS.maxHeight) parrot.velocityVertical = -1 * Math.abs(parrot.velocityVertical);
-
         parrot.mesh.position.y += parrot.velocityVertical * scope.delta;
         parrot.mesh.position.add(parrot.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.PARROTS.distance[parrot.mode] * scope.delta));
       }
