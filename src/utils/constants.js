@@ -104,7 +104,7 @@ export const DESIGN = {
       },
       ammo: {
         name: 'ammo',
-        start: ammo * 25,
+        start: ammo * 10,
         objects: ammo,
       },
       details: {
