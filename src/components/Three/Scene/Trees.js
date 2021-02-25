@@ -7,9 +7,9 @@ import {
   distance2D,
   degreesToRadians,
   randomPointInCircle,
+  isInRoundObjectsWithCoefficient,
 } from '@/utils/utilities';
 import * as Three from 'three';
-import { isInRoundObjectsWithCoefficient } from '../../../utils/utilities';
 
 function Trees() {
   const loader = new FBXLoader();
@@ -36,7 +36,7 @@ function Trees() {
     let newZ = z;
 
     // Не слишком далеко и не в камне
-    while (distance2D(0, 0, newX, newZ) > DESIGN.GROUND_SIZE * 0.525 &&
+    while (distance2D(0, 0, newX, newZ) > DESIGN.GROUND_SIZE * 0.525 ||
           isInRoundObjectsWithCoefficient(scope.objectsStoneData, newX, newZ, 1)) {
       counter++;
       newX = randomInteger(DESIGN.GROUND_SIZE * -0.5, DESIGN.GROUND_SIZE * 0.5);
