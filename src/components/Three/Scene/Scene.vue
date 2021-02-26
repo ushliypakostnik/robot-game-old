@@ -44,6 +44,7 @@ import Parrots from './Parrots';
 import Robots from './Robots';
 import Mines from './Mines';
 import Cannons from './Cannons';
+import Drones from './Drones';
 
 export default {
   name: 'Scene',
@@ -79,7 +80,7 @@ export default {
 
       x: null,
       y: null,
-      y2: null,
+      yN: null,
       z: null,
 
       moveSpeed: null,
@@ -148,6 +149,7 @@ export default {
 
       isOnStart: true, // Для стартовой позиции, см. Atmosphere.js
       isOnMine: false, // Для стартовой позиции, см. Atmosphere.js
+      isOnDrone: false, // Есть ли активный дрон
 
       // рабочие-переменные для анимационных циклов ПНС
       decision: null,
@@ -380,6 +382,9 @@ export default {
 
       this.cannons = new Cannons();
       this.cannons.init(this);
+
+      this.drones = new Drones();
+      this.drones.init(this);
 
       // Raycasters
       this.raycasterUp = new Three.Raycaster(new Three.Vector3(), new Three.Vector3(0, 1, 0), 0, 100);
@@ -623,6 +628,7 @@ export default {
         this.robots.animate(this);
         this.mines.animate(this);
         this.cannons.animate(this);
+        this.drones.animate(this);
       } else {
         this.atmosphere.stop();
         this.hero.stop();
@@ -631,6 +637,7 @@ export default {
         this.robots.stop();
         this.mines.stop();
         this.cannons.stop();
+        this.drones.stop();
       }
 
       if (!this.isPause && this.isDrone) {

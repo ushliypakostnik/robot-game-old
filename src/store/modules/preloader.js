@@ -20,6 +20,7 @@ const initialState = {
   isRobotsLoaded: false,
   isMetalLoaded: false,
   isFireLoaded: false,
+  isPurpleLoaded: false,
 
   isMashaComplete: false,
   isStepComplete: false,
@@ -47,6 +48,8 @@ const initialState = {
   isBoomComplete: false,
   isRotateComplete: false,
   isFireComplete: false,
+  isEnergyComplete: false,
+  isAirComplete: false,
 
   isAmmoBuilt: false,
   isGrassBuilt: false,
@@ -66,6 +69,7 @@ const initialState = {
   isRobotsBuilt: false,
   isMinesBuilt: false,
   isCannonsBuilt: false,
+  isDronesBuilt: false,
 };
 
 const state = initialState;

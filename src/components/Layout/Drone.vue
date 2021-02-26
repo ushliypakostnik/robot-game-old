@@ -60,6 +60,13 @@
         </div>
         <div class="drone__circle" />
       </div>
+      <div class="drone__block drone--mine">
+        <div class="drone__text">
+          {{ $t(`enemies.mine.name`) }}
+          {{ $t(`enemies.mine.text`) }}
+        </div>
+        <div class="drone__circle" />
+      </div>
       <div class="drone__block drone--cannon">
         <div class="drone__text">
           {{ $t(`enemies.cannon.name`) }}
@@ -67,10 +74,10 @@
         </div>
         <div class="drone__circle" />
       </div>
-      <div class="drone__block drone--mine">
+      <div class="drone__block drone--drone">
         <div class="drone__text">
-          {{ $t(`enemies.mine.name`) }}
-          {{ $t(`enemies.mine.text`) }}
+          {{ $t(`enemies.drone.name`) }}
+          {{ $t(`enemies.drone.text`) }}
         </div>
         <div class="drone__circle" />
       </div>
@@ -186,15 +193,21 @@ export default {
     }
   }
 
+  &--mine {
+    .drone__circle {
+      background: $colors__black;
+    }
+  }
+
   &--cannon {
     .drone__circle {
       background: $colors__cannons;
     }
   }
 
-  &--mine {
+  &--drone {
     .drone__circle {
-      background: $colors__black;
+      background: $colors__drones;
     }
   }
 

@@ -46,20 +46,7 @@ function Robots() {
   fakeMaterial.side = Three.DoubleSide;
   const fakeGeometry = new Three.SphereBufferGeometry(OBJECTS.ROBOTS.scale * 5, 32, 32);
 
-  const airMaterial = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.air0x });
-  airMaterial.blending = Three.NoBlending;
-  const airGeometry = new Three.SphereBufferGeometry(OBJECTS.ROBOTS.scale * 10, 32, 32, 0, 6.3, 3, 3);
-
-  const airHoleMaterial = new Three.MeshBasicMaterial({ color: DESIGN.COLORS.airHole0x });
-  airHoleMaterial.blending = Three.NoBlending;
-  const airHoleGeometry = new Three.SphereBufferGeometry(OBJECTS.ROBOTS.scale * 9.9, 32, 32);
-
   let pseudoMesh;
-  let airMesh;
-  let airHoleMesh;
-  let air;
-
-  let isLandingStart = false;
 
   this.init = (scope) => {
     for (let i = 0; i < OBJECTS.ROBOTS.quantity; i++) {
@@ -95,27 +82,6 @@ function Robots() {
         pseudoMesh.position.set(sands[i][0], OBJECTS.ROBOTS.positionY, sands[i][1]);
         pseudoMesh.visible = false;
 
-        airMesh = new Three.Mesh(airGeometry, airMaterial);
-        airMesh.scale.set(2, 0.5, 2);
-
-        airHoleMesh = new Three.Mesh(airHoleGeometry, airHoleMaterial);
-        airHoleMesh.scale.set(2, 0.5, 2);
-
-        air = new Three.Object3D();
-
-        air.add(airMesh);
-        air.add(airHoleMesh);
-
-        air.position.set(sands[i][0], DESIGN.GROUND_SIZE / 2, sands[i][1]);
-        air.rotateY(Math.PI);
-        air.rotateX(Math.PI);
-        air.visible = false;
-
-        airMesh.updateMatrix();
-        airMesh.matrixAutoUpdate = true;
-        airHoleMesh.updateMatrix();
-        airHoleMesh.matrixAutoUpdate = true;
-
         robots.push({
           health: 100,
           damage: OBJECTS.ROBOTS.damage,
@@ -127,14 +93,11 @@ function Robots() {
           distanceToHero: null,
           isPunch: false,
           isDrunk: false,
-          air,
-          landingMode: null,
         });
         scope.scene.add(robot);
         scope.scene.add(skeleton);
         scope.scene.add(pseudoMesh);
         scope.objectsPseudoEnemies.push(pseudoMesh);
-        scope.scene.add(air);
       });
     }
     loaderDispatchHelper(scope.$store, 'isRobotsBuilt');
@@ -161,85 +124,6 @@ function Robots() {
         loaderDispatchHelper(scope.$store, 'isRobotsRunComplete');
       });
     };
-  };
-
-  const active = (scope, robot) => {
-    // Бег
-    if (robot.pseudoMesh.children[1] && robot.pseudoMesh.children[1].isPlaying) robot.pseudoMesh.children[1].stop();
-    if (robot.pseudoMesh.children[0] && !robot.pseudoMesh.children[0].isPlaying) robot.pseudoMesh.children[0].play();
-
-    if (!robot.mixer.clipAction(animations[0]).isRunning()) robot.mixer.clipAction(animations[0]).fadeOut(1).stop();
-    if (robot.isPunch) {
-      if (robot.mixer.clipAction(animations[6]).isRunning()) robot.mixer.clipAction(animations[6]).fadeIn(1).stop();
-      if (!robot.mixer.clipAction(animations[5]).isRunning()) robot.mixer.clipAction(animations[5]).fadeIn(1).play();
-    } else {
-      if (robot.mixer.clipAction(animations[5]).isRunning()) robot.mixer.clipAction(animations[5]).fadeIn(1).stop();
-      if (!robot.mixer.clipAction(animations[6]).isRunning()) robot.mixer.clipAction(animations[6]).fadeIn(1).play();
-    }
-
-    // Raycast
-    // Спереди
-    scope.directionForward = robot.mesh.getWorldDirection(scope.direction);
-    scope.raycasterForward.set(robot.mesh.position, scope.directionForward);
-    scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical);
-
-    // Позиция
-    if (scope.intersections.length > 0) {
-      // Объект спереди
-      // Слишком близко - отбрасываем сильнее
-      if (scope.intersections[0].distance < 5) {
-        robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * 5 * scope.delta));
-        robot.pseudoMesh.position.add(robot.pseudoMesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * 5 * scope.delta));
-      } else {
-        robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * 2.5 * scope.delta));
-        robot.pseudoMesh.position.add(robot.pseudoMesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * 2.5 * scope.delta));
-      }
-
-      // Поворот
-      robot.side = yesOrNo();
-      robot.mesh.rotateY(robot.side * Math.PI / 4);
-    } else {
-      // Вперед!!!
-      robot.side = null;
-
-      scope.dictance = scope.controls.getObject().position.distanceTo(robot.mesh.position);
-      scope.rotateCooeficient = scope.dictance - robot.distanceToHero < 1 ? scope.dictance * 2.5 / robot.distanceToHero : 1;
-
-      // Удар?
-      if (scope.dictance < OBJECTS.ROBOTS.distance[robot.mode] / 1.75) {
-        robot.isPunch = true;
-        if (!scope.isNotDamaged) {
-          scope.setHeroOnDamage(true);
-
-          scope.setScale({
-            field: DESIGN.HERO.scales.health.name,
-            value: DESIGN.HERO.damage.robot,
-          });
-        }
-      } else {
-        robot.isPunch = false;
-        scope.setHeroOnDamage(false);
-      }
-
-      scope.direction.copy(robot.mesh.getWorldDirection(scope.direction).normalize());
-      scope.direction.y = 0;
-      scope.directionOnHero.subVectors(scope.controls.getObject().position, robot.mesh.position).normalize();
-      scope.directionOnHero.y = 0;
-      scope.angle = scope.directionOnHero.angleTo(scope.direction.applyAxisAngle(scope.y, Math.PI / 2));
-      scope.rotate = scope.angle - Math.PI / 2 <= 0 ? scope.rotateCooeficient : -1 * scope.rotateCooeficient;
-      robot.mesh.rotateY(scope.rotate * scope.intoxication * scope.delta);
-
-      if (!robot.isPunch) {
-        // Позиция
-        robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
-        robot.pseudoMesh.position.add(robot.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
-
-        robot.distanceToHero = scope.dictance;
-      }
-    }
-
-    // Позиция
-    robot.pseudoMesh.position.set(robot.mesh.position.x, robot.mesh.position.y, robot.mesh.position.z);
   };
 
   this.animate = (scope) => {
@@ -271,7 +155,82 @@ function Robots() {
 
         // Aктивный режим
         case DESIGN.ENEMIES.mode.active:
-          active(scope, robot);
+          // Бег
+          if (robot.pseudoMesh.children[1] && robot.pseudoMesh.children[1].isPlaying) robot.pseudoMesh.children[1].stop();
+          if (robot.pseudoMesh.children[0] && !robot.pseudoMesh.children[0].isPlaying) robot.pseudoMesh.children[0].play();
+
+          if (!robot.mixer.clipAction(animations[0]).isRunning()) robot.mixer.clipAction(animations[0]).fadeOut(1).stop();
+          if (robot.isPunch) {
+            if (robot.mixer.clipAction(animations[6]).isRunning()) robot.mixer.clipAction(animations[6]).fadeIn(1).stop();
+            if (!robot.mixer.clipAction(animations[5]).isRunning()) robot.mixer.clipAction(animations[5]).fadeIn(1).play();
+          } else {
+            if (robot.mixer.clipAction(animations[5]).isRunning()) robot.mixer.clipAction(animations[5]).fadeIn(1).stop();
+            if (!robot.mixer.clipAction(animations[6]).isRunning()) robot.mixer.clipAction(animations[6]).fadeIn(1).play();
+          }
+
+          // Raycast
+          // Спереди
+          scope.directionForward = robot.mesh.getWorldDirection(scope.direction);
+          scope.raycasterForward.set(robot.mesh.position, scope.directionForward);
+          scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical);
+
+          // Позиция
+          if (scope.intersections.length > 0) {
+            // Объект спереди
+            // Слишком близко - отбрасываем сильнее
+            if (scope.intersections[0].distance < 5) {
+              robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * 5 * scope.delta));
+              robot.pseudoMesh.position.add(robot.pseudoMesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * 5 * scope.delta));
+            } else {
+              robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * 2.5 * scope.delta));
+              robot.pseudoMesh.position.add(robot.pseudoMesh.getWorldDirection(scope.direction).negate().multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * 2.5 * scope.delta));
+            }
+
+            // Поворот
+            robot.side = yesOrNo();
+            robot.mesh.rotateY(robot.side * Math.PI / 4);
+          } else {
+            // Вперед!!!
+            robot.side = null;
+
+            scope.dictance = scope.controls.getObject().position.distanceTo(robot.mesh.position);
+            scope.rotateCooeficient = scope.dictance - robot.distanceToHero < 1 ? scope.dictance * 2.5 / robot.distanceToHero : 1;
+
+            // Удар?
+            if (scope.dictance < OBJECTS.ROBOTS.distance[robot.mode] / 1.75) {
+              robot.isPunch = true;
+              if (!scope.isNotDamaged) {
+                scope.setHeroOnDamage(true);
+
+                scope.setScale({
+                  field: DESIGN.HERO.scales.health.name,
+                  value: DESIGN.HERO.damage.robot,
+                });
+              }
+            } else {
+              robot.isPunch = false;
+              scope.setHeroOnDamage(false);
+            }
+
+            scope.direction.copy(robot.mesh.getWorldDirection(scope.direction).normalize());
+            scope.direction.y = 0;
+            scope.directionOnHero.subVectors(scope.controls.getObject().position, robot.mesh.position).normalize();
+            scope.directionOnHero.y = 0;
+            scope.angle = scope.directionOnHero.angleTo(scope.direction.applyAxisAngle(scope.y, Math.PI / 2));
+            scope.rotate = scope.angle - Math.PI / 2 <= 0 ? scope.rotateCooeficient : -1 * scope.rotateCooeficient;
+            robot.mesh.rotateY(scope.rotate * scope.intoxication * scope.delta);
+
+            if (!robot.isPunch) {
+              // Позиция
+              robot.mesh.position.add(robot.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
+              robot.pseudoMesh.position.add(robot.mesh.getWorldDirection(scope.direction).multiplyScalar(scope.speed * OBJECTS.ROBOTS.distance[robot.mode] * scope.delta));
+
+              robot.distanceToHero = scope.dictance;
+            }
+          }
+
+          // Позиция
+          robot.pseudoMesh.position.set(robot.mesh.position.x, robot.mesh.position.y, robot.mesh.position.z);
           break;
 
         // Опьянел
@@ -294,82 +253,13 @@ function Robots() {
               robot.pseudoMesh.userData = { isThing: true };
               robot.pseudoMesh.position.y -= 1;
               robot.pseudoMesh.scale.set(0.5, 0.5, 0.5);
-              if (robot.pseudoMesh.children[2] && robot.pseudoMesh.children[2].isPlaying) robot.pseudoMesh.children[2].stop();
             });
-          }
-          break;
-
-        // Посадка спецназа
-        case DESIGN.ENEMIES.mode.landing:
-          switch (robot.landingMode) {
-            case 1:
-              if (robot.air.position.y > DESIGN.HERO.jumpheight * 1.25) {
-                robot.air.position.set(robot.air.position.x, robot.air.position.y - scope.delta * 100, robot.air.position.z);
-              } else robot.landingMode = 2;
-              break;
-
-            case 2:
-              robot.health = 100;
-              robot.side = null;
-              robot.distanceToHero = null;
-              robot.isPunch = false;
-              robot.isDrunk = false;
-              robot.mesh.position.copy(robot.air.position);
-              if (robot.mixer.clipAction(animations[0]).isRunning()) robot.mixer.clipAction(animations[0]).stop();
-              if (robot.mixer.clipAction(animations[5]).isRunning()) robot.mixer.clipAction(animations[5]).stop();
-              if (robot.mixer.clipAction(animations[6]).isRunning()) robot.mixer.clipAction(animations[6]).stop();
-
-              scope.scene.add(robot.mesh);
-              scope.objectsEnemies.push(robot);
-
-              robot.landingMode = 3;
-              break;
-
-            case 3:
-              if (robot.mesh.position.y > OBJECTS.ROBOTS.positionY) {
-                robot.mesh.position.set(robot.mesh.position.x, robot.mesh.position.y - scope.delta * 10, robot.mesh.position.z);
-                robot.pseudoMesh.position.set(robot.pseudoMesh.position.x, robot.pseudoMesh.position.y - scope.delta * 10, robot.pseudoMesh.position.z);
-              } else {
-                robot.pseudoMesh.position.copy(robot.mesh.position);
-
-                scope.scene.add(robot.pseudoMesh);
-                scope.objectsPseudoEnemies.push(robot.pseudoMesh);
-
-                if (!robot.mixer.clipAction(animations[6]).isRunning()) robot.mixer.clipAction(animations[6]).fadeIn(1).play();
-
-                robot.landingMode = 4;
-              }
-              break;
-
-            case 4:
-              if (robot.air.position.y < DESIGN.GROUND_SIZE / 2) {
-                robot.air.position.set(robot.air.position.x, robot.air.position.y + scope.delta * 100, robot.air.position.z);
-              } else scope.scene.remove(robot.air);
-
-              active(scope, robot);
-              break;
           }
           break;
       }
 
       if (robot.mixer) robot.mixer.update(scope.speed * scope.delta);
     });
-
-    // Если все Танцоры разобраны - высаживаем спецназ на НЛО
-    if (!isLandingStart) {
-      isLandingStart = true;
-
-      for (let i = 0; i < OBJECTS.ROBOTS.quantity; i++) {
-        robots.forEach((robot) => {
-          // Noize
-          if (robot.pseudoMesh.children[1] && !robot.pseudoMesh.children[1].isPlaying) robot.pseudoMesh.children[1].play();
-
-          robot.mode = DESIGN.ENEMIES.mode.landing;
-          robot.landingMode = 1;
-          robot.air.visible = true;
-        });
-      }
-    }
   };
 
   const stop = (robot) => {

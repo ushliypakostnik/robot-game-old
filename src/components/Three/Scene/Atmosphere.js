@@ -175,8 +175,15 @@ function Atmosphere() {
       // 150 метров - если скрытое передвижение не включено - пугает врага, 100 если включено!
       if ((distance2D(px, pz, x, z) < DESIGN.checkDistance * 3 && !scope.moveHidden && enemy.mode === DESIGN.ENEMIES.mode.idle) ||
         (distance2D(px, pz, x, z) < DESIGN.checkDistance * 2 && scope.moveHidden && enemy.mode === DESIGN.ENEMIES.mode.idle)) {
-        enemy.mode = DESIGN.ENEMIES.mode.active;
-        messagesByIdDispatchHelper(scope, 5, 'discovered', enemy.pseudoMesh.name);
+        // Только один дрон может быть активным
+        if (enemy.pseudoMesh.name !== OBJECTS.DRONES.name) {
+          enemy.mode = DESIGN.ENEMIES.mode.active;
+          messagesByIdDispatchHelper(scope, 5, 'discovered', enemy.pseudoMesh.name);
+        } else if (!scope.isOnDrone && !scope.moveHidden) {
+          scope.isOnDrone = true;
+          enemy.mode = DESIGN.ENEMIES.mode.active;
+          messagesByIdDispatchHelper(scope, 5, 'discovered', enemy.pseudoMesh.name);
+        }
       }
     });
 

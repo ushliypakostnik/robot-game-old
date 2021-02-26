@@ -29,7 +29,7 @@ const size = (size) => {
 const ammo = 25;
 
 export const DESIGN = {
-  V: '1.0',
+  V: '1.1',
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -90,6 +90,7 @@ export const DESIGN = {
       water: -1,
       robot: -2,
       сannon: -10,
+      drone: -5,
     },
     scales: {
       health: {
@@ -123,9 +124,6 @@ export const DESIGN = {
       active: 'active',
       drunk: 'drunk',
       thing: 'thing',
-
-      // Десант
-      landing: 'landing',
     },
     minIntoxication: 25,
   },
@@ -214,6 +212,12 @@ export const OBJECTS = {
       // На острове с ближайшим роботом
       [size(-0.43), size(0.33)],
     ]
+  },
+  DRONES: {
+    name: 'drone',
+    quantity: 9,
+    size: 9,
+    positionY: DESIGN.HERO.jumpheight * 2.1,
   },
   HORSES: {
     name: 'horse',
@@ -378,7 +382,7 @@ export const OBJECTS = {
     quantityMax: 10,
     largeMin: DESIGN.HERO.jumpheight * 0.5,
     largeMax: DESIGN.HERO.jumpheight * 0.75,
-    smallMin: size(0.0066),
+    smallMin: size(0.0075),
     smallMax: size(0.01),
     position: [
       // x, y
@@ -544,14 +548,19 @@ export const LOCALES = {
         declination: ': the robot dancer',
         text: `: powerful health, you need to disassemble ${OBJECTS.ROBOTS.quantity} pieces to fix the boat`,
       },
+      mine: {
+        name: 'Infantry mine',
+        text: `: upon stepping, the robot loses half of its health at once, and if the health is less than ${DESIGN.EFFECTS.mine.min}% - it is destroyed, does not work when walking stealthily`,
+      },
       cannon: {
         name: 'Heavy cannon',
         declination: ': a heavy cannon',
         text: `: impossible to destroy, guard the peace of the Robot Dancers`,
       },
-      mine: {
-        name: 'Infantry mine',
-        text: `: upon stepping, the robot loses half of its health at once, and if the health is less than ${DESIGN.EFFECTS.mine.min}% - it is destroyed, does not work when walking stealthily`,
+      drone: {
+        name: 'Cover drone',
+        declination: ': a cover drone',
+        text: `: impossible to destroy, do not respond when walking hidden, only one can be active`,
       },
     },
   },
@@ -654,14 +663,19 @@ export const LOCALES = {
         declination: ': робота-танцора',
         text: `: мощнейшее здоровье, нужно разобрать на детали ${OBJECTS.ROBOTS.quantity} штуки чтобы починить катер`,
       },
+      mine: {
+        name: 'Пехотная мина',
+        text: `: наступив, робот теряет сразу половину здоровья, а если здоровье меньше ${DESIGN.EFFECTS.mine.min}% - разрушается, не срабатывает при скрытной ходьбе`,
+      },
       cannon: {
         name: 'Тяжелые пушки',
         declination: ': тяжелую пушку',
         text: `: невозможно уничтожить, охраняют покой Роботов-танцоров`,
       },
-      mine: {
-        name: 'Пехотная мина',
-        text: `: наступив, робот теряет сразу половину здоровья, а если здоровье меньше ${DESIGN.EFFECTS.mine.min}% - разрушается, не срабатывает при скрытной ходьбе`,
+      drone: {
+        name: 'Дрон прикрытия',
+        declination: ': дрон прикрытия',
+        text: `: невозможно уничтожить, не реагируют при скрытой ходьбе, только один может быть активным`,
       },
     },
   },
