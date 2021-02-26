@@ -224,7 +224,7 @@ function Hero() {
       // Forward
       scope.directionForward = scope.camera.getWorldDirection(scope.direction);
       scope.raycasterForward.set(scope.camera.getWorldPosition(scope.position), scope.directionForward);
-      scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical);
+      scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical.concat(scope.objectsPseudoEnemies));
       scope.onForward = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
       if (scope.onForward) scope.object = scope.intersections[0].object;
 
@@ -251,21 +251,21 @@ function Hero() {
       // Backward
       scope.directionBackward = scope.directionForward.negate();
       scope.raycasterBackward.set(scope.camera.getWorldPosition(scope.position), scope.directionBackward);
-      scope.intersections = scope.raycasterBackward.intersectObjects(scope.objectsVertical);
+      scope.intersections = scope.raycasterBackward.intersectObjects(scope.objectsVertical.concat(scope.objectsPseudoEnemies));
       scope.onBackward = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
       if (scope.onBackward) scope.object = scope.intersections[0].object;
 
       // Right
       scope.directionRight = new Three.Vector3(0, 0, 0).crossVectors(scope.directionForward, scope.yN);
       scope.raycasterRight.set(scope.camera.getWorldPosition(scope.position), scope.directionRight);
-      scope.intersections = scope.raycasterRight.intersectObjects(scope.objectsVertical);
+      scope.intersections = scope.raycasterRight.intersectObjects(scope.objectsVertical.concat(scope.objectsPseudoEnemies));
       scope.onRight = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
       if (scope.onRight) scope.object = scope.intersections[0].object;
 
       // Left
       scope.directionLeft = scope.directionRight.negate();
       scope.raycasterLeft.set(scope.camera.getWorldPosition(scope.position), scope.directionLeft);
-      scope.intersections = scope.raycasterLeft.intersectObjects(scope.objectsVertical);
+      scope.intersections = scope.raycasterLeft.intersectObjects(scope.objectsVertical.concat(scope.objectsPseudoEnemies));
       scope.onLeft = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
       if (scope.onLeft) scope.object = scope.intersections[0].object;
 
@@ -298,9 +298,9 @@ function Hero() {
             });
           }
 
-          // На большой воде
+          // На большой воде - рост ниже
           if (
-            ((scope.layersNew.includes(OBJECTS.OCEAN.name)
+              ((scope.layersNew.includes(OBJECTS.OCEAN.name)
               && !scope.layersNew.includes(OBJECTS.BEACH.name)
               && !scope.layersNew.includes(OBJECTS.SANDS.name))
               || (scope.layersNew.includes(OBJECTS.LAKES.name)
