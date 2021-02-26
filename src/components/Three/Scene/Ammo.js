@@ -184,8 +184,9 @@ function Ammo() {
     }
 
     if (enemy &&
-      (enemy.mode === DESIGN.ENEMIES.mode.idle || enemy.mode === DESIGN.ENEMIES.mode.active) &&
-      !ammo.isHit) {
+      (enemy.mode === DESIGN.ENEMIES.mode.idle
+      || enemy.mode === DESIGN.ENEMIES.mode.active)
+      && !ammo.isHit) {
       if (enemy.mode === DESIGN.ENEMIES.mode.idle) enemy.mode = DESIGN.ENEMIES.mode.active;
       enemy.health -= balancePower(scope.power) * enemy.damage;
       ammo.isHit = true;
@@ -198,7 +199,8 @@ function Ammo() {
           enemy.accelerationBend = 1;
         }
       }
-      // console.log('Попал!!!', enemy, enemy.health);
+
+      console.log('Попал!!!', enemy, enemy.health);
     }
   };
 

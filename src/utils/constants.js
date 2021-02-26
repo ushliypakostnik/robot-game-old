@@ -47,6 +47,8 @@ export const DESIGN = {
     horse0x: 0x623611,
     parrot0x: 0x3c9d9d,
     robot0x: 0x7c5415,
+    air0x: 0x53baff,
+    airHole0x: 0x09222c,
   },
   GROUND_SIZE: size(1),
   checkDistance: size(0.025), // проверки при изменении позиции на 50 метров
@@ -121,6 +123,9 @@ export const DESIGN = {
       active: 'active',
       drunk: 'drunk',
       thing: 'thing',
+
+      // Десант
+      landing: 'landing',
     },
     minIntoxication: 25,
   },
@@ -184,7 +189,7 @@ export const OBJECTS = {
     distance: {
       [DESIGN.ENEMIES.mode.active]: 18,
     },
-    damage: 0.01,
+    damage: 10, // 0.01,
   },
   CANNONS: {
     name: 'cannon',

@@ -739,7 +739,7 @@ export default {
     },
 
     details(value) {
-      if (value === OBJECTS.ROBOTS.quantity) messagesByViewDispatchHelper(this, 6, 'end');
+      if (value >= OBJECTS.ROBOTS.quantity) messagesByViewDispatchHelper(this, 6, 'end');
     },
 
     isGameOver(value) {
