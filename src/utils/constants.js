@@ -88,7 +88,7 @@ export const DESIGN = {
     start: [size(-0.33), size(0.53)],
     damage: {
       water: -1,
-      robot: -2,
+      robot: -1.5,
       сannon: -10,
       drone: -5,
     },
