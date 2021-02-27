@@ -214,7 +214,7 @@ function Drones() {
         scope.dictance = drone.group.position.distanceTo(drone.fire.position);
 
         if (drone.off || !drone.start) drone.scale -= scope.delta;
-        else drone.scale += scope.delta * 2;
+        else drone.scale += scope.delta * 2.5;
         if (drone.fire.position.y < drone.y * 0.75 && !drone.start) drone.start = true;
         if (drone.fire.position.y < drone.y * 0.25 && !drone.off) drone.off = true;
 

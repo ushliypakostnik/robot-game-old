@@ -167,9 +167,13 @@ function Horses() {
       });
       if (horse.layersNew.length !== horse.layers.length) {
         //  На любой воде
-        if (!horse.layersNew.includes(OBJECTS.BEACH.name) ||
-          horse.layersNew.includes(OBJECTS.LAKES.name)
-          || horse.layersNew.includes(OBJECTS.PUDDLES.name)) {
+        if ((horse.layersNew.includes(OBJECTS.OCEAN.name)
+            && !horse.layersNew.includes(OBJECTS.BEACH.name)
+            && !horse.layersNew.includes(OBJECTS.SANDS.name))
+            ||
+            (horse.layersNew.includes(OBJECTS.LAKES.name)
+            && !horse.layersNew.includes(OBJECTS.SANDS.name))
+            || horse.layersNew.includes(OBJECTS.PUDDLES.name)) {
           horse.isOnWater = true;
         } else horse.isOnWater = false;
 
