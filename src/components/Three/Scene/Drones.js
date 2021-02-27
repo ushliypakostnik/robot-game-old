@@ -259,6 +259,11 @@ function Drones() {
     }
   };
 
+  this.stopOne = (drone) => {
+    // Только звук моторов
+    if (drone.pseudoMesh.children[0] && drone.pseudoMesh.children[0].isPlaying) drone.pseudoMesh.children[0].stop();
+  };
+
   this.stop = () => {
     drones.forEach((drone) => {
       if (drone.pseudoMesh.children[0] && drone.pseudoMesh.children[0].isPlaying) drone.pseudoMesh.children[0].stop();

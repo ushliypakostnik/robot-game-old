@@ -170,7 +170,11 @@ function Atmosphere() {
       if (distance2D(px, pz, x, z) < DESIGN.checkDistance * 5 && !isBesideNew) isBesideNew = true;
 
       // 200 метров - напуганных врагов попускает
-      if (distance2D(px, pz, x, z) > DESIGN.checkDistance * 4 && enemy.mode === DESIGN.ENEMIES.mode.active) enemy.mode = DESIGN.ENEMIES.mode.idle;
+      if (distance2D(px, pz, x, z) > DESIGN.checkDistance * 4 && enemy.mode === DESIGN.ENEMIES.mode.active) {
+        enemy.mode = DESIGN.ENEMIES.mode.idle;
+
+        if (enemy.pseudoMesh.name === OBJECTS.DRONES.name) scope.drones.stopOne(enemy);
+      }
 
       // 150 метров - если скрытое передвижение не включено - пугает врага, 100 если включено!
       if ((distance2D(px, pz, x, z) < DESIGN.checkDistance * 3 && !scope.moveHidden && enemy.mode === DESIGN.ENEMIES.mode.idle) ||
