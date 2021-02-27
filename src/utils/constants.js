@@ -216,8 +216,8 @@ export const OBJECTS = {
   DRONES: {
     name: 'drone',
     quantity: 9,
-    size: 9,
-    positionY: DESIGN.HERO.jumpheight * 2.1,
+    size: 7,
+    positionY: DESIGN.HERO.jumpheight * 2.5,
   },
   HORSES: {
     name: 'horse',

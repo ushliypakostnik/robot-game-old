@@ -190,7 +190,7 @@ function Drones() {
 
             scope.directionOnHero.subVectors(scope.controls.getObject().position, drone.pseudoMesh.position).normalize();
             scope.directionOnHero.y = 0;
-            drone.group.position.add(scope.directionOnHero.multiplyScalar(3));
+            drone.group.position.add(scope.directionOnHero.multiplyScalar(1));
             drone.pseudoMesh.position.copy(drone.group.position);
 
             if (drone.pseudoMesh.children[0] && !drone.pseudoMesh.children[0].isPlaying) drone.pseudoMesh.children[0].play();
@@ -203,7 +203,7 @@ function Drones() {
 
       // Завершаем выстрел в любом режиме
       if (drone.onFire) {
-        drone.fire.position.y -= scope.delta * 100;
+        drone.fire.position.y -= scope.delta * 50;
         scope.directionOnHero.subVectors(scope.controls.getObject().position, drone.fire.position).normalize();
         scope.directionOnHero.y = 0;
         drone.fire.position.add(scope.directionOnHero.multiplyScalar(scope.onObjectHeight > 0 ? 10 : 5));
