@@ -29,7 +29,7 @@ const size = (size) => {
 const ammo = 25;
 
 export const DESIGN = {
-  V: '1.1.2',
+  V: '1.1.3',
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -187,7 +187,7 @@ export const OBJECTS = {
     distance: {
       [DESIGN.ENEMIES.mode.active]: 18,
     },
-    damage: 10, // 0.01,
+    damage: 0.01,
   },
   CANNONS: {
     name: 'cannon',
