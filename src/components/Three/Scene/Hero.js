@@ -224,9 +224,33 @@ function Hero() {
       // Forward
       scope.directionForward = scope.camera.getWorldDirection(scope.direction);
       scope.raycasterForward.set(scope.camera.getWorldPosition(scope.position), scope.directionForward);
-      scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical.concat(scope.objectsPseudoEnemies));
+      scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsVertical.concat(scope.objectsPseudoEnemies.filter(enemy => !enemy.userData.isThing)));
       scope.onForward = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
       if (scope.onForward) scope.object = scope.intersections[0].object;
+
+      // Backward
+      scope.directionBackward = scope.directionForward.negate();
+      scope.raycasterBackward.set(scope.camera.getWorldPosition(scope.position), scope.directionBackward);
+      scope.intersections = scope.raycasterBackward.intersectObjects(scope.objectsVertical.concat(scope.objectsPseudoEnemies.filter(enemy => !enemy.userData.isThing)));
+      scope.onBackward = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
+      if (scope.onBackward) scope.object = scope.intersections[0].object;
+
+      // Right
+      scope.directionRight = new Three.Vector3(0, 0, 0).crossVectors(scope.directionForward, scope.yN);
+      scope.raycasterRight.set(scope.camera.getWorldPosition(scope.position), scope.directionRight);
+      scope.intersections = scope.raycasterRight.intersectObjects(scope.objectsVertical.concat(scope.objectsPseudoEnemies.filter(enemy => !enemy.userData.isThing)));
+      scope.onRight = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
+      if (scope.onRight) scope.object = scope.intersections[0].object;
+
+      // Left
+      scope.directionLeft = scope.directionRight.negate();
+      scope.raycasterLeft.set(scope.camera.getWorldPosition(scope.position), scope.directionLeft);
+      scope.intersections = scope.raycasterLeft.intersectObjects(scope.objectsVertical.concat(scope.objectsPseudoEnemies.filter(enemy => !enemy.userData.isThing)));
+      scope.onLeft = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
+      if (scope.onLeft) scope.object = scope.intersections[0].object;
+
+      // Столкновения
+      scope.collision = scope.onForward || scope.onBackward || scope.onLeft || scope.onRight;
 
       // Things
       scope.intersections = scope.raycasterForward.intersectObjects(scope.objectsThings);
@@ -247,29 +271,6 @@ function Hero() {
           scope.hideMessageByView(1);
         }
       }
-
-      // Backward
-      scope.directionBackward = scope.directionForward.negate();
-      scope.raycasterBackward.set(scope.camera.getWorldPosition(scope.position), scope.directionBackward);
-      scope.intersections = scope.raycasterBackward.intersectObjects(scope.objectsVertical.concat(scope.objectsPseudoEnemies));
-      scope.onBackward = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
-      if (scope.onBackward) scope.object = scope.intersections[0].object;
-
-      // Right
-      scope.directionRight = new Three.Vector3(0, 0, 0).crossVectors(scope.directionForward, scope.yN);
-      scope.raycasterRight.set(scope.camera.getWorldPosition(scope.position), scope.directionRight);
-      scope.intersections = scope.raycasterRight.intersectObjects(scope.objectsVertical.concat(scope.objectsPseudoEnemies));
-      scope.onRight = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
-      if (scope.onRight) scope.object = scope.intersections[0].object;
-
-      // Left
-      scope.directionLeft = scope.directionRight.negate();
-      scope.raycasterLeft.set(scope.camera.getWorldPosition(scope.position), scope.directionLeft);
-      scope.intersections = scope.raycasterLeft.intersectObjects(scope.objectsVertical.concat(scope.objectsPseudoEnemies));
-      scope.onLeft = scope.intersections.length > 0 ? scope.intersections[0].distance < stopDistance : false;
-      if (scope.onLeft) scope.object = scope.intersections[0].object;
-
-      scope.collision = scope.onForward || scope.onBackward || scope.onLeft || scope.onRight;
 
       // Down Through
       scope.directionDown = new Three.Vector3(0, 0, 0).crossVectors(scope.x, scope.z);
