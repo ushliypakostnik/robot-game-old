@@ -286,7 +286,10 @@ function Hero() {
           // console.log(scope.layers, scope.layersNew, scope.heroOnWater);
 
           // На мине - если не скрытный шаг или неуязвимость или не в прыжке
-          if (scope.isCanJump && !scope.moveHidden && !scope.isNotDamaged && scope.layersNew.includes(OBJECTS.MINES.name)) {
+          if (scope.isCanJump
+              && !scope.moveHidden
+              && !scope.isNotDamaged
+              && scope.layersNew.includes(OBJECTS.MINES.name)) {
             scope.mine = scope.intersections.filter(object => object.object.name === OBJECTS.MINES.name)[0].object.id;
             scope.velocity.y += DESIGN.HERO.jumpspeed * 2;
             scope.isCanJump = false;
@@ -312,7 +315,7 @@ function Hero() {
           // На камне
           if (scope.layersNew.includes(OBJECTS.STONES.name)) {
             scope.object = scope.intersections.filter(object => object.object.name === OBJECTS.STONES.name)[0].object;
-            scope.onObjectHeight = scope.object.position.y + scope.object.geometry.parameters.radius + scope.height;
+            if (scope.object) scope.onObjectHeight = scope.object.position.y + scope.object.geometry.parameters.radius + scope.height;
           } else scope.onObjectHeight = 0;
 
           scope.layers = scope.layersNew;
@@ -321,8 +324,10 @@ function Hero() {
 
       // Урон персонажу
       if (!scope.isNotDamaged) {
-        // Урон от воды, персонажей и мин
-        if ((scope.heroOnWater && scope.isCanJump) || scope.isHeroOnDamage || scope.isHeroOnFire || scope.isOnMine) {
+        if ((scope.heroOnWater && scope.isCanJump)
+            || scope.isHeroOnDamage
+            || scope.isHeroOnFire
+            || scope.isOnMine) {
           if (!damageClock.running) {
             damageClock.start();
 
