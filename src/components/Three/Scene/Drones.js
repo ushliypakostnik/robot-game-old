@@ -162,15 +162,16 @@ function Drones() {
 
   this.animate = (scope) => {
     // Только один дрон может быть активным
-    if (!drones.find(drone => drone.mode === DESIGN.STAFF.mode.active)) scope.isOnDrone = false;
-
-    drones.filter(drone => drone.mode === DESIGN.STAFF.mode.active).forEach((drone) => {
+    drone = drones.find(drone => drone.mode === DESIGN.STAFF.mode.active);
+    if (!drone) scope.isOnDrone = false;
+    else {
       // Активный режим
       if (drone.mode === DESIGN.STAFF.mode.active) {
         // Стреляем если прицелились
         if (!drone.onFire && drone.onTarget) {
           drone.onFire = true;
           drone.onFireStart = true;
+          if (drone.pseudoMesh.children[0] && drone.pseudoMesh.children[0].isPlaying) drone.pseudoMesh.children[0].stop();
           if (drone.pseudoMesh.children[1] && drone.pseudoMesh.children[1].isPlaying) drone.pseudoMesh.children[1].stop();
           if (drone.pseudoMesh.children[1] && !drone.pseudoMesh.children[1].isPlaying) drone.pseudoMesh.children[1].play();
           setTimeout(() => {
@@ -183,12 +184,15 @@ function Drones() {
 
         // Продвигаемся если не выстрел и не прицелились
         if (!drone.onFireStart || !drone.onTarget) {
-          scope.dictance = scope.controls.getObject().position.distanceTo(drone.pseudoMesh.position);
+          scope.dictance = scope.controls.getObject()
+            .position
+            .distanceTo(drone.pseudoMesh.position);
 
           if (scope.dictance > drone.y + 1) {
             drone.onTarget = false;
 
-            scope.directionOnHero.subVectors(scope.controls.getObject().position, drone.pseudoMesh.position).normalize();
+            scope.directionOnHero.subVectors(scope.controls.getObject().position, drone.pseudoMesh.position)
+              .normalize();
             scope.directionOnHero.y = 0;
             drone.group.position.add(scope.directionOnHero.multiplyScalar(2));
             drone.pseudoMesh.position.copy(drone.group.position);
@@ -204,7 +208,8 @@ function Drones() {
       // Завершаем выстрел в любом режиме
       if (drone.onFire) {
         drone.fire.position.y -= scope.delta * 50;
-        scope.directionOnHero.subVectors(scope.controls.getObject().position, drone.fire.position).normalize();
+        scope.directionOnHero.subVectors(scope.controls.getObject().position, drone.fire.position)
+          .normalize();
         scope.directionOnHero.y = 0;
         drone.fire.position.add(scope.directionOnHero.multiplyScalar(scope.onObjectHeight > 0 ? 5 : 2.5));
         drone.fire.rotateX(scope.delta * 2);
@@ -236,8 +241,8 @@ function Drones() {
           // Проверяем урон персонажу (если не неуязвим) - или по расстоянию до камеры или по сфере огня
           scope.dictance = drone.fire.position.distanceTo(scope.controls.getObject().position);
           if ((scope.dictance < DESIGN.HERO.height
-              || scope.dictance < drone.fire.geometry.parameters.radius * drone.scale)
-              && !scope.isHeroOnFire && !scope.isNotDamaged) {
+            || scope.dictance < drone.fire.geometry.parameters.radius * drone.scale)
+            && !scope.isHeroOnFire && !scope.isNotDamaged) {
             scope.setHeroOnFire(true);
             scope.setScale({
               field: DESIGN.HERO.scales.health.name,
@@ -251,7 +256,7 @@ function Drones() {
         drone.fire.scale.set(drone.scale, drone.scale, drone.scale);
         drone.fire.updateMatrix();
       }
-    });
+    }
   };
 
   this.stop = () => {
