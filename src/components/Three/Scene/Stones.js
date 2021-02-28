@@ -63,7 +63,7 @@ function Stones() {
           radius = randomInteger(OBJECTS.STONES.smallMin, OBJECTS.STONES.smallMax);
         }
 
-        geometry = new Three.OctahedronBufferGeometry(radius, randomInteger(1, 5));
+        geometry = new Three.OctahedronBufferGeometry(radius, 5);
         stone = new Three.Mesh(geometry, material);
 
         stone.position.x = OBJECTS.STONES.position[i][0] + randomInteger(20, 80) * yesOrNo();
