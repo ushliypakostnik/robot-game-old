@@ -531,7 +531,7 @@ export default {
         case 9: // TAB
           event.preventDefault();
           event.stopPropagation();
-          if (!this.isPause) this.toggleDrone(!this.isDrone);
+          if (!this.isPause && !(this.isGameOver || this.isWin)) this.toggleDrone(!this.isDrone);
           break;
       }
     },
