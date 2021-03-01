@@ -160,6 +160,15 @@ function Drones() {
     loaderDispatchHelper(scope.$store, 'isDronesBuilt');
   };
 
+  const update = (drone) => {
+    drone.fire.visible = false;
+    drone.onFire = false;
+    drone.onFireStart = false;
+    drone.scale = 1;
+    drone.off = false;
+    drone.start = false;
+  };
+
   this.animate = (scope) => {
     // Только один дрон может быть активным
     drone = drones.find(drone => drone.mode === DESIGN.STAFF.mode.active);
@@ -231,12 +240,7 @@ function Drones() {
         scope.onDonw = scope.intersections.length > 0 ? scope.intersections[0].distance < drone.fire.geometry.parameters.radius * drone.scale * 1.5 : false;
 
         if (drone.fire.position.y < -2 * drone.fire.geometry.parameters.radius * drone.scale) {
-          drone.fire.visible = false;
-          drone.onFire = false;
-          drone.onFireStart = false;
-          drone.scale = 1;
-          drone.off = false;
-          drone.start = false;
+          update(drone);
         } else {
           // Проверяем урон персонажу (если не неуязвим) - или по расстоянию до камеры или по сфере огня
           scope.dictance = drone.fire.position.distanceTo(scope.controls.getObject().position);
@@ -262,6 +266,8 @@ function Drones() {
   this.stopOne = (drone) => {
     // Только звук моторов
     if (drone.pseudoMesh.children[0] && drone.pseudoMesh.children[0].isPlaying) drone.pseudoMesh.children[0].stop();
+
+    update(drone);
   };
 
   this.stop = () => {
