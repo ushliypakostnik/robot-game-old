@@ -107,8 +107,8 @@ export const fixStaffPosition = (raduis, waters, stones, trees, x, z) => {
   let newX = x;
   let newZ = z;
   while (isInRoundObjectsWithCoefficient(waters, newX, newZ, 1.25) ||
-  isInPointObjectsWithDistance(trees, newX, newZ, 3) ||
-  isInRoundObjectsWithCoefficient(stones, newX, newZ, 2) ||
+  isInPointObjectsWithDistance(trees, newX, newZ, 5) ||
+  isInRoundObjectsWithCoefficient(stones, newX, newZ, 2.5) ||
   distance2D(0, 0, newX, newZ) > raduis) {
     counter++;
     newX = randomInteger(raduis * -1, raduis);
