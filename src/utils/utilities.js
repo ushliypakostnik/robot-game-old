@@ -159,5 +159,5 @@ export const getMinIntoxication = (health) => {
 
 export const balancePower = (power) => {
   return power + (101 - power) / 5;
-}
+};
 
