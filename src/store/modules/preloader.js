@@ -79,7 +79,6 @@ let result;
 
 const getters = {
   isGameLoaded: state => state.isGameLoaded,
-  isReload: state => state.isReload,
 };
 
 const actions = {
