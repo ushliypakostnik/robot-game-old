@@ -289,7 +289,7 @@ export default {
 
       // Cameras
 
-      this.camera = new Three.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 1, DESIGN.GROUND_SIZE);
+      this.camera = new Three.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, DESIGN.GROUND_SIZE);
       this.cameraDrone = this.camera.clone();
 
       // Audio listener
