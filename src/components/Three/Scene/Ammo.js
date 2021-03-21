@@ -200,7 +200,7 @@ function Ammo() {
         }
       }
 
-      console.log('Попал!!!', enemy, enemy.health);
+      // console.log('Попал!!!', enemy, enemy.health);
     }
   };
 
