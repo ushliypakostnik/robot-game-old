@@ -98,38 +98,3 @@ ul {
   padding: 0; // вот это становится проблемой
   margin: 0;
 }
-
-
-// WebKit Scrollbar
-//////////////////////////////////////////////////////
-
-/*
-// Let's get this party started
-::-webkit-scrollbar {
-  width: $scrollbar_width;
-}
-// Track
-::-webkit-scrollbar-track {
-  background: $colors_scrollbar_track;
-}
-// Handle
-::-webkit-scrollbar-thumb {
-  background: $colors_scrollbar-thumb;
-  border: 1px solid $colors_scrollbar_track;
-}
-*/
-
-// Customize Placeholder
-//////////////////////////////////////////////////////
-
-::-webkit-input-placeholder {color: $colors__placeholder !important;}
-::-moz-placeholder          {color: $colors__placeholder !important;} /* Firefox 19+ */
-:-moz-placeholder           {color: $colors__placeholder !important;} /* Firefox 18- */
-:-ms-input-placeholder      {color: $colors__placeholder !important;}
-
-:focus::-webkit-input-placeholder {color: transparent;}
-:focus::-moz-placeholder          {color: transparent;}
-:focus:-moz-placeholder           {color: transparent;}
-:focus:-ms-input-placeholder      {color: transparent;}
-
-// stylelint-enable declaration-no-important, no-descending-specificity, block-opening-brace-newline-after, block-closing-brace-newline-before, rule-empty-line-before, block-opening-brace-space-before
