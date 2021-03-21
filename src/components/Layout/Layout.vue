@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="isDesktop && isChrome"
+    v-if="isDesktop && isChromeOrYandex"
     class="layout"
   >
     <Preloader>
@@ -82,7 +82,7 @@ export default {
   data() {
     return {
       isDesktop: null,
-      isChrome: ScreenHelper.isChrome(),
+      isChromeOrYandex: ScreenHelper.isChromeOrYandex(),
     };
   },
 
