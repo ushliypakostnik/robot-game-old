@@ -1,6 +1,6 @@
 {
   "name": "robot-game",
-  "short_name": "robot-gamet",
+  "short_name": "robot-game",
   "start_url": "/?utm_source=homescreen",
   "display": "standalone",
   "background_color": "#000000",

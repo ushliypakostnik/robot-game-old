@@ -10,23 +10,6 @@
       content="Levon Gambaryan Game"
     />
 
-    <script>
-      var ieVersion = (function() {
-        var ua = window.navigator.userAgent;
-        var msie = ua.indexOf('MSIE');
-        if (msie > 0) {
-          return parseInt (ua.substring(msie + 5, ua.indexOf('.', msie)));
-        }
-        if (ua.indexOf('Trident/7.0') + 1) {
-          return 11;
-        }
-        return 0;
-      })();
-      if (ieVersion && ieVersion <= 9) {
-        location.href = './legacy.html';
-      }
-    </script>
-
     <link type="image/x-icon" rel="shortcut icon" href="<%= BASE_URL %>favicon.ico">
 
     <link type="image/png" sizes="16x16" rel="icon" href="<%= BASE_URL %>favicon-16x16.png">
