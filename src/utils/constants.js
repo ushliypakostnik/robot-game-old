@@ -29,7 +29,7 @@ const size = (size) => {
 const ammo = 25;
 
 export const DESIGN = {
-  V: '1.2.6',
+  V: '1',
   BREAKPOINTS: {
     desktop: 1025,
   },
@@ -462,6 +462,8 @@ export const LOCALES = {
       text8: 'Apply flower: 1234',
       text9: 'Launch drone: TAB',
       text10: 'Pause: P',
+      author: 'Author: ',
+      authorlink: 'ushliypakostnik',
       music: 'Music: ',
       musiclink: 'Kafedra',
       startbutton: 'Play',
@@ -577,6 +579,8 @@ export const LOCALES = {
       text8: 'Применить цветок: 1234',
       text9: 'Запустить дрон: TAB',
       text10: 'Пауза: P',
+      author: 'Автор: ',
+      authorlink: 'ushliypakostnik',
       music: 'Музыка: ',
       musiclink: 'Kafedra',
       startbutton: 'Играть',

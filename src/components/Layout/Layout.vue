@@ -35,8 +35,14 @@
             <LangSwitch />
           </div>
           <h5>
-            {{ $t('layout.music') }}
-            <a href="https://kafedra.bandcamp.com/" target="_blank">{{ $t('layout.musiclink') }}</a>
+            <span class="layout__link">
+              {{ $t('layout.author') }}
+              <a href="https://github.com/ushliypakostnik" target="_blank">{{ $t('layout.authorlink') }}</a>
+            </span>
+            <span class="layout__link">
+              {{ $t('layout.music') }}
+              <a href="https://kafedra.bandcamp.com" target="_blank">{{ $t('layout.musiclink') }}</a>
+            </span>
           </h5>
           <div class="layout__attention">{{ $t('layout.attention') }}</div>
         </div>
@@ -155,6 +161,10 @@ export default {
     right: 0;
     text-align: center;
     @include text($font-size--xsmall * 0.75);
+  }
+
+  &__link:not(:first-child) {
+    margin-left: $gutter;
   }
 }
 
