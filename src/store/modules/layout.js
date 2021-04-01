@@ -109,7 +109,7 @@ const mutations = {
     state.isGameOver = isGameOver;
   },
 
-  setWin: ({ commit }, isWin) => {
+  setWin: (state, isWin) => {
     state.isWin = isWin;
   },
 };

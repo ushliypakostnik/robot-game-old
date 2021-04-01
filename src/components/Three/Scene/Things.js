@@ -161,7 +161,7 @@ function Things() {
 
       switch (name) {
         case OBJECTS.FLOWERS.anemone.name:
-          material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.anemone0x });
+          material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.white0x });
           break;
         case OBJECTS.FLOWERS.crocus.name:
           material = new Three.MeshPhongMaterial({ color: DESIGN.COLORS.crocus0x });
