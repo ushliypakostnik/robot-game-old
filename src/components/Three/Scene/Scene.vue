@@ -482,7 +482,7 @@ export default {
           break;
 
         case 69: // E
-          if (!this.isKeysLock && this.thing) this.things.pick(this, this.thing);
+          if (!this.isKeysLock && this.thing) this.things.pick(this);
           break;
 
         case 49: // 1
